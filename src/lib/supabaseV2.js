@@ -183,9 +183,23 @@ export async function salvarCaptacaoV2(item, usuarioAtual = null) {
 export async function deletarCaptacaoV2(localId) {
   const sb = getClient()
   const anterior = await carregarCaptacaoAnterior(localId)
-  if (anterior?.id) await sb.from(T.carregamentos).delete().eq('captacao_id', anterior.id).catch(() => {})
-  const { error } = await sb.from(T.captacoes).delete().eq('local_id', String(localId))
+  if (!anterior?.id) return true
+
+  // Primeiro tenta usar a função SQL segura, caso ela já exista no Supabase.
+  // Se ainda não existir, faz o delete manual na ordem correta.
+  try {
+    const { error } = await sb.rpc('delete_captacao_completa', { p_local_id: String(localId) })
+    if (!error) return true
+  } catch {}
+
+  // Ordem correta para não quebrar por foreign key:
+  // eventos -> carregamentos -> captação.
+  await sb.from(T.eventos).delete().eq('captacao_id', anterior.id)
+  await sb.from(T.carregamentos).delete().eq('captacao_id', anterior.id)
+
+  const { error } = await sb.from(T.captacoes).delete().eq('id', anterior.id)
   if (error) throw error
+  return true
 }
 
 export function captacaoRowToItem(row) {
