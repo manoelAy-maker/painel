@@ -22,11 +22,19 @@ export const statusV2 = (status) => {
 
 const quantidade = (v) => Math.max(1, Number(v || 1) || 1)
 
+export const impactoPontuacaoV2 = (valor) => {
+  const s = String(valor || '').toLowerCase().trim()
+  if (s.includes('falha') || s === 'impacta' || s === 'captacao') return 'falha_captacao'
+  if (s.includes('analise') || s.includes('análise')) return 'analise'
+  return 'externo'
+}
+
 function montarObservacao(item) {
   const partes = []
   if (statusV2(item.status) === 'nao_carregou') {
     partes.push(`[NAO_CARREGOU] Motivo: ${item.motivoNaoCarregou || 'Não informado'}`)
     partes.push(`Justificativa: ${item.justificativaNaoCarregou || 'Não informada'}`)
+    partes.push(`[IMPACTO_PONTUACAO] ${impactoPontuacaoV2(item.impactoPontuacao || item.impacto_pontuacao)}`)
   }
   if (item.obs || item.observacao || item.ultimaObs) partes.push(`Obs: ${item.obs || item.observacao || item.ultimaObs}`)
   return partes.join(' | ') || null
@@ -34,11 +42,12 @@ function montarObservacao(item) {
 
 function extrairNaoCarregou(obs = '') {
   const texto = String(obs || '')
-  if (!texto.includes('[NAO_CARREGOU]')) return { obs: texto, motivoNaoCarregou: '', justificativaNaoCarregou: '' }
+  if (!texto.includes('[NAO_CARREGOU]')) return { obs: texto, motivoNaoCarregou: '', justificativaNaoCarregou: '', impactoPontuacao: 'externo' }
   const motivo = texto.match(/Motivo:\s*([^|]+)/)?.[1]?.trim() || ''
   const justificativa = texto.match(/Justificativa:\s*([^|]+)/)?.[1]?.trim() || ''
+  const impacto = texto.match(/\[IMPACTO_PONTUACAO\]\s*([^|]+)/)?.[1]?.trim() || 'externo'
   const obsLimpa = texto.split('|').map(x => x.trim()).find(x => x.startsWith('Obs:'))?.replace(/^Obs:\s*/, '') || ''
-  return { obs: obsLimpa, motivoNaoCarregou: motivo, justificativaNaoCarregou: justificativa }
+  return { obs: obsLimpa, motivoNaoCarregou: motivo, justificativaNaoCarregou: justificativa, impactoPontuacao: impactoPontuacaoV2(impacto) }
 }
 
 export async function upsertFilialBasica(filialId, nome = '') {
@@ -185,15 +194,11 @@ export async function deletarCaptacaoV2(localId) {
   const anterior = await carregarCaptacaoAnterior(localId)
   if (!anterior?.id) return true
 
-  // Primeiro tenta usar a função SQL segura, caso ela já exista no Supabase.
-  // Se ainda não existir, faz o delete manual na ordem correta.
   try {
     const { error } = await sb.rpc('delete_captacao_completa', { p_local_id: String(localId) })
     if (!error) return true
   } catch {}
 
-  // Ordem correta para não quebrar por foreign key:
-  // eventos -> carregamentos -> captação.
   await sb.from(T.eventos).delete().eq('captacao_id', anterior.id)
   await sb.from(T.carregamentos).delete().eq('captacao_id', anterior.id)
 
@@ -225,6 +230,7 @@ export function captacaoRowToItem(row) {
     observacao: extra.obs,
     motivoNaoCarregou: extra.motivoNaoCarregou,
     justificativaNaoCarregou: extra.justificativaNaoCarregou,
+    impactoPontuacao: extra.impactoPontuacao || 'externo',
     quantidadeCargas: String(row.quantidade_cargas || 1),
     ultimaAtualizacao: row.updated_at ? new Date(row.updated_at).toLocaleString('pt-BR') : '',
   }
