@@ -7,6 +7,7 @@ import './mobile-polish.css'
 import './mobile-captacao.css'
 import './login-mobile.css'
 import './clickup-workspace.css'
+import './captacao-pontuacao.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
