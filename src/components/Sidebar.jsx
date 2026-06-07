@@ -12,6 +12,7 @@ const icons = {
   historico: <Svg><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /><path d="M12 7v5l3 2" /></Svg>,
   relatorios: <Svg><path d="M4 19V5" /><path d="M4 19h16" /><path d="M8 16v-5" /><path d="M12 16V8" /><path d="M16 16v-7" /></Svg>,
   backup: <Svg><path d="M7 18a4 4 0 0 1-.8-7.9A5.5 5.5 0 0 1 17 8a4.5 4.5 0 0 1 .5 9" /><path d="M12 12v8" /><path d="m9 17 3 3 3-3" /></Svg>,
+  lixeira: <Svg><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v5" /><path d="M14 11v5" /></Svg>,
   admin: <Svg><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" /><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2.1 2.1 0 1 1-2.97 2.97l-.05-.05a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.08 1.65V21.3a2.1 2.1 0 0 1-4.2 0v-.08a1.8 1.8 0 0 0-1.08-1.65 1.8 1.8 0 0 0-1.98.36l-.05.05a2.1 2.1 0 1 1-2.97-2.97l.05-.05A1.8 1.8 0 0 0 4.6 15a1.8 1.8 0 0 0-1.65-1.08H2.87a2.1 2.1 0 0 1 0-4.2h.08A1.8 1.8 0 0 0 4.6 8.64a1.8 1.8 0 0 0-.36-1.98l-.05-.05a2.1 2.1 0 1 1 2.97-2.97l.05.05A1.8 1.8 0 0 0 9.2 4.05 1.8 1.8 0 0 0 10.27 2.4V2.32a2.1 2.1 0 0 1 4.2 0v.08a1.8 1.8 0 0 0 1.08 1.65 1.8 1.8 0 0 0 1.98-.36l.05-.05a2.1 2.1 0 1 1 2.97 2.97l-.05.05a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.08h.08a2.1 2.1 0 0 1 0 4.2h-.08A1.8 1.8 0 0 0 19.4 15Z" /></Svg>,
 }
 
@@ -28,6 +29,7 @@ const ADMIN_ABAS = [
   { id: 'captacaoAdmin', label: 'Captação Admin', group: 'extra' },
   { id: 'historico', label: 'Histórico', group: 'extra' },
   { id: 'relatorios', label: 'Relatórios', group: 'extra' },
+  { id: 'lixeira', label: 'Lixeira', group: 'extra' },
   { id: 'backup', label: 'Backup', group: 'extra' },
 ]
 
