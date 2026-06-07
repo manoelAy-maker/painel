@@ -18,6 +18,7 @@ const Historico = lazy(() => import('./pages/Historico'))
 const Relatorios = lazy(() => import('./pages/Relatorios.jsx'))
 const Backup = lazy(() => import('./pages/Backup'))
 const Admin = lazy(() => import('./pages/Admin'))
+const Lixeira = lazy(() => import('./pages/Lixeira'))
 import './captacao-theme.css'
 import './estadia-mobile.css'
 import './pro-polish.css'
@@ -68,7 +69,7 @@ function PainelEstadia() {
   const formLancadaRef = useRef()
   const formALancarRef = useRef()
   const isAdmin = usuarioAtual?.cargo === 'Admin'
-  const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin'].includes(abaAtiva)
+  const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin', 'lixeira'].includes(abaAtiva)
   const abaRender = !isAdmin && abaProtegida ? 'inicio' : abaAtiva
 
   const focarLancada = () => {
@@ -104,6 +105,7 @@ function PainelEstadia() {
               {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
               {isAdmin && abaRender === 'historico' && <Historico />}
               {isAdmin && abaRender === 'relatorios' && <Relatorios />}
+              {isAdmin && abaRender === 'lixeira' && <Lixeira />}
               {isAdmin && abaRender === 'backup' && <Backup />}
               {isAdmin && abaRender === 'admin' && <Admin />}
             </Suspense>
