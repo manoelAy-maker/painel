@@ -34,9 +34,10 @@ const ADMIN_ABAS = [
 ]
 
 export default function Sidebar({ onFechar }) {
-  const { abaAtiva, mudarAba, estadiasALancar, cloudStatus, cloudText, usuarioAtual } = useApp()
+  const { abaAtiva, mudarAba, estadiasALancar, cloudStatus, cloudText, usuarioAtual, filiais } = useApp()
   const isAdmin = usuarioAtual?.cargo === 'Admin'
   const abas = isAdmin ? ADMIN_ABAS : OPERADOR_ABAS
+  const spaces = isAdmin ? filiais : filiais.filter(f => f.id === (usuarioAtual?.filial || 'jatai-go'))
 
   const handleTab = (id) => {
     mudarAba(id)
@@ -50,11 +51,23 @@ export default function Sidebar({ onFechar }) {
     <aside className="sidebar-pro" id="sidebarPro">
       <div className="brand-pro">
         <div className="brand-mark-pro" />
-        <div><h1>AYRES</h1><p>{isAdmin ? 'Logística Management' : 'Operação de estadia'}</p></div>
+        <div><h1>AYRES</h1><p>{isAdmin ? 'Workspace logístico' : 'Operação de estadia'}</p></div>
+      </div>
+
+      <div className="clickup-space-block">
+        <div className="clickup-space-title"><span>Spaces</span><span>{spaces.length}</span></div>
+        <div className="clickup-space-list">
+          {spaces.map((f, i) => (
+            <button key={f.id} type="button" className="clickup-space-item" onClick={() => handleTab('inicio')}>
+              <span className="clickup-space-dot" style={{ background: i % 2 ? 'linear-gradient(135deg,#f97316,#facc15)' : 'linear-gradient(135deg,#3b82f6,#7c3aed)' }} />
+              <span className="clickup-space-name">{f.nome}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <nav className="sidebar-nav">
-        <div className="sidebar-section-label">Principal</div>
+        <div className="sidebar-section-label">Listas</div>
         {mainAbas.map(a => (
           <button key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)}>
             <span className="tab-icon">{icons[a.id]}</span>
@@ -66,7 +79,7 @@ export default function Sidebar({ onFechar }) {
         {isAdmin && extraAbas.length > 0 && (
           <>
             <div className="sidebar-divider" />
-            <div className="sidebar-section-label">Admin e relatórios</div>
+            <div className="sidebar-section-label">Views e relatórios</div>
             {extraAbas.map(a => (
               <button key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)}>
                 <span className="tab-icon">{icons[a.id]}</span>
