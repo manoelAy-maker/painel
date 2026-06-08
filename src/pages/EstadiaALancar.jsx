@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 import DropZone from '../components/DropZone'
 import { nomeFilial } from '../data/filiais'
 import { tempoDecorrido, slaPendencia } from '../utils/index'
+import { arquivarEstadiaALancar } from '../lib/ayresSafety'
 
 const criarFormVazio = (filial = 'jatai-go') => ({
   filial,
@@ -34,7 +35,7 @@ function SlaBadge({ data }) {
 }
 
 export default function EstadiaALancar({ formRef }) {
-  const { estadiasALancar, adicionarALancar, abrirParaLancar, excluirALancar, filiais, usuarioAtual } = useApp()
+  const { estadiasALancar, adicionarALancar, abrirParaLancar, excluirALancar, filiais, usuarioAtual, toast } = useApp()
   const filialPadrao = usuarioAtual?.filial || 'jatai-go'
   const [form, setForm] = useState(criarFormVazio(filialPadrao))
   const [arquivos, setArquivos] = useState([])
@@ -56,6 +57,17 @@ export default function EstadiaALancar({ formRef }) {
     await adicionarALancar(form, arquivos)
     setForm(criarFormVazio(filialPadrao))
     setArquivos([])
+  }
+
+  const handleArquivar = async (e) => {
+    if (!confirm('Arquivar esta pendência? Ela vai sair da tela, mas ficará salva na Lixeira com os anexos.')) return
+    try {
+      await arquivarEstadiaALancar(e, usuarioAtual?.usuario || '-', 'Pendência arquivada pela tela A lançar')
+      await excluirALancar(e.id)
+      toast?.('Pendência arquivada na Lixeira.', 'ok')
+    } catch {
+      toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err')
+    }
   }
 
   return (
@@ -135,7 +147,7 @@ export default function EstadiaALancar({ formRef }) {
                       <td>{e.criadoPor || '-'}<br /><small>{e.dataCriacao || ''}</small></td>
                       <td><TempoPendente data={e.dataCriacao} /></td>
                       <td><span className="status status-lancar">A lançar</span></td>
-                      <td><div className="actions"><button className="btn-green btn-small" onClick={() => abrirParaLancar(e.id)}>Lançar</button><button className="btn-red btn-small" onClick={() => confirm('Excluir esta pendência?') && excluirALancar(e.id)}>Excluir</button></div></td>
+                      <td><div className="actions"><button className="btn-green btn-small" onClick={() => abrirParaLancar(e.id)}>Lançar</button><button className="btn-red btn-small" onClick={() => handleArquivar(e)}>Arquivar</button></div></td>
                     </tr>
                   )
                 })}
