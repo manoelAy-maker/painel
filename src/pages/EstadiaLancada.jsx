@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 import { calcularEstadia, linkWhatsapp, dataISOTexto, tempoDecorrido } from '../utils/index'
 import DropZone from '../components/DropZone'
 import { nomeFilial } from '../data/filiais'
+import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 
 const EMPTY = { chamado: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '', prioridade: 'Normal', pagoPor: 'Logística', chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '' }
 
@@ -34,7 +35,7 @@ function TempoInfo({ label, data, compacto = false }) {
 }
 
 export default function EstadiaLancada({ formRef }) {
-  const { estadias, adicionarLancada, editarLancada, marcarFeito, finalizar, reabrir, excluirLancada, itemParaLancar, limparItemParaLancar, uploadAnexoItem, filiais } = useApp()
+  const { estadias, adicionarLancada, editarLancada, marcarFeito, finalizar, reabrir, excluirLancada, itemParaLancar, limparItemParaLancar, uploadAnexoItem, filiais, usuarioAtual, toast } = useApp()
   const [form, setForm] = useState(EMPTY)
   const [editandoId, setEditandoId] = useState(null)
   const [arquivos, setArquivos] = useState([])
@@ -108,6 +109,17 @@ export default function EstadiaLancada({ formRef }) {
     setForm(EMPTY)
     setArquivos([])
     setExistingAnexos([])
+  }
+
+  const handleArquivar = async (e) => {
+    if (!confirm('Arquivar esta estadia? Ela vai sair da tela, mas ficará salva na Lixeira com os anexos.')) return
+    try {
+      await arquivarEstadiaLancada(e, usuarioAtual?.usuario || '-', 'Estadia arquivada pela tela de lançadas')
+      await excluirLancada(e.id)
+      toast?.('Estadia arquivada na Lixeira.', 'ok')
+    } catch {
+      toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err')
+    }
   }
 
   const lista = estadias.filter(e => {
@@ -194,7 +206,7 @@ export default function EstadiaLancada({ formRef }) {
                     <td>{e.lancadoPor || '-'}</td>
                     <td><TempoInfo label="desde o lançamento" data={e.dataLancamento} /></td>
                     <td><span className={`status ${classeStatus(e.status)}`}>{e.status}</span>{e.feitoPor && <><br /><small>Feito por {e.feitoPor}</small></>}{e.finalizadoPor && <><br /><small>Finalizado por {e.finalizadoPor}</small></>}</td>
-                    <td><div className="actions">{e.status === 'Aberto' && <button className="btn-green btn-small" onClick={() => marcarFeito(e.id)}>Feito</button>}{e.status === 'Feito' && <button className="btn-purple btn-small" onClick={() => finalizar(e.id)}>Finalizar</button>}{e.status !== 'Aberto' && <button className="btn-orange btn-small" onClick={() => reabrir(e.id)}>Reabrir</button>}<button className="btn-light btn-small" onClick={() => handleEditar(e)}>Editar</button>{e.telefoneMotorista && <a className="btn btn-green btn-small" href={linkWhatsapp(e)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}<button className="btn-red btn-small" onClick={() => confirm('Excluir esta estadia?') && excluirLancada(e.id)}>Excluir</button></div></td>
+                    <td><div className="actions">{e.status === 'Aberto' && <button className="btn-green btn-small" onClick={() => marcarFeito(e.id)}>Feito</button>}{e.status === 'Feito' && <button className="btn-purple btn-small" onClick={() => finalizar(e.id)}>Finalizar</button>}{e.status !== 'Aberto' && <button className="btn-orange btn-small" onClick={() => reabrir(e.id)}>Reabrir</button>}<button className="btn-light btn-small" onClick={() => handleEditar(e)}>Editar</button>{e.telefoneMotorista && <a className="btn btn-green btn-small" href={linkWhatsapp(e)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}<button className="btn-red btn-small" onClick={() => handleArquivar(e)}>Arquivar</button></div></td>
                   </tr>
                 ))}
             </tbody>
