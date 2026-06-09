@@ -1,0 +1,255 @@
+.ayres-mobile-apk {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(37,99,235,.18), transparent 36%),
+    radial-gradient(circle at 100% 0%, rgba(249,115,22,.12), transparent 32%),
+    #05070a;
+  color: #f8fafc;
+  padding-bottom: 86px;
+}
+
+.ayres-mobile-head {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 14px 14px 10px;
+  background: rgba(5,7,10,.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.ayres-mobile-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ayres-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ayres-mobile-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #2563eb, #f97316);
+  box-shadow: 0 16px 36px rgba(37,99,235,.28);
+  font-weight: 950;
+}
+
+.ayres-mobile-brand strong {
+  display: block;
+  font-size: 17px;
+  letter-spacing: -.4px;
+}
+
+.ayres-mobile-brand span {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.ayres-mobile-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ayres-mobile-user span {
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ayres-mobile-logout {
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  color: #f8fafc;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.ayres-mobile-content {
+  padding: 12px;
+}
+
+.ayres-mobile-panel {
+  animation: ayresMobileIn .22s ease both;
+}
+
+.ayres-mobile-bottom {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 24px;
+  background: rgba(13,17,23,.92);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 24px 70px rgba(0,0,0,.46);
+  backdrop-filter: blur(18px);
+}
+
+.ayres-mobile-tab {
+  border: 0;
+  border-radius: 18px;
+  padding: 12px 8px;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 950;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+}
+
+.ayres-mobile-tab i {
+  font-style: normal;
+  font-size: 20px;
+}
+
+.ayres-mobile-tab.active {
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  box-shadow: 0 12px 28px rgba(37,99,235,.28);
+}
+
+.ayres-mobile-apk .capture-topbar-pro,
+.ayres-mobile-apk .capture-footer-pro,
+.ayres-mobile-apk .cap-header,
+.ayres-mobile-apk .cap-simple-guide,
+.ayres-mobile-apk .cap-intelligence-hero,
+.ayres-mobile-apk .cap-intel-grid,
+.ayres-mobile-apk .cap-bank-card {
+  display: none !important;
+}
+
+.ayres-mobile-apk .captacao-simple-shell {
+  min-height: auto;
+  background: transparent !important;
+}
+
+.ayres-mobile-apk .cap-main {
+  padding: 0 0 90px !important;
+  max-width: none !important;
+}
+
+.ayres-mobile-apk .cap-stats,
+.ayres-mobile-apk .cap-score-summary,
+.ayres-mobile-apk .cap-insights-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.ayres-mobile-apk .cap-score-summary {
+  display: none !important;
+}
+
+.ayres-mobile-apk .cap-stat-card,
+.ayres-mobile-apk .cap-insight-card,
+.ayres-mobile-apk .cap-driver-card,
+.ayres-mobile-apk .box,
+.ayres-mobile-apk .table-wrap {
+  border-radius: 20px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.26) !important;
+}
+
+.ayres-mobile-apk .cap-search-row {
+  position: static !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  padding: 10px !important;
+  margin: 12px 0 !important;
+}
+
+.ayres-mobile-apk .cap-search {
+  grid-column: 1 / -1;
+  min-width: 0 !important;
+}
+
+.ayres-mobile-apk .cap-status-filter {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.ayres-mobile-apk .cap-list {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+.ayres-mobile-apk .cap-driver-card {
+  display: grid !important;
+  grid-template-columns: 46px 1fr !important;
+  gap: 12px !important;
+  padding: 14px !important;
+}
+
+.ayres-mobile-apk .cap-card-actions {
+  grid-column: 1 / -1;
+  min-width: 0 !important;
+  width: 100%;
+}
+
+.ayres-mobile-apk .cap-next-btn,
+.ayres-mobile-apk .cap-no-load-btn {
+  width: 100%;
+}
+
+.ayres-mobile-apk .cap-fab {
+  right: 18px !important;
+  bottom: 94px !important;
+}
+
+.ayres-mobile-apk .cap-db-pill {
+  display: none !important;
+}
+
+.ayres-mobile-apk #abaALancar {
+  display: block;
+}
+
+.ayres-mobile-apk #abaALancar .box {
+  padding: 16px !important;
+}
+
+.ayres-mobile-apk #abaALancar .form-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+.ayres-mobile-apk #abaALancar .table-wrap {
+  margin-top: 12px;
+}
+
+.ayres-mobile-apk #abaALancar table {
+  min-width: 760px;
+}
+
+.ayres-mobile-apk .sla-alert {
+  border-radius: 18px !important;
+  margin-bottom: 12px !important;
+}
+
+@keyframes ayresMobileIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
