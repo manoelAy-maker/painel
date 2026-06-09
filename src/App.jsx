@@ -26,6 +26,66 @@ import './sidebar-reference.css'
 import './tempo-estadia.css'
 import './live-command.css'
 import './admin-pro.css'
+import './mobile-app-apk.css'
+
+function isApkMobileMode() {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('app') === 'mobile') return true
+    if (window.Capacitor?.isNativePlatform?.()) return true
+    if (window.Capacitor) return true
+  } catch {}
+  return false
+}
+
+function AppMobileOperacional() {
+  const { usuarioAtual, logout } = useApp()
+  const [aba, setAba] = useState('captacao')
+  const formALancarRef = useRef()
+
+  const sair = () => {
+    localStorage.removeItem('moduloInicialViaLog')
+    logout()
+  }
+
+  return (
+    <div className="ayres-mobile-apk">
+      <header className="ayres-mobile-head">
+        <div className="ayres-mobile-head-row">
+          <div className="ayres-mobile-brand">
+            <div className="ayres-mobile-logo">A</div>
+            <div>
+              <strong>AYRES Mobile</strong>
+              <span>{aba === 'captacao' ? 'Captação rápida' : 'Lançar pendência'}</span>
+            </div>
+          </div>
+          <div className="ayres-mobile-user">
+            <span>{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
+            <button className="ayres-mobile-logout" onClick={sair}>Sair</button>
+          </div>
+        </div>
+      </header>
+
+      <main className="ayres-mobile-content">
+        <Suspense fallback={<Loader />}>
+          {aba === 'captacao' && <section className="ayres-mobile-panel"><Captacao /></section>}
+          {aba === 'pendencia' && <section className="ayres-mobile-panel"><EstadiaALancar formRef={formALancarRef} /></section>}
+        </Suspense>
+      </main>
+
+      <nav className="ayres-mobile-bottom">
+        <button className={`ayres-mobile-tab ${aba === 'captacao' ? 'active' : ''}`} onClick={() => setAba('captacao')}>
+          <i>📞</i>
+          <span>Captação</span>
+        </button>
+        <button className={`ayres-mobile-tab ${aba === 'pendencia' ? 'active' : ''}`} onClick={() => setAba('pendencia')}>
+          <i>📝</i>
+          <span>Pendência</span>
+        </button>
+      </nav>
+    </div>
+  )
+}
 
 function CaptacaoIsolada() {
   const { usuarioAtual, logout } = useApp()
@@ -130,14 +190,16 @@ export default function App() {
   if (loading) return <Loader />
 
   const moduloInicial = localStorage.getItem('moduloInicialViaLog')
+  const mobileApk = isApkMobileMode()
 
   return (
     <>
       <SoundManager />
       {!usuarioAtual && <Login />}
-      {usuarioAtual && !moduloInicial && <SelecaoPainel />}
-      {usuarioAtual && moduloInicial === 'captacao' && <CaptacaoIsolada />}
-      {usuarioAtual && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}
+      {usuarioAtual && mobileApk && <AppMobileOperacional />}
+      {usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}
+      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <CaptacaoIsolada />}
+      {usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}
       <Toast />
     </>
   )
