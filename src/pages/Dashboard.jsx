@@ -1,6 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { useApp } from '../context/AppContext'
 import { dinheiro, moedaNumero } from '../utils/index'
+import { podeAdministrar } from '../utils/roles'
 import '../estadia-dashboard-pro.css'
 import '../operator-simple.css'
 import '../dashboard-functional.css'
@@ -150,7 +151,7 @@ function OperatorHome({ usuarioAtual, totalEstadias, totalPendentes, cloudStatus
 
 export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
   const { estadias, estadiasALancar, usuarioAtual, usuariosOnline, cloudStatus, mudarAba, activityFeed } = useApp()
-  const isAdmin = usuarioAtual?.cargo === 'Admin'
+  const isAdmin = podeAdministrar(usuarioAtual)
 
   const abertas = estadias.filter(e => e.status === 'Aberto').length
   const feitas = estadias.filter(e => e.status === 'Feito').length
