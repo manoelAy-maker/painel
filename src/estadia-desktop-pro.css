@@ -1,0 +1,102 @@
+@media (min-width: 1024px) {
+  #abaLancadas {
+    display: grid;
+    gap: 18px;
+  }
+
+  #abaLancadas .estadia-form-box,
+  #abaLancadas .estadia-filter-box,
+  #abaLancadas .estadia-table-wrap {
+    border-radius: 24px;
+  }
+
+  #abaLancadas .estadia-form-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .estadia-form-hint {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(37,99,235,.08);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  #abaLancadas .estadia-form-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 14px;
+    align-items: end;
+  }
+
+  #abaLancadas .estadia-form-grid .field {
+    min-width: 0;
+  }
+
+  #abaLancadas .estadia-form-grid .field-sm { grid-column: span 2; }
+  #abaLancadas .estadia-form-grid .field-md { grid-column: span 3; }
+  #abaLancadas .estadia-form-grid .field-lg { grid-column: span 4; }
+  #abaLancadas .estadia-form-grid .wide { grid-column: 1 / -1; }
+
+  #abaLancadas .estadia-calc-preview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  #abaLancadas .estadia-form-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 14px;
+  }
+
+  #abaLancadas .estadia-form-actions .btn-full {
+    width: auto;
+    min-width: 240px;
+    margin-top: 0;
+  }
+
+  #abaLancadas .estadia-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr .9fr .9fr;
+    gap: 10px;
+  }
+
+  #abaLancadas table {
+    font-size: 12.5px;
+  }
+
+  #abaLancadas th,
+  #abaLancadas td {
+    padding: 10px 9px;
+    vertical-align: top;
+  }
+
+  #abaLancadas .actions {
+    min-width: 180px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+@media (min-width: 1280px) {
+  #abaLancadas .estadia-form-grid .field-sm { grid-column: span 2; }
+  #abaLancadas .estadia-form-grid .field-md { grid-column: span 3; }
+  #abaLancadas .estadia-form-grid .field-lg { grid-column: span 3; }
+}
+
+@media (max-width: 1023px) {
+  .estadia-form-hint {
+    display: none;
+  }
+}
