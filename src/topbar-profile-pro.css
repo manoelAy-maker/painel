@@ -1,0 +1,78 @@
+.topbar .topbar-inner {
+  min-height: 76px;
+  padding: 14px 18px !important;
+}
+
+.topbar .topbar-inner > div:first-child h1 {
+  letter-spacing: -.7px;
+}
+
+.top-actions {
+  gap: 8px !important;
+}
+
+.profile-pill.profile-action {
+  cursor: pointer;
+  border: 1px solid rgba(148,163,184,.14);
+  background: rgba(255,255,255,.055);
+  padding: 6px 9px 6px 6px;
+  transition: .18s ease;
+}
+
+.profile-pill.profile-action:hover {
+  background: rgba(37,99,235,.11);
+  border-color: rgba(96,165,250,.28);
+  transform: translateY(-1px);
+}
+
+.profile-pill .avatar.user-photo {
+  overflow: hidden;
+  background: linear-gradient(135deg, #2563eb, #f97316);
+}
+
+.profile-pill .avatar.user-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-pill .profile-text {
+  display: grid;
+  line-height: 1.1;
+}
+
+.profile-pill .profile-text span {
+  font-weight: 950;
+}
+
+.profile-pill .profile-text small {
+  color: #94a3b8;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.topbar-profile-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #bfdbfe;
+  background: rgba(37,99,235,.10);
+  border: 1px solid rgba(59,130,246,.20);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+@media (max-width: 900px) {
+  .topbar-profile-label,
+  .profile-pill .profile-text small {
+    display: none;
+  }
+
+  .top-actions .sound-toggle,
+  .top-actions button[title="Alternar tema"],
+  .top-actions button[title^="Paleta"] {
+    display: none;
+  }
+}
