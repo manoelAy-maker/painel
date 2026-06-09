@@ -1,0 +1,15 @@
+{
+  "appId": "com.ayres.logistica",
+  "appName": "AYRES",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 900,
+      "backgroundColor": "#05070a",
+      "showSpinner": false
+    }
+  }
+}
