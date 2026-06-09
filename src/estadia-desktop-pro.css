@@ -1,17 +1,12 @@
 @media (min-width: 1024px) {
   #abaLancadas {
     display: grid;
-    gap: 20px;
-  }
-
-  #abaLancadas .estadia-form-box,
-  #abaLancadas .estadia-filter-box,
-  #abaLancadas .estadia-table-wrap {
-    border-radius: 22px;
+    gap: 18px;
   }
 
   #abaLancadas .estadia-form-box {
     padding: 22px;
+    border-radius: 24px;
   }
 
   #abaLancadas .estadia-form-title {
@@ -25,11 +20,6 @@
   #abaLancadas .estadia-form-title h2 {
     font-size: 22px;
     line-height: 1.1;
-    margin-bottom: 4px;
-  }
-
-  #abaLancadas .estadia-form-title span {
-    font-size: 13px;
   }
 
   .estadia-form-hint {
@@ -43,10 +33,11 @@
     white-space: nowrap;
   }
 
+  /* Layout simples e profissional: sem campos espremidos */
   #abaLancadas .estadia-form-grid {
     display: grid;
-    grid-template-columns: 130px 150px minmax(260px, 1.2fr) 150px minmax(220px, .9fr) 120px;
-    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
     align-items: end;
   }
 
@@ -63,79 +54,56 @@
 
   #abaLancadas .estadia-form-grid input,
   #abaLancadas .estadia-form-grid select {
-    height: 42px;
-    min-height: 42px;
-    padding: 9px 11px;
+    height: 44px;
+    min-height: 44px;
+    padding: 10px 12px;
     font-size: 13px;
   }
 
-  #abaLancadas .estadia-form-grid .field-sm,
-  #abaLancadas .estadia-form-grid .field-md,
-  #abaLancadas .estadia-form-grid .field-lg {
-    grid-column: auto;
+  /* Campos importantes maiores */
+  #abaLancadas .estadia-form-grid .field:nth-child(3),
+  #abaLancadas .estadia-form-grid .field:nth-child(5) {
+    grid-column: span 2;
   }
 
-  /* Linha 1 */
-  #abaLancadas .estadia-form-grid .field:nth-child(1) { grid-column: 1; }
-  #abaLancadas .estadia-form-grid .field:nth-child(2) { grid-column: 2; }
-  #abaLancadas .estadia-form-grid .field:nth-child(3) { grid-column: 3; }
-  #abaLancadas .estadia-form-grid .field:nth-child(4) { grid-column: 4; }
-  #abaLancadas .estadia-form-grid .field:nth-child(5) { grid-column: 5; }
-  #abaLancadas .estadia-form-grid .field:nth-child(6) { grid-column: 6; }
-
-  /* Linha 2 */
-  #abaLancadas .estadia-form-grid .field:nth-child(7) { grid-column: 1; }
-  #abaLancadas .estadia-form-grid .field:nth-child(8) { grid-column: 2; }
-  #abaLancadas .estadia-form-grid .field:nth-child(9) { grid-column: 3; }
-  #abaLancadas .estadia-form-grid .field:nth-child(10) { grid-column: 4; }
-  #abaLancadas .estadia-form-grid .field:nth-child(11) { grid-column: 5; }
-  #abaLancadas .estadia-form-grid .field:nth-child(12) { grid-column: 6; }
-
-  /* Hora saída ocupa o espaço da placa/peso quando necessário */
-  #abaLancadas .estadia-form-grid .field:nth-child(13) {
-    grid-column: 1;
-  }
-
+  /* Dropzone/anexos ocupam linha inteira */
+  #abaLancadas .estadia-form-grid > div:not(.field),
   #abaLancadas .estadia-form-grid .wide {
-    grid-column: 1 / -1;
-  }
-
-  #abaLancadas .estadia-form-grid > div:not(.field) {
     grid-column: 1 / -1;
   }
 
   #abaLancadas .estadia-calc-preview {
     display: grid;
     grid-template-columns: repeat(2, minmax(220px, 1fr));
-    gap: 12px;
+    gap: 14px;
     margin-top: 16px;
   }
 
   #abaLancadas .preview-card {
-    padding: 14px 16px;
+    padding: 15px 16px;
     border-radius: 18px;
   }
 
   #abaLancadas .preview-card strong {
-    font-size: 22px;
+    font-size: 23px;
   }
 
   #abaLancadas .estadia-form-actions {
     display: flex;
     gap: 10px;
-    align-items: center;
     justify-content: flex-end;
     margin-top: 14px;
   }
 
   #abaLancadas .estadia-form-actions .btn-full {
     width: auto;
-    min-width: 230px;
+    min-width: 240px;
     margin-top: 0;
   }
 
   #abaLancadas .estadia-filter-box {
     padding: 18px 20px;
+    border-radius: 24px;
   }
 
   #abaLancadas .estadia-filters {
@@ -153,6 +121,7 @@
   }
 
   #abaLancadas .estadia-table-wrap {
+    border-radius: 24px;
     overflow: hidden;
   }
 
@@ -162,12 +131,11 @@
 
   #abaLancadas table {
     font-size: 12px;
-    min-width: 1580px;
+    min-width: 1500px;
   }
 
   #abaLancadas th {
     font-size: 10px;
-    letter-spacing: .04em;
     white-space: nowrap;
   }
 
@@ -193,7 +161,12 @@
 
 @media (min-width: 1500px) {
   #abaLancadas .estadia-form-grid {
-    grid-template-columns: 150px 170px minmax(320px, 1.3fr) 165px minmax(260px, 1fr) 140px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  #abaLancadas .estadia-form-grid .field:nth-child(3),
+  #abaLancadas .estadia-form-grid .field:nth-child(5) {
+    grid-column: span 2;
   }
 
   #abaLancadas table {
