@@ -168,6 +168,28 @@ function ImpactoPill({ impacto }) {
   return <span className={`cap-impact-pill cap-impact-${impactoKey(impacto)}`}>{info.icon} {info.label} · {info.curto}</span>
 }
 
+function GuiaSimplesCaptacao() {
+  return (
+    <div className="cap-simple-guide">
+      <section className="cap-action-now">
+        <h3>Fluxo simples da captação</h3>
+        <p>Cadastre rápido, avance o status e só preencha motivo quando realmente não carregar.</p>
+        <div className="cap-simple-steps">
+          <div className="cap-simple-step"><strong>1. Lead</strong><span>Nome, número e operação.</span></div>
+          <div className="cap-simple-step"><strong>2. Ordem</strong><span>Clique em avançar quando pegar ordem.</span></div>
+          <div className="cap-simple-step"><strong>3. Carregou</strong><span>Avance de novo quando confirmar.</span></div>
+          <div className="cap-simple-step"><strong>4. Não carregou</strong><span>Informe motivo e se pesa ou não.</span></div>
+        </div>
+      </section>
+      <section className="cap-simple-rules">
+        <h3>Regra da pontuação</h3>
+        <div className="cap-rule-line"><span className="cap-rule-icon">🛡️</span><p><strong>Motivo externo</strong><br />Preço, agenda, seguradora ou concorrência não tira ponto.</p></div>
+        <div className="cap-rule-line"><span className="cap-rule-icon">⚠️</span><p><strong>Falha de captação</strong><br />Dados errados, perfil errado ou falta de acompanhamento pesa.</p></div>
+      </section>
+    </div>
+  )
+}
+
 function StatCard({ icon, label, valor, cor }) {
   return (
     <div className="cap-stat-card">
@@ -277,7 +299,7 @@ function ModalMotorista({ aberto, fechar, salvarMotorista, editando }) {
             </div>
 
             <label style={lblStyle}>Justificativa obrigatória</label>
-            <textarea value={form.justificativaNaoCarregou} onChange={(e) => set('justificativaNaoCarregou', e.target.value)} placeholder="Explique. Ex: preço não fechou, seguradora não liberou, ou dados foram captados incorretamente." style={{ ...inputStyle, minHeight: 86, resize: 'vertical' }} />
+            <textarea value={form.justificativaNaoCarregou} onChange={(e) => set('justificativaNaoCarregou', e.target.value)} placeholder="Ex: preço não fechou, seguradora não liberou ou dados foram captados incorretamente." style={{ ...inputStyle, minHeight: 86, resize: 'vertical' }} />
           </div>
         )}
         <label style={lblStyle}>Observação</label>
@@ -453,7 +475,6 @@ export default function Captacao() {
 
   const topCaptador = ranking[0]
   const topEfetivo = [...ranking].filter((r) => r.total > 0).sort((a, b) => b.efetividade - a.efetividade || b.carregou - a.carregou)[0]
-  const topOrdem = [...ranking].sort((a, b) => b.ordem - a.ordem || b.ordemPct - a.ordemPct)[0]
   const motivoTop = motivosNaoCarregou[0]
   const topJusto = [...ranking].sort((a, b) => b.pontos - a.pontos)[0]
 
@@ -512,14 +533,15 @@ export default function Captacao() {
     <div className="captacao-simple-shell">
       <header className="cap-header"><div className="cap-header-inner"><div className="cap-user"><div className="cap-avatar" style={{ background: corCaptador }}>{nomeCaptador[0]?.toUpperCase() || '?'}</div><div><small>{isAdmin ? 'Visão administrativa' : 'Captador'}</small><strong>{nomeCaptador}</strong></div></div><div className="cap-filial">{isAdmin ? 'Admin · Geral' : nomeFilial(filialAtual)} {carregando ? ' · Sync' : ''}</div></div></header>
       <main className="cap-main">
+        <GuiaSimplesCaptacao />
         <div className="cap-stats"><StatCard icon="📞" label="Leads captados" valor={stats.total} cor="#64748b" /><StatCard icon="📋" label="Com ordem" valor={stats.ordem} cor="#d97706" /><StatCard icon="✅" label="Carregou" valor={stats.carregou} cor="#16a34a" /><StatCard icon="⛔" label="Não carregou" valor={stats.naoCarregou} cor="#dc2626" /></div>
         <div className="cap-score-summary"><StatCard icon="🛡️" label="Motivo externo: não pesa" valor={stats.motivoExterno} cor="#2563eb" /><StatCard icon="⚠️" label="Falha de captação: pesa" valor={stats.falhaCaptacao} cor="#dc2626" /><StatCard icon="🕵️" label="Em análise" valor={stats.analise} cor="#d97706" /></div>
         <div className="cap-conversion"><div style={{ flex: 1 }}><div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#64748b', fontSize: 13, marginBottom: 8, fontWeight: 800 }}>📈 Taxa de carregamento efetivo</div><div className="cap-bar"><i style={{ width: `${conversao}%` }} /></div></div><div style={{ fontSize: 27, fontWeight: 900, color: '#16a34a' }}>{conversao}%</div></div>
-        <section className="cap-intelligence-hero"><div><span>CRM de leads captados</span><h2>Não carregou só pesa quando for falha de captação</h2><p>Motivo externo fica como perda operacional, mas não tira ponto do captador. Só pesa quando houve cadastro ruim, perfil errado, falta de confirmação ou acompanhamento.</p></div></section>
+        <section className="cap-intelligence-hero"><div><span>CRM de leads captados</span><h2>Simples para lançar, forte para medir resultado</h2><p>Cadastre o motorista rápido, avance o status e registre o motivo apenas quando não carregar. O painel separa motivo externo de falha de captação.</p></div></section>
         <div className="cap-insights-grid"><InsightCard icon="🏆" titulo="Maior pontuação justa" valor={topJusto?.nome} detalhe={`${topJusto?.pontos || 0} pontos`} cor="#7c3aed" /><InsightCard icon="📞" titulo="Mais captou" valor={topCaptador?.nome} detalhe={`${topCaptador?.total || 0} lead(s)`} cor="#2563eb" /><InsightCard icon="✅" titulo="Mais efetivo" valor={topEfetivo?.nome} detalhe={`${topEfetivo?.efetividade || 0}% · ${topEfetivo?.carregou || 0} carregou`} cor="#16a34a" /><InsightCard icon="⛔" titulo="Maior motivo de perda" valor={motivoTop?.motivo} detalhe={`${motivoTop?.qtd || 0} ocorrência(s)`} cor="#dc2626" /></div>
         <div className="cap-intel-grid"><RankingEfetividade ranking={ranking} /><MotivosNaoCarregou motivos={motivosNaoCarregou} /></div>
         <BancoMotoristas motoristas={bancoMotoristas} />
-        <div className="cap-search-row"><div className="cap-search"><span>🔎</span><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar motorista, número, motivo, impacto ou justificativa..." /></div>{['Todas', ...OPERACOES].map((op) => <button key={op} onClick={() => setFiltroOp(op)} className={`cap-filter ${filtroOp === op ? 'active' : ''}`}>{op}</button>)}<select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)} className="cap-status-filter"><option value="Todos">Todos status</option>{Object.entries(STATUS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select></div>
+        <div className="cap-search-row"><div className="cap-search"><span>🔎</span><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar motorista, número, motivo ou justificativa..." /></div>{['Todas', ...OPERACOES].map((op) => <button key={op} onClick={() => setFiltroOp(op)} className={`cap-filter ${filtroOp === op ? 'active' : ''}`}>{op}</button>)}<select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)} className="cap-status-filter"><option value="Todos">Todos status</option>{Object.entries(STATUS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select></div>
         <div className="cap-list">
           {lista.length === 0 && <div className="cap-empty"><div style={{ fontSize: 38, opacity: 0.55 }}>👥</div><p>Nenhum lead por aqui ainda.</p></div>}
           {lista.map((m) => {
