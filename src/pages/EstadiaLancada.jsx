@@ -4,6 +4,7 @@ import { calcularEstadia, linkWhatsapp, dataISOTexto, tempoDecorrido } from '../
 import DropZone from '../components/DropZone'
 import { nomeFilial } from '../data/filiais'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
+import '../estadia-desktop-pro.css'
 
 const EMPTY = { nf: '', chamado: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '', prioridade: 'Normal', pagoPor: 'Logística', chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '' }
 const TRANSPORTADORAS_BASE = ['Via Log', 'RDR', 'Transportes', 'Autônomo']
