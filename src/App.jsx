@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, lazy, Suspense } from 'react'
 import { useApp } from './context/AppContext'
+import { podeAdministrar } from './utils/roles'
 import Loader from './components/Loader'
 import Login from './components/Login'
 import SelecaoPainel from './components/SelecaoPainel'
@@ -129,7 +130,7 @@ function PainelEstadia() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const formLancadaRef = useRef()
   const formALancarRef = useRef()
-  const isAdmin = usuarioAtual?.cargo === 'Admin'
+  const isAdmin = podeAdministrar(usuarioAtual)
   const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin', 'lixeira'].includes(abaAtiva)
   const abaRender = !isAdmin && abaProtegida ? 'inicio' : abaAtiva
 
