@@ -1,0 +1,51 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-apk:
+    name: Gerar APK AYRES
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build do painel web
+        run: npm run build
+
+      - name: Criar projeto Android
+        run: npx cap add android
+
+      - name: Sincronizar arquivos web no Android
+        run: npx cap sync android
+
+      - name: Permitir execução do Gradle
+        run: chmod +x android/gradlew
+
+      - name: Gerar APK debug
+        run: cd android && ./gradlew assembleDebug
+
+      - name: Enviar APK para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: AYRES-android-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
