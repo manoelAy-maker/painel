@@ -27,6 +27,7 @@ import './tempo-estadia.css'
 import './live-command.css'
 import './admin-pro.css'
 import './mobile-app-apk.css'
+import './ayres-inner-minimal.css'
 
 function isApkMobileMode() {
   try {
