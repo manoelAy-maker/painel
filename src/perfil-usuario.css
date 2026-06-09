@@ -1,0 +1,223 @@
+.perfil-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(12px);
+}
+
+.perfil-modal {
+  width: min(860px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(145deg, rgba(13,17,23,.98), rgba(8,10,15,.98));
+  border-radius: 30px;
+  box-shadow: 0 30px 90px rgba(0,0,0,.45);
+  color: #f8fafc;
+}
+
+.perfil-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.perfil-head span {
+  color: #60a5fa;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-weight: 950;
+}
+
+.perfil-head h2 {
+  margin: 5px 0 0;
+  font-size: 26px;
+  letter-spacing: -.7px;
+}
+
+.perfil-head button {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.055);
+  color: #f8fafc;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.perfil-body {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 18px;
+  padding: 22px 26px;
+}
+
+.perfil-photo-card {
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+  border-radius: 24px;
+  padding: 18px;
+  text-align: center;
+  height: fit-content;
+}
+
+.perfil-photo-preview {
+  width: 138px;
+  height: 138px;
+  margin: 0 auto 16px;
+  border-radius: 34px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #2563eb, #f97316);
+  box-shadow: 0 20px 50px rgba(37,99,235,.22);
+}
+
+.perfil-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.perfil-photo-preview strong {
+  font-size: 38px;
+  letter-spacing: -1px;
+}
+
+.perfil-upload {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  border-radius: 16px;
+  cursor: pointer;
+  background: rgba(37,99,235,.14);
+  border: 1px solid rgba(59,130,246,.26);
+  color: #bfdbfe !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+.perfil-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.perfil-photo-card small,
+.perfil-fields small {
+  display: block;
+  margin-top: 8px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.perfil-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.perfil-fields label {
+  color: #cbd5e1 !important;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+  font-weight: 950 !important;
+  margin-top: 4px;
+}
+
+.perfil-fields input,
+.perfil-fields select {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.045);
+  color: #f8fafc;
+  padding: 0 13px;
+  outline: none;
+}
+
+.perfil-fields input:disabled,
+.perfil-fields select:disabled {
+  color: #94a3b8;
+  opacity: .78;
+}
+
+.perfil-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.perfil-password-box {
+  margin-top: 10px;
+  border: 1px solid rgba(59,130,246,.18);
+  background: rgba(37,99,235,.07);
+  border-radius: 22px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.perfil-password-box strong {
+  font-size: 14px;
+}
+
+.perfil-password-box span {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.perfil-actions {
+  padding: 18px 26px 24px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.perfil-btn {
+  min-height: 44px;
+  border-radius: 15px;
+  padding: 0 18px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.perfil-btn.ghost {
+  color: #e2e8f0;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.perfil-btn.primary {
+  color: #fff;
+  border: 0;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+}
+
+@media (max-width: 760px) {
+  .perfil-body {
+    grid-template-columns: 1fr;
+  }
+  .perfil-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .perfil-modal {
+    border-radius: 24px;
+  }
+}
