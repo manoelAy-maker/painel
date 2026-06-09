@@ -3,11 +3,14 @@ import { useApp } from '../context/AppContext'
 import NotificationBell from './NotificationBell'
 import ConfigModal from './modals/ConfigModal'
 import CommandPalette from './modals/CommandPalette'
+import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
+import '../topbar-profile-pro.css'
 
 export default function Header({ onMenuMobile }) {
   const { cloudStatus, cloudText, usuarioAtual, estadiasALancar, alternarTema, tema, logout, conectarSupabase } = useApp()
   const [showConfig, setShowConfig] = useState(false)
   const [showCommand, setShowCommand] = useState(false)
+  const [showPerfil, setShowPerfil] = useState(false)
 
   const voltarAoPortal = () => {
     localStorage.removeItem('moduloInicialViaLog')
@@ -31,6 +34,8 @@ export default function Header({ onMenuMobile }) {
           </div>
 
           <div className="top-actions">
+            <span className="topbar-profile-label">{usuarioAtual?.cargo || 'Operador'} · {usuarioAtual?.filial || 'jatai-go'}</span>
+
             <div className={`cloud-mini ${cloudStatus}`} onClick={conectarSupabase} style={{ cursor: 'pointer' }} title={cloudText}>
               <span className={`cloud-dot ${cloudStatus === 'online' ? 'online' : cloudStatus === 'syncing' ? 'syncing' : ''}`} />
               <div>
@@ -69,11 +74,11 @@ export default function Header({ onMenuMobile }) {
               <span>Busca</span>
             </button>
 
-            <div className="profile-pill">
-              <div className="avatar">{usuarioAtual?.avatar || '?'}</div>
-              <span>{usuarioAtual?.nome?.split(' ')[0] || 'Usuário'}</span>
+            <button className="profile-pill profile-action" onClick={() => setShowPerfil(true)} title="Editar meu perfil">
+              <div className="avatar user-photo">{usuarioAtual?.foto ? <img src={usuarioAtual.foto} alt="Perfil" /> : (usuarioAtual?.avatar || '?')}</div>
+              <span className="profile-text"><span>{usuarioAtual?.nome?.split(' ')[0] || 'Usuário'}</span><small>Editar perfil</small></span>
               {estadiasALancar.length > 0 && <span className="pending-badge">{estadiasALancar.length}</span>}
-            </div>
+            </button>
 
             <button className="btn-light" onClick={logout} title="Sair" style={{ color: '#dc2626' }}>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
@@ -84,6 +89,7 @@ export default function Header({ onMenuMobile }) {
 
       <ConfigModal show={showConfig} onClose={() => setShowConfig(false)} />
       <CommandPalette show={showCommand} onClose={() => setShowCommand(false)} />
+      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
     </>
   )
 }
