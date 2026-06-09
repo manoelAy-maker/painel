@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
+import '../portal-pro.css'
 
 const Svg = ({ children, ...p }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
@@ -18,36 +19,25 @@ const modulos = [
   {
     id: 'estadia',
     nome: 'Estadia',
-    subtitulo: 'Gerencie estadias, pátios e movimentações com total visibilidade.',
+    subtitulo: 'Lance estadias, acompanhe pendências, calcule valores e mantenha os anexos organizados na nuvem.',
     icon: 'grid',
     cor: 'blue',
     aba: 'inicio',
+    badge: 'Operação principal',
   },
   {
     id: 'captacao',
     nome: 'Captação',
-    subtitulo: 'Indicadores e resultados da captação de cargas em tempo real.',
+    subtitulo: 'Controle leads de motoristas, ordens, carregamentos e motivos de não carregamento com pontuação justa.',
     icon: 'chart',
     cor: 'orange',
     aba: 'captacao',
+    badge: 'CRM operacional',
   },
 ]
 
-const cores = {
-  blue: {
-    texto: 'text-blue-500',
-    iconeWrap: 'bg-blue-500/10 border-blue-500/20 text-blue-500',
-    glow: 'hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.6),0_0_24px_rgba(59,130,246,0.12)] hover:border-blue-500/30',
-  },
-  orange: {
-    texto: 'text-orange-500',
-    iconeWrap: 'bg-orange-500/10 border-orange-500/20 text-orange-500',
-    glow: 'hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.6),0_0_24px_rgba(249,115,22,0.12)] hover:border-orange-500/30',
-  },
-}
-
 export default function SelecaoPainel() {
-  const { usuarioAtual, mudarAba, logout } = useApp()
+  const { usuarioAtual, mudarAba, logout, estadias, estadiasALancar, cloudStatus, usuariosOnline } = useApp()
   const [heroVisivel, setHeroVisivel] = useState(false)
 
   useEffect(() => {
@@ -55,10 +45,11 @@ export default function SelecaoPainel() {
     return () => clearTimeout(t)
   }, [])
 
-  const moverGlow = (e) => {
+  const moverGlow = (e, cor) => {
     const rect = e.currentTarget.getBoundingClientRect()
     e.currentTarget.style.setProperty('--x', `${e.clientX - rect.left}px`)
     e.currentTarget.style.setProperty('--y', `${e.clientY - rect.top}px`)
+    e.currentTarget.style.setProperty('--glow', cor === 'orange' ? 'rgba(249,115,22,.16)' : 'rgba(59,130,246,.16)')
   }
 
   const acessar = (m) => {
@@ -72,88 +63,94 @@ export default function SelecaoPainel() {
     logout()
   }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-[#05070a] text-white font-sans relative overflow-hidden" style={{ fontFamily: "'Inter','Plus Jakarta Sans',Arial,sans-serif" }}>
-      <div
-        className="fixed inset-0 -z-10 pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(59,130,246,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,.05) 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-          maskImage: 'radial-gradient(circle at center, black, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 80%)',
-        }}
-      />
+  const abertas = estadias.filter(e => e.status === 'Aberto').length
+  const finalizadas = estadias.filter(e => e.status === 'Finalizado').length
+  const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'visitante'
+  const online = cloudStatus === 'online'
 
-      <header className="px-6 sm:px-10 py-8 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
-            <span className="text-2xl font-extrabold">A</span>
-          </div>
+  const metricasModulo = (id) => id === 'estadia'
+    ? [
+        { label: 'Lançadas', value: estadias.length },
+        { label: 'Pendências', value: estadiasALancar.length },
+        { label: 'Abertas', value: abertas },
+      ]
+    : [
+        { label: 'Fluxo', value: 'Leads' },
+        { label: 'Resultado', value: 'Ordens' },
+        { label: 'Análise', value: 'Motivos' },
+      ]
+
+  return (
+    <div className="portal-pro">
+      <header className="portal-header-pro">
+        <div className="portal-brand-pro">
+          <div className="portal-logo-pro">A</div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AYRES</h1>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-blue-400 font-bold">Logística inteligente</p>
+            <h1>AYRES</h1>
+            <p>Logística inteligente</p>
           </div>
         </div>
-        <button type="button" onClick={sair} className="bg-white/5 border border-white/10 rounded-full px-4 sm:px-5 py-2.5 text-xs font-bold flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all text-red-400">
-          {ICONES.logout}
-          <span className="hidden sm:inline">SAIR</span>
-        </button>
+
+        <div className="portal-top-actions-pro">
+          <span className="portal-chip-pro"><i className={`portal-chip-dot-pro ${online ? '' : 'offline'}`} />{online ? 'Nuvem online' : 'Modo offline'}</span>
+          <button type="button" onClick={sair} className="portal-logout-pro">{ICONES.logout} Sair</button>
+        </div>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
-        <div className={`text-center mb-14 sm:mb-20 max-w-3xl transition-all duration-1000 ease-out ${heroVisivel ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 tracking-tight">
-            Olá, <span className="text-blue-500">{usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'visitante'}</span>
-          </h2>
-          <p className="text-slate-400 text-base sm:text-xl leading-relaxed font-light">
-            Escolha qual painel você quer acessar agora. Você pode trocar entre eles a qualquer momento, sem precisar entrar de novo.
-          </p>
-        </div>
+      <main className="portal-main-pro">
+        <section className={`portal-hero-pro transition-all duration-700 ease-out ${heroVisivel ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <div className="portal-hero-card-pro">
+            <div className="portal-kicker-pro">Central AYRES</div>
+            <h2>Olá, <span>{primeiroNome}</span>. Escolha sua operação.</h2>
+            <p>
+              Acesse o painel de estadias ou a central de captação com login único. O objetivo é abrir rápido, lançar certo e manter tudo salvo com segurança.
+            </p>
+            <div className="portal-quick-row-pro">
+              <button className="portal-quick-btn-pro primary" onClick={() => acessar(modulos[0])}>Abrir Estadia</button>
+              <button className="portal-quick-btn-pro" onClick={() => acessar(modulos[1])}>Abrir Captação</button>
+            </div>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 max-w-6xl w-full">
-          {modulos.map((m) => {
-            const c = cores[m.cor]
-            return (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => acessar(m)}
-                onMouseMove={moverGlow}
-                className={`group relative overflow-hidden text-left p-8 sm:p-12 flex flex-col justify-between min-h-[340px] sm:min-h-[450px] rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-[#0d1117] to-[#080a0f] cursor-pointer transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] ${c.glow}`}
-              >
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  style={{
-                    background: `radial-gradient(circle at var(--x, 50%) var(--y, 50%), ${m.cor === 'blue' ? 'rgba(59,130,246,.15)' : 'rgba(249,115,22,.15)'}, transparent 40%)`,
-                  }}
-                />
-                <div className="relative">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-8 sm:mb-10 border ${c.iconeWrap}`}>
-                    {ICONES[m.icon]}
-                  </div>
-                  <h3 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 tracking-tight">
-                    Painel de <br />
-                    <span className={c.texto}>{m.nome}</span>
-                  </h3>
-                  <p className="text-slate-400 text-base sm:text-lg leading-relaxed max-w-xs">{m.subtitulo}</p>
-                </div>
-                <div className={`flex items-center gap-3 font-bold text-sm ${c.texto}`}>
-                  <span>ACESSAR MÓDULO</span>
-                  {ICONES.arrowRight}
-                </div>
-              </button>
-            )
-          })}
-        </div>
+          <aside className="portal-info-card-pro">
+            <div className="portal-info-head-pro">
+              <h3>Status operacional</h3>
+              <span>Resumo rápido antes de entrar no módulo</span>
+            </div>
+            <div className="portal-info-grid-pro">
+              <div className="portal-mini-card-pro"><span>Cargo</span><strong>{usuarioAtual?.cargo || 'Operador'}</strong></div>
+              <div className="portal-mini-card-pro"><span>Filial</span><strong>{usuarioAtual?.filial || 'jatai-go'}</strong></div>
+              <div className="portal-mini-card-pro"><span>Usuários online</span><strong>{usuariosOnline?.length || 0}</strong></div>
+              <div className="portal-mini-card-pro"><span>Finalizadas</span><strong>{finalizadas}</strong></div>
+            </div>
+          </aside>
+        </section>
+
+        <section className="portal-modules-pro">
+          {modulos.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => acessar(m)}
+              onMouseMove={(e) => moverGlow(e, m.cor)}
+              className={`portal-module-card-pro ${m.cor === 'orange' ? 'orange' : ''}`}
+            >
+              <span className="portal-module-glow-pro" style={{ background: 'radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--glow, rgba(59,130,246,.16)), transparent 42%)' }} />
+              <div className="portal-module-top-pro">
+                <div className="portal-module-icon-pro">{ICONES[m.icon]}</div>
+                <span className="portal-module-badge-pro">{m.badge}</span>
+              </div>
+              <h3>Painel de <br /><span>{m.nome}</span></h3>
+              <p>{m.subtitulo}</p>
+              <div className="portal-module-stats-pro">
+                {metricasModulo(m.id).map((s) => <div key={s.label} className="portal-module-stat-pro"><small>{s.label}</small><strong>{s.value}</strong></div>)}
+              </div>
+              <span className="portal-module-action-pro">Acessar módulo {ICONES.arrowRight}</span>
+            </button>
+          ))}
+        </section>
       </main>
 
-      <footer className="px-6 py-12 sm:py-16 text-center">
-        <p className="text-[10px] text-slate-700 uppercase tracking-[0.4em]">
-          © 2026 AYRES Logística. Todos os direitos reservados.
-        </p>
-      </footer>
+      <footer className="portal-footer-pro">© 2026 AYRES Logística · Plataforma operacional</footer>
     </div>
   )
 }
