@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useApp } from '../context/AppContext'
 import { calcularEstadia, linkWhatsapp, dataISOTexto, tempoDecorrido } from '../utils/index'
 import DropZone from '../components/DropZone'
 import { nomeFilial } from '../data/filiais'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 
-const EMPTY = { chamado: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '', prioridade: 'Normal', pagoPor: 'Logística', chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '' }
+const EMPTY = { nf: '', chamado: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '', prioridade: 'Normal', pagoPor: 'Logística', chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '' }
+const TRANSPORTADORAS_BASE = ['Via Log', 'RDR', 'Transportes', 'Autônomo']
 
 function badgePago(p) {
   return p === 'Transportes'
@@ -34,6 +35,10 @@ function TempoInfo({ label, data, compacto = false }) {
   )
 }
 
+function uniq(arr) {
+  return [...new Set(arr.map(v => String(v || '').trim()).filter(Boolean))]
+}
+
 export default function EstadiaLancada({ formRef }) {
   const { estadias, adicionarLancada, editarLancada, marcarFeito, finalizar, reabrir, excluirLancada, itemParaLancar, limparItemParaLancar, uploadAnexoItem, filiais, usuarioAtual, toast } = useApp()
   const [form, setForm] = useState(EMPTY)
@@ -49,10 +54,32 @@ export default function EstadiaLancada({ formRef }) {
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const calc = calcularEstadia(form.peso, form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
 
+  const motoristasOptions = useMemo(() => {
+    const map = new Map()
+    estadias.forEach(e => {
+      const nome = String(e.motorista || '').trim()
+      if (!nome) return
+      if (!map.has(nome.toUpperCase())) map.set(nome.toUpperCase(), { nome, telefone: e.telefoneMotorista || '' })
+    })
+    return [...map.values()].sort((a, b) => a.nome.localeCompare(b.nome))
+  }, [estadias])
+
+  const transportadorasOptions = useMemo(() => uniq([
+    ...TRANSPORTADORAS_BASE,
+    ...estadias.map(e => e.transportadora),
+  ]).sort((a, b) => a.localeCompare(b)), [estadias])
+
+  const preencherTelefoneMotorista = () => {
+    if (form.telefoneMotorista) return
+    const achou = motoristasOptions.find(m => m.nome.toUpperCase() === form.motorista.trim().toUpperCase())
+    if (achou?.telefone) set('telefoneMotorista', String(achou.telefone).replace(/[^0-9]/g, ''))
+  }
+
   useEffect(() => {
     if (!itemParaLancar) return
     setForm(prev => ({
       ...prev,
+      nf: itemParaLancar.nf || itemParaLancar.numeroNf || '',
       placa: itemParaLancar.placa || '',
       transportadora: itemParaLancar.transportadora || '',
       prioridade: itemParaLancar.prioridade || 'Normal',
@@ -66,6 +93,7 @@ export default function EstadiaLancada({ formRef }) {
   const handleEditar = (e) => {
     setEditandoId(e.id)
     setForm({
+      nf: e.nf || e.numeroNf || '',
       chamado: e.chamado || '',
       motorista: e.motorista || '',
       telefoneMotorista: e.telefoneMotorista || '',
@@ -101,10 +129,10 @@ export default function EstadiaLancada({ formRef }) {
     }
     const anexos = [...existingAnexos, ...novosAnexos]
     if (editandoId) {
-      await editarLancada(editandoId, { ...form, anexos })
+      await editarLancada(editandoId, { ...form, numeroNf: form.nf, anexos })
       setEditandoId(null)
     } else {
-      await adicionarLancada({ ...form, ...calc, anexos })
+      await adicionarLancada({ ...form, numeroNf: form.nf, ...calc, anexos })
     }
     setForm(EMPTY)
     setArquivos([])
@@ -123,7 +151,7 @@ export default function EstadiaLancada({ formRef }) {
   }
 
   const lista = estadias.filter(e => {
-    const txt = ((e.placa || '') + ' ' + (e.motorista || '') + ' ' + (e.chamado || '') + ' ' + (e.transportadora || '')).toUpperCase()
+    const txt = ((e.placa || '') + ' ' + (e.motorista || '') + ' ' + (e.chamado || '') + ' ' + (e.transportadora || '') + ' ' + (e.nf || e.numeroNf || '')).toUpperCase()
     const data = dataISOTexto(e.dataLancamento)
     return (!busca || txt.includes(busca.toUpperCase()))
       && (!filtroStatus || e.status === filtroStatus)
@@ -134,48 +162,50 @@ export default function EstadiaLancada({ formRef }) {
 
   return (
     <section className="aba active" id="abaLancadas">
-      <div className="box" ref={formRef}>
-        <div className="box-title">
-          <h2>{editandoId ? 'Editar estadia' : 'Adicionar estadia lançada'}</h2>
-          <span>Cálculo: peso (ton) × R$ 0,80 × horas após 12h</span>
+      <div className="box estadia-form-box" ref={formRef}>
+        <div className="box-title estadia-form-title">
+          <div>
+            <h2>{editandoId ? 'Editar estadia' : 'Adicionar estadia lançada'}</h2>
+            <span>Motorista e transportadora podem ser selecionados ou digitados.</span>
+          </div>
+          <div className="estadia-form-hint">NF · Placa · Motorista · Datas</div>
         </div>
 
-        <div className="form-grid">
-          {[
-            ['chamado', 'Número do chamado', 'Ex: 16820752'],
-            ['motorista', 'Motorista', 'Nome do motorista'],
-          ].map(([k, lbl, ph]) => <div key={k} className="field"><label>{lbl}</label><input value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph} /></div>)}
-          <div className="field"><label>WhatsApp do motorista</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
-          <div className="field"><label>Transportadora</label><input value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Ex: Via Log" /></div>
-          <div className="field"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase())} placeholder="JBU0H16" /></div>
-          <div className="field"><label>Peso</label><input value={form.peso} onChange={e => set('peso', e.target.value)} placeholder="38380" /></div>
-          <div className="field"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Média</option><option>Urgente</option></select></div>
-          <div className="field"><label>Pago por</label><select value={form.pagoPor} onChange={e => set('pagoPor', e.target.value)}><option>Logística</option><option>Transportes</option></select></div>
-          <div className="field"><label>Data chegada</label><input type="date" value={form.chegadaData} onChange={e => set('chegadaData', e.target.value)} /></div>
-          <div className="field"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
-          <div className="field"><label>Data saída</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
-          <div className="field"><label>Hora saída</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
+        <div className="form-grid estadia-form-grid">
+          <div className="field field-sm"><label>Número da NF</label><input value={form.nf} onChange={e => set('nf', e.target.value)} placeholder="Ex: 388860" /></div>
+          <div className="field field-sm"><label>Número do chamado</label><input value={form.chamado} onChange={e => set('chamado', e.target.value)} placeholder="Ex: 16820752" /></div>
+          <div className="field field-lg"><label>Motorista</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite o motorista" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} />)}</datalist></div>
+          <div className="field field-sm"><label>WhatsApp</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
+          <div className="field field-md"><label>Transportadora</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
+          <div className="field field-sm"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase())} placeholder="JBU0H16" /></div>
+          <div className="field field-sm"><label>Peso</label><input value={form.peso} onChange={e => set('peso', e.target.value)} placeholder="38380" /></div>
+          <div className="field field-sm"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Média</option><option>Urgente</option></select></div>
+          <div className="field field-sm"><label>Pago por</label><select value={form.pagoPor} onChange={e => set('pagoPor', e.target.value)}><option>Logística</option><option>Transportes</option></select></div>
+          <div className="field field-sm"><label>Data chegada</label><input type="date" value={form.chegadaData} onChange={e => set('chegadaData', e.target.value)} /></div>
+          <div className="field field-sm"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
+          <div className="field field-sm"><label>Data saída</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
+          <div className="field field-sm"><label>Hora saída</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
 
           <DropZone arquivos={arquivos} onChange={setArquivos} />
 
           {existingAnexos.length > 0 && <div className="field wide"><label>Anexos existentes</label><div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{existingAnexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div></div>}
         </div>
 
-        <div className="calc-preview">
+        <div className="calc-preview estadia-calc-preview">
           <div className="preview-card"><span>Horas válidas</span><strong>{calc ? `${parseFloat(calc.horas).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} h` : '0,00 h'}</strong></div>
           <div className="preview-card"><span>Valor automático</span><strong>{calc?.valor || 'R$ 0,00'}</strong></div>
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="estadia-form-actions">
           <button className="btn-green btn-full" onClick={handleSalvar}>{editandoId ? 'Salvar alterações' : 'Salvar estadia lançada'}</button>
           {editandoId && <button className="btn-light" onClick={handleCancelarEdicao}>Cancelar</button>}
         </div>
       </div>
 
-      <div className="box">
+      <div className="box estadia-filter-box">
         <div className="box-title"><h2>Consultar estadias lançadas</h2><button className="btn-light btn-small" onClick={() => { setBusca(''); setFiltroStatus(''); setFiltroFilial(''); setDataInicio(''); setDataFim('') }}>Limpar filtros</button></div>
-        <div className="filters">
-          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Pesquisar placa, motorista, chamado..." />
+        <div className="filters estadia-filters">
+          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Pesquisar placa, motorista, chamado, NF..." />
           <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="">Todos status</option><option>Aberto</option><option>Feito</option><option>Finalizado</option></select>
           <select value={filtroFilial} onChange={e => setFiltroFilial(e.target.value)}><option value="">Todas as filiais</option>{filiais.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select>
           <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
@@ -183,15 +213,16 @@ export default function EstadiaLancada({ formRef }) {
         </div>
       </div>
 
-      <div className="table-wrap">
+      <div className="table-wrap estadia-table-wrap">
         <div className="table-scroll">
           <table>
-            <thead><tr><th>Chamado</th><th>Motorista</th><th>Transportadora</th><th>Placa</th><th>Peso</th><th>Horas</th><th>Valor</th><th>Pago por</th><th>Prioridade</th><th>Filial</th><th>Anexos</th><th>Lançado por</th><th>Lançada há</th><th>Status</th><th>Ações</th></tr></thead>
+            <thead><tr><th>NF</th><th>Chamado</th><th>Motorista</th><th>Transportadora</th><th>Placa</th><th>Peso</th><th>Horas</th><th>Valor</th><th>Pago por</th><th>Prioridade</th><th>Filial</th><th>Anexos</th><th>Lançado por</th><th>Lançada há</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody>
               {lista.length === 0
-                ? <tr><td colSpan={15} className="empty">Nenhuma estadia encontrada.</td></tr>
+                ? <tr><td colSpan={16} className="empty">Nenhuma estadia encontrada.</td></tr>
                 : lista.map(e => (
                   <tr key={e.id}>
+                    <td><strong>{e.nf || e.numeroNf || '-'}</strong></td>
                     <td><strong>{e.chamado || '-'}</strong><br /><small>{e.dataLancamento || ''}</small></td>
                     <td>{e.motorista || '-'}<br /><small>Chegada: {e.chegada || '-'}<br />Saída: {e.saida || '-'}</small></td>
                     <td>{e.transportadora || '-'}</td>
