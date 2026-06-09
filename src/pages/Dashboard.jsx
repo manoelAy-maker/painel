@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 import { dinheiro, moedaNumero } from '../utils/index'
 import '../estadia-dashboard-pro.css'
 import '../operator-simple.css'
+import '../dashboard-functional.css'
 
 const STATUS_CORES = ['#2563eb', '#22c55e', '#f97316']
 const PRIO_CORES = { Urgente: '#ef4444', Média: '#f97316', Normal: '#22c55e' }
@@ -45,19 +46,60 @@ function Kpi({ label, value, sub, icon, primary, color = '#60a5fa' }) {
         <span className="command-kpi-icon" style={!primary ? { color, background: `${color}22` } : {}}>{icon}</span>
       </div>
       <div className="kpi-value">{value}</div>
-      <div className="kpi-sub">↑ {sub}</div>
+      <div className="kpi-sub">{sub}</div>
     </div>
   )
 }
 
-function Panel({ title, subtitle, action = 'View Report', children }) {
+function Panel({ title, subtitle, action = '', onAction, children }) {
   return (
     <div className="command-panel">
       <div className="command-panel-head">
         <div><h3>{title}</h3><span>{subtitle}</span></div>
-        {action && <button className="command-mini-btn">{action}</button>}
+        {action && <button className="command-mini-btn" onClick={onAction}>{action}</button>}
       </div>
       {children}
+    </div>
+  )
+}
+
+function DataCurta({ valor }) {
+  if (!valor) return 'Sem data'
+  return String(valor).slice(0, 16)
+}
+
+function ListaEstadias({ itens, onAbrir }) {
+  if (!itens.length) return <div className="dash-empty-pro">Nenhuma estadia lançada ainda.</div>
+  return (
+    <div className="dash-list-pro">
+      {itens.slice(0, 6).map((e) => (
+        <div key={e.id} className="dash-row-pro">
+          <div className="dash-row-icon-pro">🚛</div>
+          <div className="dash-row-main-pro">
+            <strong>{e.placa || 'Sem placa'} · {e.motorista || 'Motorista não informado'}</strong>
+            <span>NF {e.nf || e.numeroNf || '-'} · {e.transportadora || '-'} · <DataCurta valor={e.dataLancamento} /></span>
+          </div>
+          <button className={`dash-row-badge-pro ${e.status === 'Finalizado' ? 'done' : ''}`} onClick={onAbrir}>{e.status || 'Aberto'}</button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ListaPendencias({ itens, onAbrir }) {
+  if (!itens.length) return <div className="dash-empty-pro">Nenhuma pendência aberta. Operação limpa.</div>
+  return (
+    <div className="dash-list-pro">
+      {itens.slice(0, 6).map((e) => (
+        <div key={e.id} className="dash-row-pro">
+          <div className="dash-row-icon-pro" style={{ background: e.prioridade === 'Urgente' ? 'rgba(239,68,68,.14)' : 'rgba(249,115,22,.14)', color: e.prioridade === 'Urgente' ? '#fecaca' : '#fdba74' }}>📋</div>
+          <div className="dash-row-main-pro">
+            <strong>{e.placa || 'Sem placa'} · {e.transportadora || 'Transportadora não informada'}</strong>
+            <span>{e.obs || 'Sem observação'} · {e.dataCriacao || ''}</span>
+          </div>
+          <button className={`dash-row-badge-pro ${e.prioridade === 'Urgente' ? 'urgent' : ''}`} onClick={onAbrir}>{e.prioridade || 'Normal'}</button>
+        </div>
+      ))}
     </div>
   )
 }
@@ -146,27 +188,25 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
     { titulo: 'Usuários online', texto: `${usuariosOnline.length} pessoa(s) conectada(s).`, icone: '👥', tempo: 'online' },
   ]
 
-  const rotas = [
-    { nome: 'Jataí → Santos', value: totalEstadias + 6, color: '#2563eb' },
-    { nome: 'Mineiros → Santos', value: totalPendentes + 4, color: '#22c55e' },
-    { nome: 'Rio Verde → Santos', value: urgentes + 3, color: '#a855f7' },
-    { nome: 'Alto Araguaia → Santos', value: abertas + 2, color: '#f97316' },
-  ]
-  const maxRota = Math.max(...rotas.map(r => r.value), 1)
+  const ultimasEstadias = [...estadias].reverse().slice(0, 8)
+  const pendenciasPrioridade = [...estadiasALancar].sort((a, b) => {
+    const peso = { Urgente: 3, Média: 2, Normal: 1 }
+    return (peso[b.prioridade] || 1) - (peso[a.prioridade] || 1)
+  })
 
   return (
     <section className="aba active">
       <div className="command-topbar">
         <div className="command-title"><h1>Dashboard</h1><span>Painel administrativo de estadias · visão operacional</span></div>
-        <div className="command-search"><span>⌕</span><input placeholder="Buscar estadias, placas, motoristas..." readOnly /><kbd>⌘ K</kbd></div>
+        <div className="command-search"><span>⌕</span><input placeholder="Use os filtros nas telas de estadia e pendência" readOnly /><kbd>{cloudStatus === 'online' ? 'ON' : 'OFF'}</kbd></div>
         <div className="command-user"><div className="command-user-avatar">{usuarioAtual?.avatar || primeiroNome[0]}</div><div><strong>{usuarioAtual?.nome || primeiroNome}</strong><small>{usuarioAtual?.cargo || 'Admin'}</small></div></div>
       </div>
 
-      <div className="command-actions-row">
-        <button className="command-action-primary" onClick={onNovaLancada}>Nova estadia</button>
-        <button className="command-action-secondary" onClick={onNovaPendencia}>Nova pendência</button>
-        <button className="command-action-secondary" onClick={() => mudarAba('relatorios')}>Relatórios</button>
-        <button className="command-action-secondary" onClick={() => mudarAba('admin')}>Painel Admin</button>
+      <div className="dash-action-strip-pro">
+        <button className="dash-action-tile-pro" onClick={onNovaLancada}><i>📦</i><strong>Nova estadia</strong><span>Lançar registro completo</span></button>
+        <button className="dash-action-tile-pro" onClick={onNovaPendencia}><i>📋</i><strong>Nova pendência</strong><span>Enviar para tratar depois</span></button>
+        <button className="dash-action-tile-pro" onClick={() => mudarAba('relatorios')}><i>📊</i><strong>Relatórios</strong><span>Exportar e analisar</span></button>
+        <button className="dash-action-tile-pro" onClick={() => mudarAba('lixeira')}><i>🗑️</i><strong>Lixeira</strong><span>Restaurar registros</span></button>
       </div>
 
       <div className="command-kpis">
@@ -179,7 +219,7 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
       <div className="estadia-command">
         <div>
           <div className="command-grid">
-            <Panel title="Status das estadias" subtitle="Distribuição dos lançamentos">
+            <Panel title="Status das estadias" subtitle="Distribuição real dos lançamentos">
               <div className="command-donut-wrap">
                 <DonutCommand dados={statusDados} total={totalEstadias} />
                 <div className="command-legend-list">
@@ -188,28 +228,36 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
               </div>
             </Panel>
 
-            <Panel title="Prioridade" subtitle="Pendências por urgência">
+            <Panel title="Prioridade" subtitle="Pendências por urgência" onAction={() => mudarAba('alancar')} action="Abrir">
               <div className="command-priority-bars">
                 {prios.map(p => <div key={p.name} className="command-priority-row"><span>{p.name}</span><div className="command-bar"><i style={{ width: `${Math.max(8, (p.value / maxPrio) * 100)}%`, background: p.color }} /></div><strong>{p.value}</strong></div>)}
               </div>
             </Panel>
           </div>
 
-          <Panel title="Visão mensal das estadias" subtitle="Tendência operacional simulada pelo volume atual" action="Este mês">
-            <div className="command-chart-placeholder"><div className="command-chart-line" /><div className="command-chart-label">{Math.max(totalEstadias, totalPendentes, 1) * 10}</div></div>
-          </Panel>
+          <div className="dash-functional-grid">
+            <Panel title="Últimas estadias lançadas" subtitle="Registros mais recentes" action="Abrir tela" onAction={() => mudarAba('lancadas')}>
+              <ListaEstadias itens={ultimasEstadias} onAbrir={() => mudarAba('lancadas')} />
+            </Panel>
+
+            <Panel title="Pendências prioritárias" subtitle="O que precisa de atenção" action="Abrir tela" onAction={() => mudarAba('alancar')}>
+              <ListaPendencias itens={pendenciasPrioridade} onAbrir={() => mudarAba('alancar')} />
+            </Panel>
+          </div>
         </div>
 
         <aside className="command-side">
-          <Panel title="Atividade em tempo real" subtitle="Últimos eventos do painel" action="View All">
+          <Panel title="Atividade em tempo real" subtitle="Últimos eventos do painel" action="Histórico" onAction={() => mudarAba('historico')}>
             <div className="command-activity-list">
               {atividades.slice(0, 5).map((a, i) => <div key={`${a.titulo}-${i}`} className="command-activity"><div className="command-activity-icon" style={{ background: ['#2563eb', '#22c55e', '#a855f7', '#f97316', '#0ea5e9'][i % 5] }}>{a.icone}</div><div><strong>{a.titulo}</strong><span>{a.texto}</span></div><time>{a.tempo}</time></div>)}
             </div>
           </Panel>
 
-          <Panel title="Principais rotas" subtitle="Resumo por operação" action="">
-            <div className="command-route">
-              {rotas.map(r => <div key={r.nome} className="command-route-row"><div><span>{r.nome}</span><div className="command-route-bar"><i style={{ width: `${(r.value / maxRota) * 100}%`, background: r.color }} /></div></div><strong>{r.value}</strong></div>)}
+          <Panel title="Resumo da operação" subtitle="Indicadores úteis" action="Admin" onAction={() => mudarAba('admin')}>
+            <div className="dash-list-pro">
+              <div className="dash-row-pro"><div className="dash-row-icon-pro">☁️</div><div className="dash-row-main-pro"><strong>Nuvem</strong><span>Sincronização do banco</span></div><span className={`dash-row-badge-pro ${cloudStatus === 'online' ? 'done' : 'urgent'}`}>{cloudStatus === 'online' ? 'Online' : 'Offline'}</span></div>
+              <div className="dash-row-pro"><div className="dash-row-icon-pro">👥</div><div className="dash-row-main-pro"><strong>Usuários online</strong><span>Pessoas conectadas agora</span></div><span className="dash-row-badge-pro">{usuariosOnline.length}</span></div>
+              <div className="dash-row-pro"><div className="dash-row-icon-pro">⚠️</div><div className="dash-row-main-pro"><strong>Urgentes</strong><span>Pendências marcadas como urgentes</span></div><span className={`dash-row-badge-pro ${urgentes ? 'urgent' : ''}`}>{urgentes}</span></div>
             </div>
           </Panel>
         </aside>
