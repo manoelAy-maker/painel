@@ -10,7 +10,6 @@ import './clickup-workspace.css'
 import './captacao-pontuacao.css'
 import './captacao-leads-pro.css'
 import './captacao-simple-mode.css'
-import './ayres-system-pro.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
