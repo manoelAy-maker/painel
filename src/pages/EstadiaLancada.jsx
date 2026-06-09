@@ -4,6 +4,7 @@ import { calcularEstadia, linkWhatsapp, dataISOTexto, tempoDecorrido } from '../
 import DropZone from '../components/DropZone'
 import { nomeFilial } from '../data/filiais'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
+import { listarMotoristasBancoV2, listarTransportadorasV2, upsertMotoristaBasicoV2, upsertTransportadoraV2 } from '../lib/supabaseV2'
 import '../estadia-desktop-pro.css'
 
 const EMPTY = { nf: '', chamado: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '', prioridade: 'Normal', pagoPor: 'Logística', chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '' }
@@ -40,6 +41,10 @@ function uniq(arr) {
   return [...new Set(arr.map(v => String(v || '').trim()).filter(Boolean))]
 }
 
+function chaveNome(nome) {
+  return String(nome || '').trim().toUpperCase()
+}
+
 export default function EstadiaLancada({ formRef }) {
   const { estadias, adicionarLancada, editarLancada, marcarFeito, finalizar, reabrir, excluirLancada, itemParaLancar, limparItemParaLancar, uploadAnexoItem, filiais, usuarioAtual, toast } = useApp()
   const [form, setForm] = useState(EMPTY)
@@ -51,28 +56,67 @@ export default function EstadiaLancada({ formRef }) {
   const [filtroFilial, setFiltroFilial] = useState('')
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
+  const [bancoMotoristas, setBancoMotoristas] = useState([])
+  const [bancoTransportadoras, setBancoTransportadoras] = useState([])
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const calc = calcularEstadia(form.peso, form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
 
+  const carregarCadastros = async () => {
+    try {
+      const data = await listarMotoristasBancoV2()
+      setBancoMotoristas(data || [])
+    } catch {
+      setBancoMotoristas([])
+    }
+    try {
+      const data = await listarTransportadorasV2()
+      setBancoTransportadoras(data || [])
+    } catch {
+      setBancoTransportadoras([])
+    }
+  }
+
+  useEffect(() => { carregarCadastros() }, [])
+
   const motoristasOptions = useMemo(() => {
     const map = new Map()
+
+    bancoMotoristas.forEach(m => {
+      const nome = String(m.nome || '').trim()
+      if (!nome) return
+      map.set(chaveNome(nome), {
+        nome,
+        telefone: m.telefone || '',
+        origem: m.captacoes?.length ? 'Captação' : 'Banco',
+        carregou: (m.captacoes || []).filter(c => c.status === 'carregou').length,
+      })
+    })
+
     estadias.forEach(e => {
       const nome = String(e.motorista || '').trim()
       if (!nome) return
-      if (!map.has(nome.toUpperCase())) map.set(nome.toUpperCase(), { nome, telefone: e.telefoneMotorista || '' })
+      const key = chaveNome(nome)
+      const atual = map.get(key)
+      map.set(key, {
+        nome,
+        telefone: atual?.telefone || e.telefoneMotorista || '',
+        origem: atual?.origem || 'Estadia',
+        carregou: atual?.carregou || 0,
+      })
     })
+
     return [...map.values()].sort((a, b) => a.nome.localeCompare(b.nome))
-  }, [estadias])
+  }, [bancoMotoristas, estadias])
 
   const transportadorasOptions = useMemo(() => uniq([
     ...TRANSPORTADORAS_BASE,
+    ...bancoTransportadoras.map(t => t.nome),
     ...estadias.map(e => e.transportadora),
-  ]).sort((a, b) => a.localeCompare(b)), [estadias])
+  ]).sort((a, b) => a.localeCompare(b)), [bancoTransportadoras, estadias])
 
   const preencherTelefoneMotorista = () => {
-    if (form.telefoneMotorista) return
-    const achou = motoristasOptions.find(m => m.nome.toUpperCase() === form.motorista.trim().toUpperCase())
+    const achou = motoristasOptions.find(m => chaveNome(m.nome) === chaveNome(form.motorista))
     if (achou?.telefone) set('telefoneMotorista', String(achou.telefone).replace(/[^0-9]/g, ''))
   }
 
@@ -123,6 +167,16 @@ export default function EstadiaLancada({ formRef }) {
   const handleSalvar = async () => {
     if (!calc) { alert('Preencha peso, chegada e saída corretamente.'); return }
     if (!form.motorista.trim() || !form.placa.trim()) { alert('Preencha motorista e placa.'); return }
+
+    try {
+      await upsertMotoristaBasicoV2({
+        nome: form.motorista.trim(),
+        telefone: form.telefoneMotorista,
+        observacao: 'Criado/atualizado pelo lançamento de estadia',
+      }, usuarioAtual)
+      await upsertTransportadoraV2(form.transportadora, usuarioAtual)
+    } catch {}
+
     const novosAnexos = []
     for (const file of arquivos.slice(0, 2)) {
       const up = await uploadAnexoItem(file)
@@ -138,6 +192,7 @@ export default function EstadiaLancada({ formRef }) {
     setForm(EMPTY)
     setArquivos([])
     setExistingAnexos([])
+    carregarCadastros()
   }
 
   const handleArquivar = async (e) => {
@@ -167,15 +222,15 @@ export default function EstadiaLancada({ formRef }) {
         <div className="box-title estadia-form-title">
           <div>
             <h2>{editandoId ? 'Editar estadia' : 'Adicionar estadia lançada'}</h2>
-            <span>Motorista e transportadora podem ser selecionados ou digitados.</span>
+            <span>Motorista vem da captação/banco. Selecionou motorista salvo, o telefone vem junto.</span>
           </div>
-          <div className="estadia-form-hint">NF · Placa · Motorista · Datas</div>
+          <div className="estadia-form-hint">Banco inteligente</div>
         </div>
 
         <div className="form-grid estadia-form-grid">
           <div className="field field-sm"><label>Número da NF</label><input value={form.nf} onChange={e => set('nf', e.target.value)} placeholder="Ex: 388860" /></div>
           <div className="field field-sm"><label>Número do chamado</label><input value={form.chamado} onChange={e => set('chamado', e.target.value)} placeholder="Ex: 16820752" /></div>
-          <div className="field field-lg"><label>Motorista</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite o motorista" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} />)}</datalist></div>
+          <div className="field field-lg"><label>Motorista</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite o motorista" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} label={`${m.telefone ? m.telefone + ' · ' : ''}${m.origem}${m.carregou ? ` · carregou ${m.carregou}x` : ''}`} />)}</datalist></div>
           <div className="field field-sm"><label>WhatsApp</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
           <div className="field field-md"><label>Transportadora</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
           <div className="field field-sm"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase())} placeholder="JBU0H16" /></div>
