@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
+import { salvar } from '../lib/supabase'
 
 const Svg = ({ children, ...p }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
@@ -23,12 +24,84 @@ const beneficios = [
   { icon: 'brain', texto: 'Inteligência de Dados' },
 ]
 
+function ForgotPasswordModal({ show, onClose, onDone }) {
+  const [form, setForm] = useState({ usuario: '', nome: '', motivo: '' })
+  const [enviando, setEnviando] = useState(false)
+  const [msg, setMsg] = useState('')
+
+  if (!show) return null
+
+  const solicitar = async () => {
+    if (!form.usuario.trim()) { setMsg('Informe seu usuário.'); return }
+    setEnviando(true)
+    setMsg('')
+    const pedido = {
+      id: `senha_${form.usuario.trim()}_${Date.now()}`,
+      usuario: form.usuario.trim(),
+      nome: form.nome.trim(),
+      motivo: form.motivo.trim(),
+      status: 'pendente',
+      criadoEm: new Date().toLocaleString('pt-BR'),
+      filial: 'jatai-go',
+    }
+    try {
+      await salvar(pedido, 'senha_reset', pedido.filial)
+      setMsg('Pedido enviado. Aguarde o admin autorizar a troca de senha.')
+      setTimeout(() => { onDone?.(); onClose() }, 1100)
+    } catch {
+      const local = JSON.parse(localStorage.getItem('solicitacoesSenhaAyres') || '[]')
+      localStorage.setItem('solicitacoesSenhaAyres', JSON.stringify([pedido, ...local]))
+      setMsg('Pedido salvo neste aparelho. Avise o admin para verificar depois.')
+      setTimeout(() => { onDone?.(); onClose() }, 1400)
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-md" onClick={onClose}>
+      <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0d1117] p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-4 mb-7">
+          <div>
+            <p className="text-[10px] uppercase tracking-[.22em] text-blue-400 font-black mb-2">Recuperação</p>
+            <h3 className="text-2xl font-bold">Esqueci minha senha</h3>
+            <p className="text-sm text-slate-500 mt-2">O admin receberá uma notificação para autorizar a troca.</p>
+          </div>
+          <button className="bg-white/5 border border-white/10 rounded-xl w-9 h-9 text-white" onClick={onClose}>×</button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Usuário</label>
+            <input value={form.usuario} onChange={e => setForm(p => ({ ...p, usuario: e.target.value }))} placeholder="Ex: jamis" className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5" />
+          </div>
+          <div>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Nome</label>
+            <input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Seu nome" className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5" />
+          </div>
+          <div>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Motivo</label>
+            <textarea value={form.motivo} onChange={e => setForm(p => ({ ...p, motivo: e.target.value }))} placeholder="Ex: esqueci minha senha" className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5 min-h-[88px] resize-none" />
+          </div>
+        </div>
+
+        {msg && <p className="text-sm text-center text-blue-300 mt-4">{msg}</p>}
+
+        <button disabled={enviando} onClick={solicitar} className="w-full py-4 rounded-2xl font-bold text-base mt-6 bg-gradient-to-r from-blue-600 to-blue-500 disabled:opacity-60">
+          {enviando ? 'Enviando...' : 'Solicitar troca de senha'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function Login() {
   const { entrar } = useApp()
   const [form, setForm] = useState({ usuario: '', senha: '' })
   const [heroVisivel, setHeroVisivel] = useState(false)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState('')
+  const [forgot, setForgot] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(() => setHeroVisivel(true), 60)
@@ -111,7 +184,10 @@ export default function Login() {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Senha</label>
+              <div className="flex items-center justify-between gap-3 mb-2 ml-1">
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Senha</label>
+                <button type="button" onClick={() => setForgot(true)} className="text-[11px] text-blue-400 font-bold hover:text-blue-300">Esqueci minha senha</button>
+              </div>
               <input
                 id="portal-pass"
                 type="password"
@@ -154,6 +230,8 @@ export default function Login() {
         {ICONES.lock}
         <span className="text-right leading-tight normal-case tracking-normal">Acesso protegido<br />Sessão operacional</span>
       </div>
+
+      <ForgotPasswordModal show={forgot} onClose={() => setForgot(false)} />
     </div>
   )
 }
