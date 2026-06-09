@@ -1,0 +1,218 @@
+@media (min-width: 1024px) {
+  .capture-shell-pro {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(37,99,235,.12), transparent 34%),
+      radial-gradient(circle at 100% 0%, rgba(249,115,22,.10), transparent 32%),
+      #05070a;
+  }
+
+  .capture-main-pro {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 22px 28px 42px;
+  }
+
+  .capture-topbar-pro {
+    max-width: none;
+    margin: 0 0 18px;
+    padding: 22px 24px;
+    border-radius: 24px;
+  }
+
+  .capture-title-pro h1 {
+    font-size: 30px;
+    line-height: 1.05;
+  }
+
+  .capture-title-pro p {
+    max-width: 720px;
+  }
+
+  .capture-panel-wrap-pro {
+    width: 100%;
+    max-width: none;
+  }
+
+  .capture-panel-wrap-pro .captacao-simple-shell {
+    width: 100%;
+    max-width: none;
+    border-radius: 26px;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .capture-panel-wrap-pro .cap-header {
+    border-radius: 24px;
+    margin-bottom: 16px;
+  }
+
+  .capture-panel-wrap-pro .cap-header-inner,
+  .capture-panel-wrap-pro .cap-main {
+    max-width: none !important;
+    width: 100%;
+  }
+
+  .capture-panel-wrap-pro .cap-header-inner {
+    padding: 18px 22px;
+  }
+
+  .capture-panel-wrap-pro .cap-main {
+    padding: 0 0 80px !important;
+  }
+
+  .capture-panel-wrap-pro .cap-simple-guide {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(340px, .65fr);
+    gap: 16px;
+    margin: 0 0 16px;
+  }
+
+  .capture-panel-wrap-pro .cap-simple-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .capture-panel-wrap-pro .cap-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 0;
+  }
+
+  .capture-panel-wrap-pro .cap-score-summary,
+  .capture-panel-wrap-pro .cap-insights-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .capture-panel-wrap-pro .cap-score-summary .cap-stat-card:nth-child(1) {
+    grid-column: span 2;
+  }
+
+  .capture-panel-wrap-pro .cap-stat-card {
+    min-width: 0;
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .capture-panel-wrap-pro .cap-stat-value {
+    font-size: 34px;
+  }
+
+  .capture-panel-wrap-pro .cap-conversion {
+    margin: 16px 0;
+    padding: 18px 20px;
+  }
+
+  .capture-panel-wrap-pro .cap-intelligence-hero {
+    border-radius: 26px !important;
+    padding: 24px !important;
+    margin: 16px 0;
+  }
+
+  .capture-panel-wrap-pro .cap-intelligence-hero h2 {
+    font-size: 34px !important;
+    max-width: 760px;
+  }
+
+  .capture-panel-wrap-pro .cap-intel-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr);
+    gap: 16px;
+  }
+
+  .capture-panel-wrap-pro .cap-bank-card {
+    margin-top: 16px;
+  }
+
+  .capture-panel-wrap-pro .cap-search-row {
+    position: sticky;
+    top: 10px;
+    z-index: 15;
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) auto auto 210px;
+    gap: 10px;
+    margin: 16px 0;
+    padding: 12px;
+  }
+
+  .capture-panel-wrap-pro .cap-search {
+    min-width: 0;
+  }
+
+  .capture-panel-wrap-pro .cap-status-filter {
+    min-height: 43px;
+    padding: 0 12px;
+  }
+
+  .capture-panel-wrap-pro .cap-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .capture-panel-wrap-pro .cap-driver-card {
+    align-items: flex-start;
+    min-height: 154px;
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .capture-panel-wrap-pro .cap-driver-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .capture-panel-wrap-pro .cap-card-actions {
+    min-width: 150px;
+  }
+
+  .capture-panel-wrap-pro .cap-next-btn,
+  .capture-panel-wrap-pro .cap-no-load-btn {
+    min-height: 38px;
+    justify-content: center;
+  }
+
+  .capture-panel-wrap-pro .cap-empty {
+    grid-column: 1 / -1;
+  }
+
+  .capture-panel-wrap-pro .cap-modal {
+    max-width: 720px !important;
+  }
+
+  .capture-panel-wrap-pro .cap-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    gap: 14px;
+  }
+
+  .capture-panel-wrap-pro .cap-db-pill {
+    left: 28px;
+    bottom: 24px;
+  }
+
+  .capture-panel-wrap-pro .cap-fab {
+    right: 34px;
+    bottom: 30px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .capture-main-pro {
+    max-width: 1640px;
+  }
+
+  .capture-panel-wrap-pro .cap-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  .capture-panel-wrap-pro .cap-list {
+    display: flex;
+    flex-direction: column;
+  }
+}
