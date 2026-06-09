@@ -4,6 +4,7 @@ export const T = {
   filiais: 'vl_filiais',
   profiles: 'vl_profiles',
   motoristas: 'vl_motoristas',
+  transportadoras: 'vl_transportadoras',
   captacoes: 'vl_captacoes',
   carregamentos: 'vl_motorista_carregamentos',
   motoristasView: 'vw_motoristas_que_carregam',
@@ -90,7 +91,7 @@ export async function upsertProfileBasico(usuario) {
 export async function upsertMotoristaFromCaptacao(item, usuarioAtual = null) {
   const sb = getClient()
   const nome = item.nome || item.motorista || 'Motorista sem nome'
-  const telefone = item.numero || item.telefone || ''
+  const telefone = item.numero || item.telefone || item.telefoneMotorista || ''
   const telefoneLimpo = limparTelefone(telefone)
   const payload = {
     nome,
@@ -107,6 +108,51 @@ export async function upsertMotoristaFromCaptacao(item, usuarioAtual = null) {
 
   const { data, error } = await query
   if (error) throw error
+  return data
+}
+
+export async function upsertMotoristaBasicoV2({ nome, telefone, observacao } = {}, usuarioAtual = null) {
+  if (!String(nome || '').trim()) return null
+  return upsertMotoristaFromCaptacao({ nome, telefone, telefoneMotorista: telefone, observacao }, usuarioAtual)
+}
+
+export async function listarMotoristasBancoV2() {
+  const sb = getClient()
+  const { data, error } = await sb
+    .from(T.motoristas)
+    .select('*, captacoes:vl_captacoes(status,operacao,filial_id,captador_usuario,data_captacao)')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
+export async function listarTransportadorasV2() {
+  const sb = getClient()
+  const { data, error } = await sb
+    .from(T.transportadoras)
+    .select('*')
+    .order('nome', { ascending: true })
+  if (error) return []
+  return data || []
+}
+
+export async function upsertTransportadoraV2(nome, usuarioAtual = null) {
+  const nomeLimpo = String(nome || '').trim()
+  if (!nomeLimpo) return null
+  const sb = getClient()
+  const id = nomeLimpo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || nomeLimpo.toLowerCase()
+  const { data, error } = await sb
+    .from(T.transportadoras)
+    .upsert({
+      id,
+      nome: nomeLimpo,
+      ativa: true,
+      criado_por: usuarioAtual?.usuario || null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'id' })
+    .select('*')
+    .single()
+  if (error) return null
   return data
 }
 
@@ -252,16 +298,6 @@ export async function listarEventosCaptacaoV2(limit = 80) {
     .select('*, captacao:vl_captacoes(local_id,operacao,status,motorista:vl_motoristas(nome,telefone))')
     .order('created_at', { ascending: false })
     .limit(limit)
-  if (error) throw error
-  return data || []
-}
-
-export async function listarMotoristasBancoV2() {
-  const sb = getClient()
-  const { data, error } = await sb
-    .from(T.motoristas)
-    .select('*, captacoes:vl_captacoes(status,operacao,filial_id,captador_usuario,data_captacao)')
-    .order('created_at', { ascending: false })
   if (error) throw error
   return data || []
 }
