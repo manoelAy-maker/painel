@@ -1,0 +1,291 @@
+/* AYRES — acabamento minimalista apenas para telas internas do painel.
+   Não afeta a tela de seleção de módulos. */
+
+.app {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(37,99,235,.10), transparent 30%),
+    radial-gradient(circle at 100% 0%, rgba(249,115,22,.08), transparent 26%),
+    #05070a !important;
+}
+
+.app .app-layout {
+  min-height: 100vh;
+}
+
+.app .main-pro {
+  min-width: 0;
+}
+
+.app .container {
+  max-width: 1480px;
+  padding: 20px 22px 48px !important;
+}
+
+/* Topo e sidebar mais limpos */
+.app .topbar {
+  padding: 16px 22px 0 !important;
+}
+
+.app .topbar-inner,
+.app .capture-topbar-pro {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.76) !important;
+  backdrop-filter: blur(16px);
+  border-radius: 22px !important;
+  box-shadow: none !important;
+}
+
+.app .sidebar-pro {
+  border-right: 1px solid rgba(148,163,184,.11) !important;
+  background: rgba(5,7,10,.96) !important;
+}
+
+.app .sidebar-nav .tab {
+  min-height: 40px;
+  border-radius: 12px !important;
+}
+
+.app .sidebar-nav .tab.active {
+  background: rgba(37,99,235,.13) !important;
+  border-color: rgba(96,165,250,.22) !important;
+  box-shadow: none !important;
+}
+
+/* Cards e painéis internos */
+.app .box,
+.app .command-panel,
+.app .command-kpi,
+.app .table-wrap,
+.app .live-panel,
+.app .admin-card,
+.app .backup-card,
+.app .trash-hero,
+.app .cap-stat-card,
+.app .cap-intel-card,
+.app .cap-driver-card,
+.app .cap-conversion,
+.app .cap-action-now,
+.app .cap-simple-rules,
+.app .cap-intelligence-hero {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.72) !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+}
+
+.app .box-title h2,
+.app .command-panel-head h3,
+.app .command-title h1,
+.app .capture-title-pro h1,
+.app .cap-intel-head h3 {
+  letter-spacing: -.45px;
+}
+
+.app .box-title span,
+.app .command-panel-head span,
+.app .command-title span,
+.app .capture-title-pro p,
+.app small {
+  color: #94a3b8 !important;
+}
+
+/* Dashboard mais prático */
+.app .command-topbar {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.72) !important;
+  border-radius: 22px !important;
+  box-shadow: none !important;
+  margin-bottom: 14px !important;
+}
+
+.app .dash-action-strip-pro {
+  gap: 10px;
+}
+
+.app .dash-action-tile-pro {
+  border-radius: 16px !important;
+  background: rgba(15,23,42,.42) !important;
+  box-shadow: none !important;
+}
+
+.app .dash-action-tile-pro:hover {
+  transform: translateY(-1px) !important;
+}
+
+.app .command-kpis {
+  gap: 12px !important;
+}
+
+.app .command-kpi {
+  min-height: 132px;
+  padding: 18px !important;
+}
+
+.app .command-kpi.primary {
+  background: linear-gradient(135deg, rgba(37,99,235,.26), rgba(124,58,237,.16)) !important;
+}
+
+/* Formulários */
+.app input,
+.app select,
+.app textarea {
+  border: 1px solid rgba(148,163,184,.14) !important;
+  background: rgba(15,23,42,.42) !important;
+  color: #f8fafc !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.app input:focus,
+.app select:focus,
+.app textarea:focus {
+  outline: none !important;
+  border-color: rgba(96,165,250,.65) !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12) !important;
+}
+
+.app label {
+  color: #cbd5e1 !important;
+  font-weight: 800 !important;
+}
+
+/* Botões menos gritantes */
+.app .btn,
+.app button,
+.app a.btn {
+  box-shadow: none !important;
+}
+
+.app .btn-small,
+.app .command-mini-btn,
+.app .capture-action-btn-pro {
+  border-radius: 11px !important;
+}
+
+.app .btn-light,
+.app .command-mini-btn,
+.app .capture-action-btn-pro {
+  background: rgba(255,255,255,.055) !important;
+  border: 1px solid rgba(148,163,184,.14) !important;
+  color: #e2e8f0 !important;
+}
+
+.app .btn-green,
+.app .command-action-primary {
+  background: linear-gradient(135deg, #15803d, #22c55e) !important;
+}
+
+.app .btn-purple {
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+}
+
+.app .btn-red {
+  background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+}
+
+.app .btn-orange {
+  background: linear-gradient(135deg, #d97706, #f97316) !important;
+}
+
+/* Tabelas mais legíveis */
+.app .table-scroll {
+  border-radius: 18px;
+}
+
+.app table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+.app thead th {
+  background: rgba(15,23,42,.72) !important;
+  color: #cbd5e1 !important;
+  font-size: 10.5px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  border-bottom: 1px solid rgba(148,163,184,.12) !important;
+}
+
+.app tbody td {
+  border-bottom: 1px solid rgba(148,163,184,.08) !important;
+}
+
+.app tbody tr:hover td {
+  background: rgba(37,99,235,.045) !important;
+}
+
+/* Badges */
+.app .badge,
+.app .status,
+.app .prio,
+.app .plate,
+.app .sla-badge,
+.app .cap-impact-pill {
+  border-radius: 999px !important;
+  font-weight: 850 !important;
+}
+
+/* Captação web mais sistema e menos app */
+.app.capture-shell-pro .capture-main-pro {
+  max-width: 1540px !important;
+}
+
+.app .capture-panel-wrap-pro .cap-main {
+  padding-bottom: 70px !important;
+}
+
+.app .cap-driver-card {
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+.app .cap-driver-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(96,165,250,.26) !important;
+}
+
+.app .cap-search-row {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.84) !important;
+  box-shadow: none !important;
+}
+
+.app .cap-fab {
+  box-shadow: 0 16px 36px rgba(37,99,235,.24) !important;
+}
+
+/* Estadia: deixar mais respirado */
+.app #abaLancadas .estadia-form-box,
+.app #abaALancar .box {
+  background: rgba(13,17,23,.76) !important;
+}
+
+.app #abaLancadas .preview-card {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(15,23,42,.42) !important;
+}
+
+/* Mobile mantém simples */
+@media (max-width: 980px) {
+  .app .container {
+    padding: 14px 12px 42px !important;
+  }
+
+  .app .topbar {
+    padding: 12px 12px 0 !important;
+  }
+
+  .app .box,
+  .app .command-panel,
+  .app .command-kpi,
+  .app .table-wrap,
+  .app .cap-driver-card {
+    border-radius: 18px !important;
+  }
+
+  .app .command-topbar,
+  .app .dash-action-strip-pro,
+  .app .command-kpis {
+    grid-template-columns: 1fr !important;
+  }
+}
