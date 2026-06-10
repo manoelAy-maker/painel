@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useApp } from '../context/AppContext'
+import { useAuthContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import { baixarAdmin, deletar, salvar } from '../lib/supabase'
 
 export default function NotificationBell() {
-  const { estadiasALancar, usuarioAtual, toast } = useApp()
+  const { estadiasALancar } = useEstadiaContext()
+  const { usuarioAtual } = useAuthContext()
+  const { toast } = useUiContext()
   const [open, setOpen] = useState(false)
   const [resetRequests, setResetRequests] = useState([])
   const isAdmin = usuarioAtual?.cargo === 'Admin'
