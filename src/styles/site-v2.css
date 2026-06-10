@@ -1,0 +1,481 @@
+/* AYRES Site V2 — organização visual interna
+   Mantém login e portal, organiza apenas painel interno. */
+
+.app {
+  background:
+    radial-gradient(circle at 0 0, rgba(37,99,235,.10), transparent 32%),
+    radial-gradient(circle at 100% 0, rgba(249,115,22,.07), transparent 28%),
+    #05070a !important;
+  color: #f8fafc;
+}
+
+.app .app-layout {
+  display: grid !important;
+  grid-template-columns: 280px minmax(0, 1fr) !important;
+  min-height: 100vh;
+}
+
+.app .main-pro {
+  min-width: 0 !important;
+  background: transparent !important;
+}
+
+.app .container {
+  max-width: 1500px !important;
+  margin: 0 auto !important;
+  padding: 22px 24px 54px !important;
+}
+
+/* SIDEBAR — mais site/sistema */
+.app .sidebar-pro {
+  width: 280px !important;
+  min-width: 280px !important;
+  background: linear-gradient(180deg, rgba(5,7,10,.98), rgba(8,12,20,.96)) !important;
+  border-right: 1px solid rgba(148,163,184,.12) !important;
+  box-shadow: none !important;
+}
+
+.app .brand-pro {
+  padding: 22px 20px 16px !important;
+  border-bottom: 1px solid rgba(148,163,184,.10) !important;
+}
+
+.app .brand-pro h1 {
+  font-size: 22px !important;
+  letter-spacing: -.7px !important;
+}
+
+.app .brand-pro p,
+.app .sidebar-section-label,
+.app .clickup-space-title {
+  color: #94a3b8 !important;
+}
+
+.app .clickup-space-block,
+.app .sidebar-nav,
+.app .sidebar-status {
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+}
+
+.app .clickup-space-item,
+.app .sidebar-nav .tab {
+  width: 100% !important;
+  min-height: 42px !important;
+  border-radius: 14px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  transition: .16s ease !important;
+}
+
+.app .clickup-space-item:hover,
+.app .sidebar-nav .tab:hover {
+  background: rgba(255,255,255,.045) !important;
+  border-color: rgba(148,163,184,.10) !important;
+}
+
+.app .sidebar-nav .tab.active {
+  background: rgba(37,99,235,.14) !important;
+  border-color: rgba(96,165,250,.25) !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+.app .sidebar-mini-card,
+.app .sidebar-card,
+.app .sidebar-user-card {
+  border-radius: 18px !important;
+  border: 1px solid rgba(148,163,184,.11) !important;
+  background: rgba(15,23,42,.42) !important;
+  box-shadow: none !important;
+}
+
+/* TOPBAR — volta a ser barra de sistema, não pílula perdida */
+.app .clean-topbar,
+.app .ayres-topbar-pro {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 70 !important;
+  padding: 16px 24px 0 !important;
+  pointer-events: auto !important;
+  background: linear-gradient(180deg, rgba(5,7,10,.92), rgba(5,7,10,0)) !important;
+}
+
+.app .clean-topbar .topbar-inner,
+.app .clean-topbar .ayres-topbar-inner-pro,
+.app .ayres-topbar-inner-pro {
+  width: 100% !important;
+  max-width: 1500px !important;
+  min-height: 68px !important;
+  margin: 0 auto !important;
+  padding: 10px 12px !important;
+  border-radius: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.86) !important;
+  backdrop-filter: blur(18px) !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,.22) !important;
+  pointer-events: auto !important;
+}
+
+.app .clean-topbar .ayres-topbar-left-pro,
+.app .ayres-topbar-left-pro {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.app .topbar-menu-btn,
+.app .topbar-link-btn,
+.app .topbar-exit-btn,
+.app .ayres-topbar-actions-pro .notif-button {
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 13px !important;
+  border: 1px solid rgba(148,163,184,.13) !important;
+  background: rgba(255,255,255,.045) !important;
+  color: #e2e8f0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 0 12px !important;
+  box-shadow: none !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+.app .topbar-menu-btn {
+  width: 40px !important;
+  padding: 0 !important;
+}
+
+.app .ayres-topbar-logo-pro {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 14px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: linear-gradient(135deg, #2563eb, #f97316) !important;
+  color: #fff !important;
+  font-weight: 950 !important;
+  box-shadow: 0 12px 28px rgba(37,99,235,.20) !important;
+}
+
+.app .ayres-topbar-brand-pro {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+}
+
+.app .ayres-topbar-brand-pro strong {
+  color: #f8fafc !important;
+  font-size: 18px !important;
+  letter-spacing: -.6px !important;
+  line-height: 1 !important;
+}
+
+.app .ayres-topbar-brand-pro span {
+  color: #94a3b8 !important;
+  font-size: 11.5px !important;
+  white-space: nowrap !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.app .ayres-topbar-actions-pro,
+.app .clean-topbar .top-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  flex-wrap: nowrap !important;
+}
+
+.app .topbar-profile-btn {
+  height: 44px !important;
+  min-height: 44px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(148,163,184,.13) !important;
+  background: rgba(255,255,255,.055) !important;
+  color: #f8fafc !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  padding: 5px 12px 5px 5px !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+.app .topbar-user-photo {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 13px !important;
+  overflow: hidden !important;
+  display: grid !important;
+  place-items: center !important;
+  background: linear-gradient(135deg,#2563eb,#f97316) !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+}
+
+.app .topbar-user-photo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.app .topbar-user-text {
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.05 !important;
+  text-align: left !important;
+}
+
+.app .topbar-user-text strong {
+  color: #f8fafc !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+}
+
+.app .topbar-user-text small {
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+  margin-top: 3px !important;
+}
+
+.app .topbar-exit-btn {
+  background: rgba(239,68,68,.10) !important;
+  border-color: rgba(239,68,68,.20) !important;
+  color: #fecaca !important;
+}
+
+.app .topbar-link-btn:hover,
+.app .topbar-profile-btn:hover,
+.app .ayres-topbar-actions-pro .notif-button:hover {
+  background: rgba(37,99,235,.12) !important;
+  border-color: rgba(96,165,250,.28) !important;
+  transform: translateY(-1px) !important;
+}
+
+.app .topbar-exit-btn:hover {
+  background: rgba(239,68,68,.16) !important;
+  border-color: rgba(239,68,68,.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* DASHBOARD e CONTEÚDO — visual de site */
+.app .command-topbar,
+.app .command-panel,
+.app .command-kpi,
+.app .box,
+.app .table-wrap,
+.app .admin-card,
+.app .backup-card,
+.app .trash-hero,
+.app .cap-stat-card,
+.app .cap-driver-card,
+.app .cap-intelligence-hero,
+.app .cap-conversion,
+.app .cap-action-now,
+.app .cap-simple-rules {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.74) !important;
+  border-radius: 22px !important;
+  box-shadow: none !important;
+}
+
+.app .command-topbar {
+  padding: 24px !important;
+  margin-bottom: 16px !important;
+}
+
+.app .command-title h1,
+.app .box-title h2,
+.app .command-panel-head h3,
+.app .capture-title-pro h1 {
+  color: #f8fafc !important;
+  letter-spacing: -.55px !important;
+}
+
+.app .command-title span,
+.app .box-title span,
+.app .command-panel-head span,
+.app .capture-title-pro p,
+.app small,
+.app .muted {
+  color: #94a3b8 !important;
+}
+
+.app .dash-action-strip-pro {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  padding: 0 !important;
+  margin-bottom: 16px !important;
+}
+
+.app .dash-action-tile-pro {
+  min-height: 106px !important;
+  padding: 16px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.72) !important;
+  box-shadow: none !important;
+}
+
+.app .command-kpis {
+  gap: 12px !important;
+  margin-bottom: 16px !important;
+}
+
+.app .command-kpi {
+  border-radius: 20px !important;
+  min-height: 120px !important;
+}
+
+.app .command-side {
+  display: none !important;
+}
+
+.app .estadia-command {
+  grid-template-columns: 1fr !important;
+  gap: 16px !important;
+}
+
+.app .command-grid,
+.app .dash-functional-grid,
+.app .form-grid,
+.app .cap-stats,
+.app .cap-insights-grid {
+  gap: 12px !important;
+}
+
+/* FORMULÁRIOS E TABELAS */
+.app input,
+.app select,
+.app textarea {
+  background: rgba(2,6,23,.45) !important;
+  border: 1px solid rgba(148,163,184,.14) !important;
+  color: #f8fafc !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.app input:focus,
+.app select:focus,
+.app textarea:focus {
+  border-color: rgba(96,165,250,.60) !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12) !important;
+  outline: none !important;
+}
+
+.app thead th {
+  background: rgba(2,6,23,.70) !important;
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(148,163,184,.11) !important;
+}
+
+.app tbody td {
+  border-bottom: 1px solid rgba(148,163,184,.08) !important;
+}
+
+.app tbody tr:hover td {
+  background: rgba(37,99,235,.045) !important;
+}
+
+.app button {
+  box-shadow: none !important;
+}
+
+/* Esconde coisas antigas que deixam cara de remendo */
+.app .live-dashboard.live-command-center,
+.app .ayres-topbar-center-pro,
+.app .cloud-mini,
+.app .sound-toggle,
+.app .command-search,
+.app .command-user,
+.app .ayres-icon-btn-pro,
+.app .ayres-topbar-btn-pro,
+.app .profile-pill.profile-action {
+  display: none !important;
+}
+
+@media (max-width: 1100px) {
+  .app .app-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app .sidebar-pro {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    z-index: 90 !important;
+    transform: translateX(-105%);
+    transition: transform .2s ease;
+  }
+
+  .app .container {
+    padding: 16px 14px 46px !important;
+  }
+
+  .app .dash-action-strip-pro {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .app .clean-topbar,
+  .app .ayres-topbar-pro {
+    padding: 10px 10px 0 !important;
+  }
+
+  .app .clean-topbar .topbar-inner,
+  .app .clean-topbar .ayres-topbar-inner-pro,
+  .app .ayres-topbar-inner-pro {
+    min-height: 60px !important;
+    padding: 8px !important;
+    border-radius: 18px !important;
+  }
+
+  .app .ayres-topbar-logo-pro,
+  .app .topbar-menu-btn,
+  .app .topbar-link-btn,
+  .app .topbar-exit-btn,
+  .app .ayres-topbar-actions-pro .notif-button {
+    width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+  }
+
+  .app .ayres-topbar-brand-pro span,
+  .app .topbar-link-btn span,
+  .app .topbar-exit-btn span,
+  .app .topbar-user-text {
+    display: none !important;
+  }
+
+  .app .topbar-profile-btn {
+    width: 40px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 2px !important;
+    justify-content: center !important;
+  }
+
+  .app .dash-action-strip-pro {
+    grid-template-columns: 1fr !important;
+  }
+}
