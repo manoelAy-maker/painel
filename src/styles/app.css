@@ -1,0 +1,27 @@
+/*
+  AYRES v1 - centralizador de estilos globais.
+  Objetivo: parar a guerra de imports espalhados entre main.jsx e App.jsx.
+  Ordem importa: estilos gerais primeiro, ajustes específicos depois, portal por último.
+*/
+
+@import '../mobile-polish.css';
+@import '../mobile-captacao.css';
+@import '../login-mobile.css';
+@import '../clickup-workspace.css';
+@import '../captacao-pontuacao.css';
+@import '../captacao-leads-pro.css';
+@import '../captacao-simple-mode.css';
+@import '../captacao-desktop-pro.css';
+
+@import '../captacao-theme.css';
+@import '../estadia-mobile.css';
+@import '../pro-polish.css';
+@import '../sidebar-reference.css';
+@import '../tempo-estadia.css';
+@import '../live-command.css';
+@import '../admin-pro.css';
+@import '../mobile-app-apk.css';
+@import '../ayres-inner-minimal.css';
+
+/* Portal/login ficam por último para garantir prioridade visual. */
+@import '../portal-background.css';
