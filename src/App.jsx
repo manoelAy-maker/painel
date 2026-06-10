@@ -10,6 +10,7 @@ import SoundManager from './components/SoundManager'
 import Dashboard from './pages/Dashboard'
 import './styles/app.css'
 import './cargo-options-runtime.js'
+import './login-dark-restore.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
