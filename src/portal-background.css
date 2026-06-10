@@ -1,140 +1,137 @@
-/* Fundo logístico premium do portal AYRES
-   Ideia: caminhão + containers + rede digital, sem usar foto pesada no fundo.
-   Mantém cards, textos e animações originais. */
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) {
+/* Portal AYRES: fundo limpo + rede digital + caminhão animado.
+   Sem foto pesada e sem blocos estáticos feios. */
+.portal-screen,
+.min-h-screen.flex.flex-col.relative.overflow-hidden {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   background-color: #030712 !important;
   background-image:
-    radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.09), transparent 10%),
-    radial-gradient(circle at 22% 20%, rgba(59, 130, 246, 0.30), transparent 28%),
-    radial-gradient(circle at 84% 18%, rgba(56, 189, 248, 0.20), transparent 30%),
-    radial-gradient(circle at 52% 105%, rgba(249, 115, 22, 0.14), transparent 34%),
-    linear-gradient(115deg, #020617 0%, #07111f 48%, #0b1628 100%) !important;
-  overflow: hidden;
+    radial-gradient(circle at 22% 18%, rgba(37,99,235,.28), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(14,165,233,.18), transparent 30%),
+    radial-gradient(circle at 50% 102%, rgba(249,115,22,.10), transparent 34%),
+    linear-gradient(115deg, #020617 0%, #07111f 48%, #081424 100%) !important;
 }
 
-/* Esconde o fundo antigo do React/Tailwind para o novo aparecer de verdade. */
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > .fixed.inset-0.\-z-10.pointer-events-none {
+.portal-screen > .fixed.inset-0.\-z-10.pointer-events-none,
+.min-h-screen.flex.flex-col.relative.overflow-hidden > .fixed.inset-0.\-z-10.pointer-events-none {
   display: none !important;
 }
 
-/* Deixa todo o conteúdo acima do cenário. */
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > header,
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > main,
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > footer,
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > .fixed.bottom-5,
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > .fixed.bottom-6 {
+.portal-screen > header,
+.portal-screen > main,
+.portal-screen > footer,
+.portal-screen > .fixed.bottom-5,
+.portal-screen > .fixed.bottom-6,
+.min-h-screen.flex.flex-col.relative.overflow-hidden > header,
+.min-h-screen.flex.flex-col.relative.overflow-hidden > main,
+.min-h-screen.flex.flex-col.relative.overflow-hidden > footer,
+.min-h-screen.flex.flex-col.relative.overflow-hidden > .fixed.bottom-5,
+.min-h-screen.flex.flex-col.relative.overflow-hidden > .fixed.bottom-6 {
   position: relative;
-  z-index: 3;
+  z-index: 4;
 }
 
-/* Foto conceitual em CSS: pátio/containers/caminhão em baixo. */
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden)::before {
-  content: '';
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 46vh;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.62;
-  background:
-    /* brilho do horizonte */
-    radial-gradient(ellipse at 50% 5%, rgba(255,255,255,.22), transparent 24%),
-    radial-gradient(ellipse at 50% 8%, rgba(59,130,246,.24), transparent 34%),
-
-    /* caminhão */
-    linear-gradient(90deg, rgba(226,232,240,.74), rgba(148,163,184,.50)) 10% 70% / 220px 64px no-repeat,
-    linear-gradient(90deg, rgba(226,232,240,.92), rgba(148,163,184,.70)) 25% 61% / 96px 76px no-repeat,
-    linear-gradient(90deg, transparent 0 20%, rgba(15,23,42,.82) 20% 78%, transparent 78%) 27.5% 60% / 44px 30px no-repeat,
-    radial-gradient(circle, rgba(2,6,23,.95) 0 38%, rgba(148,163,184,.65) 39% 54%, transparent 55%) 17% 88% / 54px 54px no-repeat,
-    radial-gradient(circle, rgba(2,6,23,.95) 0 38%, rgba(148,163,184,.65) 39% 54%, transparent 55%) 29% 88% / 54px 54px no-repeat,
-
-    /* containers laterais */
-    repeating-linear-gradient(90deg, rgba(148,163,184,.18) 0 2px, transparent 2px 26px) 0 54% / 100% 96px no-repeat,
-    linear-gradient(90deg, rgba(15,23,42,.82), rgba(30,41,59,.30)) 0 56% / 30% 128px no-repeat,
-    linear-gradient(90deg, rgba(15,23,42,.40), rgba(30,41,59,.80)) 76% 55% / 32% 150px no-repeat,
-
-    /* chão */
-    linear-gradient(180deg, transparent 0%, rgba(15,23,42,.56) 36%, rgba(2,6,23,.94) 100%),
-    linear-gradient(90deg, rgba(59,130,246,.14), rgba(255,255,255,.14), rgba(249,115,22,.10));
-  filter: saturate(1.1);
-}
-
-/* Rede digital estilo logística inteligente. */
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden)::after {
-  content: '';
-  position: fixed;
-  inset: -6%;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.58;
-  background:
-    radial-gradient(circle at 42% 24%, rgba(255,255,255,.88) 0 2px, transparent 3px),
-    radial-gradient(circle at 49% 18%, rgba(255,255,255,.78) 0 2px, transparent 3px),
-    radial-gradient(circle at 58% 25%, rgba(255,255,255,.82) 0 2px, transparent 3px),
-    radial-gradient(circle at 66% 36%, rgba(255,255,255,.75) 0 2px, transparent 3px),
-    radial-gradient(circle at 54% 43%, rgba(255,255,255,.78) 0 2px, transparent 3px),
-    radial-gradient(circle at 38% 42%, rgba(255,255,255,.68) 0 2px, transparent 3px),
-    radial-gradient(circle at 72% 50%, rgba(56,189,248,.92) 0 3px, transparent 4px),
-    radial-gradient(circle at 30% 30%, rgba(56,189,248,.75) 0 3px, transparent 4px),
-
-    linear-gradient(32deg, transparent 40%, rgba(255,255,255,.20) 40.4%, transparent 41%) 42% 18% / 360px 220px no-repeat,
-    linear-gradient(-26deg, transparent 42%, rgba(255,255,255,.18) 42.4%, transparent 43%) 37% 20% / 410px 230px no-repeat,
-    linear-gradient(70deg, transparent 44%, rgba(56,189,248,.17) 44.4%, transparent 45%) 35% 24% / 470px 260px no-repeat,
-    linear-gradient(112deg, transparent 46%, rgba(255,255,255,.16) 46.4%, transparent 47%) 44% 18% / 370px 300px no-repeat,
-
-    radial-gradient(circle at 56% 34%, rgba(255,255,255,.11), transparent 16%),
-    linear-gradient(rgba(148,163,184,.052) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,163,184,.052) 1px, transparent 1px);
-  background-size:
-    auto, auto, auto, auto, auto, auto, auto, auto,
-    360px 220px, 410px 230px, 470px 260px, 370px 300px,
-    auto,
-    60px 60px,
-    60px 60px;
-  mix-blend-mode: screen;
-}
-
-/* Vinheta para o formulário continuar legível. */
-:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) main::before {
+/* grid + chão, bem sutil para não poluir o portal */
+.portal-screen main::before,
+.min-h-screen.flex.flex-col.relative.overflow-hidden main::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 44%, rgba(2,6,23,.12), rgba(2,6,23,.45) 56%, rgba(2,6,23,.78) 100%);
+    linear-gradient(rgba(148,163,184,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,.045) 1px, transparent 1px),
+    linear-gradient(180deg, transparent 0%, transparent 54%, rgba(15,23,42,.38) 54%, rgba(2,6,23,.92) 100%),
+    radial-gradient(circle at center, transparent 0%, rgba(2,6,23,.42) 70%, rgba(2,6,23,.88) 100%);
+  background-size: 54px 54px, 54px 54px, auto, auto;
+}
+
+/* rede digital animada no fundo */
+.portal-screen::after,
+.min-h-screen.flex.flex-col.relative.overflow-hidden::after {
+  content: '';
+  position: fixed;
+  inset: -8%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .48;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(56,189,248,.95) 0 2px, transparent 3px),
+    radial-gradient(circle at 43% 18%, rgba(255,255,255,.78) 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 32%, rgba(255,255,255,.72) 0 2px, transparent 3px),
+    radial-gradient(circle at 61% 22%, rgba(255,255,255,.72) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 38%, rgba(56,189,248,.86) 0 2px, transparent 3px),
+    radial-gradient(circle at 58% 48%, rgba(255,255,255,.62) 0 2px, transparent 3px),
+    linear-gradient(27deg, transparent 43%, rgba(255,255,255,.15) 43.35%, transparent 43.75%) 35% 14% / 520px 340px no-repeat,
+    linear-gradient(-25deg, transparent 45%, rgba(56,189,248,.16) 45.35%, transparent 45.75%) 31% 16% / 610px 360px no-repeat,
+    linear-gradient(72deg, transparent 46%, rgba(255,255,255,.12) 46.35%, transparent 46.75%) 40% 16% / 540px 360px no-repeat,
+    radial-gradient(circle at 50% 34%, rgba(59,130,246,.12), transparent 18%);
+  mix-blend-mode: screen;
+  animation: ayresNetworkFloat 14s ease-in-out infinite alternate;
+}
+
+/* caminhão passando atrás dos cards */
+.portal-screen::before,
+.min-h-screen.flex.flex-col.relative.overflow-hidden::before {
+  content: '';
+  position: fixed;
+  left: -360px;
+  bottom: 84px;
+  width: 330px;
+  height: 118px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: .42;
+  background:
+    /* faróis */
+    radial-gradient(circle, rgba(255,255,255,.85) 0 18%, transparent 20%) 280px 48px / 26px 18px no-repeat,
+    radial-gradient(circle, rgba(59,130,246,.55) 0 18%, transparent 22%) 294px 54px / 68px 22px no-repeat,
+
+    /* baú */
+    linear-gradient(135deg, rgba(226,232,240,.42), rgba(96,165,250,.16)) 8px 32px / 205px 56px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 28px) 20px 38px / 184px 44px no-repeat,
+
+    /* cabine */
+    linear-gradient(135deg, rgba(226,232,240,.62), rgba(96,165,250,.22)) 213px 24px / 82px 66px no-repeat,
+    linear-gradient(135deg, rgba(2,6,23,.86), rgba(30,64,175,.50)) 232px 34px / 34px 26px no-repeat,
+
+    /* base */
+    linear-gradient(90deg, rgba(15,23,42,.82), rgba(30,41,59,.64)) 0 84px / 306px 8px no-repeat,
+
+    /* rodas */
+    radial-gradient(circle, #020617 0 36%, rgba(148,163,184,.72) 37% 52%, transparent 54%) 46px 76px / 48px 48px no-repeat,
+    radial-gradient(circle, #020617 0 36%, rgba(148,163,184,.72) 37% 52%, transparent 54%) 224px 76px / 48px 48px no-repeat;
+  filter: drop-shadow(0 18px 28px rgba(37,99,235,.20));
+  animation: ayresTruckPass 18s linear infinite;
+}
+
+@keyframes ayresTruckPass {
+  0% { transform: translateX(-12vw); opacity: 0; }
+  8% { opacity: .42; }
+  50% { opacity: .48; }
+  88% { opacity: .42; }
+  100% { transform: translateX(calc(100vw + 760px)); opacity: 0; }
+}
+
+@keyframes ayresNetworkFloat {
+  from { transform: translate3d(-12px, -6px, 0) scale(1); opacity: .38; }
+  to { transform: translate3d(16px, 10px, 0) scale(1.035); opacity: .56; }
 }
 
 @media (max-width: 760px) {
-  :where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden)::before {
-    height: 38vh;
-    opacity: 0.38;
-    background-position:
-      center,
-      center,
-      -40px 72%,
-      88px 64%,
-      108px 63%,
-      18px 91%,
-      148px 91%,
-      center,
-      left bottom,
-      right bottom,
-      center,
-      center;
+  .portal-screen::before,
+  .min-h-screen.flex.flex-col.relative.overflow-hidden::before {
+    width: 260px;
+    height: 94px;
+    bottom: 42px;
+    opacity: .30;
+    transform: scale(.78);
   }
 
-  :where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden)::after {
-    opacity: 0.35;
-    background-size:
-      auto, auto, auto, auto, auto, auto, auto, auto,
-      260px 180px, 280px 190px, 320px 210px, 290px 220px,
-      auto,
-      44px 44px,
-      44px 44px;
+  .portal-screen::after,
+  .min-h-screen.flex.flex-col.relative.overflow-hidden::after {
+    opacity: .32;
   }
 }
