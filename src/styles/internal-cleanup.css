@@ -15,10 +15,63 @@
   display: none !important;
 }
 
+/* Topbar flutuante no canto */
+.clean-topbar {
+  position: sticky !important;
+  top: 0;
+  z-index: 80;
+  padding: 16px 22px 0 !important;
+  pointer-events: none;
+}
+
 .clean-topbar .topbar-inner,
 .ayres-topbar-inner-pro {
-  min-height: 72px;
-  padding: 14px 18px !important;
+  min-height: 58px !important;
+  width: max-content !important;
+  max-width: calc(100vw - 320px) !important;
+  margin-left: auto !important;
+  padding: 9px 10px !important;
+  border-radius: 999px !important;
+  pointer-events: auto;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+
+.clean-topbar .ayres-topbar-left-pro {
+  display: none !important;
+}
+
+.clean-topbar .top-actions,
+.clean-topbar .ayres-topbar-actions-pro {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+.clean-topbar .ayres-topbar-btn-pro,
+.clean-topbar .ayres-icon-btn-pro,
+.clean-topbar .profile-pill,
+.clean-topbar .notif-button {
+  height: 42px !important;
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  padding: 0 14px !important;
+  white-space: nowrap;
+}
+
+.clean-topbar .ayres-icon-btn-pro,
+.clean-topbar .notif-button {
+  width: 42px !important;
+  padding: 0 !important;
+}
+
+.clean-topbar .profile-pill {
+  padding: 0 14px 0 6px !important;
+}
+
+.clean-topbar .profile-text small {
+  display: none !important;
 }
 
 .ayres-topbar-brand-pro strong {
@@ -122,6 +175,11 @@ small,
   .dash-action-strip-pro {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .clean-topbar .topbar-inner,
+  .ayres-topbar-inner-pro {
+    max-width: calc(100vw - 40px) !important;
+  }
 }
 
 @media (max-width: 640px) {
@@ -129,8 +187,28 @@ small,
     grid-template-columns: 1fr;
   }
 
+  .clean-topbar {
+    padding: 12px 12px 0 !important;
+  }
+
   .clean-topbar .topbar-inner,
   .ayres-topbar-inner-pro {
-    min-height: auto;
+    min-height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .clean-topbar .ayres-topbar-left-pro {
+    display: flex !important;
+  }
+
+  .clean-topbar .ayres-topbar-brand-pro {
+    display: none !important;
+  }
+
+  .clean-topbar .ayres-topbar-btn-pro span,
+  .clean-topbar .profile-text {
+    display: none !important;
   }
 }
