@@ -1,5 +1,5 @@
-/* Portal AYRES: fundo logístico animado de verdade.
-   Agora a animação usa elementos reais: estrada, rede e caminhões passando. */
+/* Portal AYRES: fundo logístico mais limpo e cinematográfico.
+   Remove o caminhão quadradão e deixa só luz/silhueta passando. */
 .portal-screen,
 .min-h-screen.flex.flex-col.relative.overflow-hidden {
   position: relative;
@@ -7,9 +7,9 @@
   overflow: hidden;
   background-color: #030712 !important;
   background-image:
-    radial-gradient(circle at 22% 18%, rgba(37,99,235,.28), transparent 28%),
-    radial-gradient(circle at 82% 16%, rgba(14,165,233,.18), transparent 30%),
-    radial-gradient(circle at 50% 102%, rgba(249,115,22,.10), transparent 34%),
+    radial-gradient(circle at 22% 18%, rgba(37,99,235,.24), transparent 30%),
+    radial-gradient(circle at 82% 16%, rgba(14,165,233,.14), transparent 32%),
+    radial-gradient(circle at 52% 100%, rgba(249,115,22,.08), transparent 35%),
     linear-gradient(115deg, #020617 0%, #07111f 48%, #081424 100%) !important;
 }
 
@@ -39,10 +39,10 @@
   pointer-events: none;
   overflow: hidden;
   background:
-    linear-gradient(rgba(148,163,184,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,163,184,.05) 1px, transparent 1px),
-    radial-gradient(circle at 50% 40%, rgba(59,130,246,.12), transparent 26%),
-    radial-gradient(circle at 80% 70%, rgba(249,115,22,.10), transparent 24%);
+    linear-gradient(rgba(148,163,184,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,.035) 1px, transparent 1px),
+    radial-gradient(circle at 50% 38%, rgba(59,130,246,.10), transparent 28%),
+    radial-gradient(circle at 82% 70%, rgba(249,115,22,.07), transparent 26%);
   background-size: 54px 54px, 54px 54px, auto, auto;
 }
 
@@ -50,19 +50,19 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 48% 34%, rgba(255,255,255,.12), transparent 10%),
-    radial-gradient(circle at 50% 34%, rgba(59,130,246,.20), transparent 26%),
-    linear-gradient(180deg, transparent 0%, transparent 54%, rgba(15,23,42,.52) 74%, rgba(2,6,23,.94) 100%);
+    radial-gradient(circle at 50% 36%, rgba(255,255,255,.08), transparent 10%),
+    radial-gradient(circle at 50% 36%, rgba(59,130,246,.18), transparent 28%),
+    linear-gradient(180deg, transparent 0%, transparent 58%, rgba(15,23,42,.38) 76%, rgba(2,6,23,.92) 100%);
 }
 
 .portal-network {
   position: absolute;
   left: 28%;
-  top: 8%;
+  top: 7%;
   width: 52vw;
   height: 34vh;
-  opacity: .75;
-  animation: ayresNetworkFloat 8s ease-in-out infinite alternate;
+  opacity: .52;
+  animation: ayresNetworkFloat 10s ease-in-out infinite alternate;
 }
 
 .portal-network .node,
@@ -72,24 +72,24 @@
 }
 
 .portal-network .node {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
-  background: rgba(125,211,252,.95);
-  box-shadow: 0 0 20px rgba(56,189,248,.72);
+  background: rgba(125,211,252,.82);
+  box-shadow: 0 0 18px rgba(56,189,248,.54);
 }
 
 .portal-network .n1 { left: 4%; top: 58%; }
-.portal-network .n2 { left: 27%; top: 18%; background: rgba(255,255,255,.86); }
-.portal-network .n3 { left: 45%; top: 42%; background: rgba(255,255,255,.82); }
+.portal-network .n2 { left: 27%; top: 18%; background: rgba(255,255,255,.70); }
+.portal-network .n3 { left: 45%; top: 42%; background: rgba(255,255,255,.68); }
 .portal-network .n4 { left: 63%; top: 20%; }
 .portal-network .n5 { left: 78%; top: 62%; }
-.portal-network .n6 { left: 93%; top: 38%; background: rgba(255,255,255,.74); }
+.portal-network .n6 { left: 93%; top: 38%; background: rgba(255,255,255,.60); }
 
 .portal-network .line {
   height: 1px;
   transform-origin: left center;
-  background: linear-gradient(90deg, transparent, rgba(147,197,253,.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(147,197,253,.24), transparent);
 }
 .portal-network .l1 { left: 5%; top: 60%; width: 330px; transform: rotate(-24deg); }
 .portal-network .l2 { left: 27%; top: 20%; width: 320px; transform: rotate(28deg); }
@@ -101,10 +101,11 @@
   left: -5%;
   right: -5%;
   bottom: 8%;
-  height: 96px;
-  opacity: .95;
+  height: 120px;
+  opacity: .72;
   background:
-    linear-gradient(180deg, transparent, rgba(15,23,42,.40) 32%, rgba(2,6,23,.80) 100%);
+    radial-gradient(ellipse at center, rgba(96,165,250,.14), transparent 48%),
+    linear-gradient(180deg, transparent, rgba(15,23,42,.26) 35%, rgba(2,6,23,.76) 100%);
 }
 
 .portal-road::before {
@@ -112,100 +113,80 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 46px;
+  top: 56px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(96,165,250,.30), rgba(255,255,255,.20), rgba(249,115,22,.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(96,165,250,.20), rgba(255,255,255,.18), rgba(249,115,22,.12), transparent);
 }
 
 .portal-road span {
   position: absolute;
-  top: 42px;
-  width: 120px;
-  height: 4px;
+  top: 52px;
+  width: 160px;
+  height: 3px;
   border-radius: 999px;
-  background: rgba(148,163,184,.36);
-  animation: ayresRoadLine 1.8s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(191,219,254,.42), transparent);
+  animation: ayresRoadLine 1.9s linear infinite;
 }
-.portal-road span:nth-child(1) { left: 20%; }
+.portal-road span:nth-child(1) { left: 18%; }
 .portal-road span:nth-child(2) { left: 72%; animation-delay: -.9s; }
 
+/* Em vez de caminhão quadrado: rastro de luz/silhueta passando */
 .portal-truck {
   position: absolute;
-  bottom: 12%;
-  left: -420px;
-  width: 360px;
-  height: 130px;
-  opacity: .90;
-  filter: drop-shadow(0 24px 34px rgba(37,99,235,.30));
-  animation: ayresTruckPass 11s linear infinite;
+  bottom: 13%;
+  left: -520px;
+  width: 440px;
+  height: 86px;
+  opacity: .50;
+  border-radius: 999px;
+  filter: blur(.2px) drop-shadow(0 18px 30px rgba(37,99,235,.22));
+  background:
+    radial-gradient(ellipse at 88% 48%, rgba(255,255,255,.78), transparent 14%),
+    radial-gradient(ellipse at 100% 52%, rgba(96,165,250,.42), transparent 36%),
+    linear-gradient(90deg, transparent 0%, rgba(148,163,184,.08) 16%, rgba(226,232,240,.22) 48%, rgba(96,165,250,.20) 72%, transparent 100%);
+  animation: ayresTruckPass 12s linear infinite;
+}
+
+.portal-truck::before {
+  content: '';
+  position: absolute;
+  left: 58px;
+  right: 96px;
+  top: 26px;
+  height: 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(226,232,240,.24), rgba(96,165,250,.15), transparent);
+}
+
+.portal-truck::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 30px;
+  width: 180px;
+  height: 28px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at left, rgba(255,255,255,.70), rgba(96,165,250,.28) 36%, transparent 78%);
+}
+
+.portal-truck .trailer,
+.portal-truck .cab,
+.portal-truck .light,
+.portal-truck .wheel {
+  display: none !important;
 }
 
 .portal-truck.truck-one { animation-delay: -4s; }
 .portal-truck.truck-two {
-  width: 285px;
-  height: 104px;
-  bottom: 9%;
-  opacity: .40;
-  transform: scale(.76);
-  animation-duration: 15s;
-  animation-delay: -11s;
+  bottom: 10%;
+  width: 360px;
+  height: 68px;
+  opacity: .28;
+  animation-duration: 17s;
+  animation-delay: -12s;
 }
 
-.portal-truck .trailer {
-  position: absolute;
-  left: 0;
-  top: 36px;
-  width: 220px;
-  height: 62px;
-  border-radius: 10px 4px 4px 10px;
-  border: 1px solid rgba(191,219,254,.34);
-  background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.15) 0 1px, transparent 1px 26px),
-    linear-gradient(135deg, rgba(226,232,240,.78), rgba(96,165,250,.22));
-}
-
-.portal-truck .cab {
-  position: absolute;
-  left: 220px;
-  top: 24px;
-  width: 88px;
-  height: 76px;
-  border-radius: 12px 22px 8px 6px;
-  border: 1px solid rgba(191,219,254,.36);
-  background: linear-gradient(135deg, rgba(226,232,240,.92), rgba(96,165,250,.34));
-}
-.portal-truck .cab i {
-  position: absolute;
-  left: 19px;
-  top: 12px;
-  width: 36px;
-  height: 28px;
-  border-radius: 5px 12px 4px 4px;
-  background: linear-gradient(135deg, rgba(2,6,23,.90), rgba(30,64,175,.56));
-}
-
-.portal-truck .light {
-  position: absolute;
-  left: 302px;
-  top: 54px;
-  width: 90px;
-  height: 24px;
-  border-radius: 999px;
-  background: radial-gradient(circle at left, rgba(255,255,255,.95), rgba(96,165,250,.42) 34%, transparent 72%);
-}
-
-.portal-truck .wheel {
-  position: absolute;
-  top: 86px;
-  width: 50px;
-  height: 50px;
-  border-radius: 999px;
-  background: radial-gradient(circle, #020617 0 36%, rgba(148,163,184,.82) 37% 54%, transparent 55%);
-}
-.portal-truck .w1 { left: 52px; }
-.portal-truck .w2 { left: 238px; }
-
-/* esconde os pseudos antigos para não aparecer aquele caminhão/bloco feio */
+/* esconde pseudos antigos do container */
 .portal-screen::before,
 .portal-screen::after,
 .min-h-screen.flex.flex-col.relative.overflow-hidden::before,
@@ -213,7 +194,7 @@
   content: none !important;
 }
 
-/* melhora o botão 'Esqueci minha senha' sem mexer no JSX */
+/* melhora o botão 'Esqueci minha senha' */
 .min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) {
   position: relative;
 }
@@ -226,8 +207,8 @@
   bottom: 10px;
   z-index: 2;
   border-radius: 999px;
-  border: 1px solid rgba(59,130,246,.24);
-  background: rgba(15,23,42,.80);
+  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(15,23,42,.78);
   padding: 8px 12px;
   color: #93c5fd !important;
   font-size: 10px;
@@ -240,25 +221,25 @@
 }
 
 @keyframes ayresTruckPass {
-  from { transform: translateX(-20vw); }
-  to { transform: translateX(calc(100vw + 760px)); }
+  from { transform: translateX(-18vw); }
+  to { transform: translateX(calc(100vw + 900px)); }
 }
 
 @keyframes ayresNetworkFloat {
-  from { transform: translate3d(-10px, -6px, 0) scale(1); opacity: .56; }
-  to { transform: translate3d(16px, 10px, 0) scale(1.04); opacity: .82; }
+  from { transform: translate3d(-8px, -5px, 0) scale(1); opacity: .40; }
+  to { transform: translate3d(12px, 8px, 0) scale(1.025); opacity: .58; }
 }
 
 @keyframes ayresRoadLine {
   from { transform: translateX(0); opacity: 0; }
-  20% { opacity: .55; }
-  to { transform: translateX(-280px); opacity: 0; }
+  20% { opacity: .45; }
+  to { transform: translateX(-340px); opacity: 0; }
 }
 
 @media (max-width: 760px) {
-  .portal-network { left: 8%; width: 92vw; opacity: .38; }
-  .portal-truck { width: 260px; height: 94px; bottom: 8%; opacity: .45; transform: scale(.78); }
-  .portal-road { bottom: 4%; opacity: .55; }
+  .portal-network { left: 8%; width: 92vw; opacity: .32; }
+  .portal-truck { width: 300px; height: 62px; bottom: 7%; opacity: .30; }
+  .portal-road { bottom: 4%; opacity: .50; }
   .min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 input[type="password"] { padding-right: 132px !important; }
   .min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) button[type="button"] { font-size: 9px; padding: 7px 9px; }
 }
