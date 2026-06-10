@@ -1,7 +1,7 @@
-import { useApp } from '../context/AppContext'
+import { useUiContext } from '../context/hooks'
 
 export default function Toast() {
-  const { toasts } = useApp()
+  const { toasts } = useUiContext()
   return (
     <div className="toast-wrap">
       {toasts.map(t => (
