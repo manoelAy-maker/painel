@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { useAuthContext, useCloudContext, useEstadiaContext, useUiContext } from '../context/hooks'
+import { useAuthContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import NotificationBell from './NotificationBell'
 import ConfigModal from './modals/ConfigModal'
-import CommandPalette from './modals/CommandPalette'
 import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
 import '../topbar-profile-pro.css'
 import '../topbar-clean-v2.css'
@@ -11,23 +10,19 @@ const Icon = ({ children }) => <span aria-hidden="true">{children}</span>
 
 export default function Header({ onMenuMobile }) {
   const { usuarioAtual, logout } = useAuthContext()
-  const { cloudStatus, cloudText, conectarSupabase } = useCloudContext()
   const { estadiasALancar } = useEstadiaContext()
   const { alternarTema, tema } = useUiContext()
   const [showConfig, setShowConfig] = useState(false)
-  const [showCommand, setShowCommand] = useState(false)
   const [showPerfil, setShowPerfil] = useState(false)
 
   const voltarAoPortal = () => {
     localStorage.removeItem('moduloInicialViaLog')
-    window.location.reload()
+    window.dispatchEvent(new Event('ayres:modulo'))
   }
-
-  const cloudLabel = cloudStatus === 'online' ? 'Online' : cloudStatus === 'syncing' ? 'Sync...' : 'Offline'
 
   return (
     <>
-      <header className="topbar ayres-topbar-pro">
+      <header className="topbar ayres-topbar-pro clean-topbar">
         <div className="topbar-inner ayres-topbar-inner-pro">
           <div className="ayres-topbar-left-pro">
             <button className="btn-light mobile-menu-btn" onClick={onMenuMobile} title="Abrir menu">
@@ -35,45 +30,25 @@ export default function Header({ onMenuMobile }) {
             </button>
             <div className="ayres-topbar-brand-pro">
               <strong>AYRES</strong>
-              <span>Central logística</span>
+              <span>{usuarioAtual?.filial || 'jatai-go'} · {usuarioAtual?.cargo || 'Operador'}</span>
             </div>
           </div>
 
-          <div className="ayres-topbar-center-pro">
-            <span className="topbar-profile-label">{usuarioAtual?.cargo || 'Operador'} · {usuarioAtual?.filial || 'jatai-go'}</span>
-            <button className={`cloud-mini ${cloudStatus}`} onClick={conectarSupabase} title={cloudText}>
-              <span className={`cloud-dot ${cloudStatus === 'online' ? 'online' : cloudStatus === 'syncing' ? 'syncing' : ''}`} />
-              <div>
-                <strong>{cloudLabel}</strong>
-                <small>{cloudText?.slice(0, 30)}{cloudText?.length > 30 ? '…' : ''}</small>
-              </div>
-            </button>
-          </div>
-
           <div className="top-actions ayres-topbar-actions-pro">
-            <button className="btn-light ayres-topbar-btn-pro" onClick={voltarAoPortal} title="Voltar ao portal de módulos">
+            <button className="btn-light ayres-topbar-btn-pro" onClick={voltarAoPortal} title="Voltar ao portal">
               <Icon>⌂</Icon>
               <span>Portal</span>
             </button>
 
             <NotificationBell />
 
-            <button className="btn-light ayres-icon-btn-pro sound-toggle on" title="Som premium sempre ativo" data-sound="off">
-              <Icon>♪</Icon>
-            </button>
-
             <button className="btn-light ayres-icon-btn-pro" onClick={alternarTema} title="Alternar tema">
               <Icon>{tema === 'dark' ? '☀' : '◐'}</Icon>
             </button>
 
-            <button className="btn-light ayres-topbar-btn-pro" onClick={() => setShowCommand(true)} title="Paleta de comandos">
-              <Icon>⌕</Icon>
-              <span>Busca</span>
-            </button>
-
             <button className="profile-pill profile-action ayres-profile-pro" onClick={() => setShowPerfil(true)} title="Editar meu perfil">
               <div className="avatar user-photo">{usuarioAtual?.foto ? <img src={usuarioAtual.foto} alt="Perfil" /> : (usuarioAtual?.avatar || '?')}</div>
-              <span className="profile-text"><span>{usuarioAtual?.nome?.split(' ')[0] || 'Usuário'}</span><small>Editar perfil</small></span>
+              <span className="profile-text"><span>{usuarioAtual?.nome?.split(' ')[0] || 'Usuário'}</span><small>Perfil</small></span>
               {estadiasALancar.length > 0 && <span className="pending-badge">{estadiasALancar.length}</span>}
             </button>
 
@@ -89,7 +64,6 @@ export default function Header({ onMenuMobile }) {
       </header>
 
       <ConfigModal show={showConfig} onClose={() => setShowConfig(false)} />
-      <CommandPalette show={showCommand} onClose={() => setShowCommand(false)} />
       <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
     </>
   )
