@@ -1,27 +1,61 @@
-/* AYRES v1 - modernização visual rápida
-   Cards mais premium, escuros, com glass, brilho e profundidade. */
+/* AYRES v1 - modernização premium v2
+   Visual 50% mais moderno: glass SaaS, glow controlado, cards mais vivos e acabamento escuro. */
 
 :root {
-  --ay-glass: rgba(8, 13, 26, .72);
-  --ay-glass-strong: rgba(10, 16, 32, .88);
-  --ay-stroke: rgba(148, 163, 184, .16);
-  --ay-stroke-blue: rgba(96, 165, 250, .26);
-  --ay-glow-blue: rgba(37, 99, 235, .22);
-  --ay-glow-soft: rgba(59, 130, 246, .10);
+  --ay-bg-deep: #01030a;
+  --ay-panel: rgba(8, 13, 26, .78);
+  --ay-panel-strong: rgba(11, 18, 34, .92);
+  --ay-stroke: rgba(148, 163, 184, .15);
+  --ay-stroke-hot: rgba(96, 165, 250, .34);
+  --ay-blue: #60a5fa;
+  --ay-blue-2: #2563eb;
+  --ay-orange: #fb923c;
+  --ay-ink: #e5e7eb;
+  --ay-muted: #94a3b8;
 }
 
-/* Login e portal */
+/* base do app mais premium */
+.app,
+.main-pro,
+.container,
+.capture-shell-pro,
+.capture-main-pro {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(37, 99, 235, .12), transparent 28%),
+    radial-gradient(circle at 90% 4%, rgba(14, 165, 233, .08), transparent 26%),
+    linear-gradient(135deg, #01030a 0%, #030712 52%, #07111f 100%) !important;
+}
+
+.container {
+  position: relative;
+}
+
+/* login e cards do portal */
 .portal-screen main > div[class*="max-w-md"],
 .portal-screen main .grid > button {
+  position: relative;
+  overflow: hidden;
   background:
-    linear-gradient(145deg, rgba(15, 23, 42, .92), rgba(3, 7, 18, .82)) !important;
-  border: 1px solid rgba(148, 163, 184, .14) !important;
+    radial-gradient(circle at 18% 0%, rgba(96, 165, 250, .16), transparent 34%),
+    radial-gradient(circle at 96% 90%, rgba(37, 99, 235, .12), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, .94), rgba(2, 6, 23, .82)) !important;
+  border: 1px solid rgba(148, 163, 184, .16) !important;
   box-shadow:
-    0 28px 90px rgba(0, 0, 0, .48),
-    inset 0 1px 0 rgba(255, 255, 255, .055),
-    0 0 0 1px rgba(96, 165, 250, .035) !important;
-  backdrop-filter: blur(22px) saturate(1.15);
-  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+    0 34px 110px rgba(0, 0, 0, .58),
+    inset 0 1px 0 rgba(255, 255, 255, .075),
+    inset 0 -1px 0 rgba(255, 255, 255, .025),
+    0 0 0 1px rgba(96, 165, 250, .04) !important;
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+}
+
+.portal-screen main > div[class*="max-w-md"] {
+  border-radius: 38px !important;
+}
+
+.portal-screen main .grid > button {
+  border-radius: 38px !important;
+  min-height: 405px !important;
 }
 
 .portal-screen main > div[class*="max-w-md"]::before,
@@ -29,71 +63,100 @@
 .live-card::before,
 .sidebar-card::before,
 .sidebar-mini-card::before,
+.sidebar-user-card::before,
 .card::before,
 .metric-card::before,
 .panel-card::before,
 .admin-card::before,
-.capture-panel-wrap-pro::before {
+.report-card::before,
+.backup-card::before,
+.history-card::before,
+.stat-card::before,
+.kpi-card::before,
+.capture-panel-wrap-pro::before,
+.capture-topbar-pro::before {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 18% 0%, rgba(96, 165, 250, .16), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, .055), transparent 42%);
-  opacity: .78;
+    linear-gradient(120deg, rgba(255,255,255,.095), transparent 26%, transparent 68%, rgba(96,165,250,.055)),
+    radial-gradient(circle at 16% 0%, rgba(96,165,250,.16), transparent 32%);
+  opacity: .82;
 }
 
-.portal-screen main > div[class*="max-w-md"] {
-  position: relative;
-  overflow: hidden;
-  border-radius: 36px !important;
-}
-
-.portal-screen main .grid > button {
-  position: relative;
-  border-radius: 34px !important;
-  min-height: 390px !important;
+.portal-screen main > div[class*="max-w-md"]::after,
+.portal-screen main .grid > button::after,
+.live-card::after,
+.card::after,
+.metric-card::after,
+.panel-card::after,
+.admin-card::after,
+.stat-card::after,
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  pointer-events: none;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,.035);
 }
 
 .portal-screen main .grid > button:hover {
-  transform: translateY(-10px) scale(1.018) !important;
-  border-color: rgba(96, 165, 250, .36) !important;
+  transform: translateY(-12px) scale(1.02) !important;
+  border-color: rgba(96, 165, 250, .46) !important;
   box-shadow:
-    0 34px 100px rgba(0, 0, 0, .58),
-    0 0 55px rgba(37, 99, 235, .13),
-    inset 0 1px 0 rgba(255, 255, 255, .07) !important;
+    0 42px 130px rgba(0, 0, 0, .66),
+    0 0 70px rgba(37, 99, 235, .18),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.portal-screen main .grid > button:nth-child(2) {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(251, 146, 60, .13), transparent 34%),
+    radial-gradient(circle at 96% 90%, rgba(37, 99, 235, .10), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, .94), rgba(2, 6, 23, .82)) !important;
 }
 
 .portal-screen main .grid > button:nth-child(2):hover {
-  border-color: rgba(249, 115, 22, .34) !important;
+  border-color: rgba(251, 146, 60, .44) !important;
   box-shadow:
-    0 34px 100px rgba(0, 0, 0, .58),
-    0 0 55px rgba(249, 115, 22, .11),
-    inset 0 1px 0 rgba(255, 255, 255, .07) !important;
+    0 42px 130px rgba(0, 0, 0, .66),
+    0 0 72px rgba(249, 115, 22, .16),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
 }
 
-/* Campos do login mais modernos */
+/* inputs e formulário */
+.portal-screen input,
+.portal-screen select,
+.portal-screen textarea,
+input,
+select,
+textarea {
+  border-radius: 18px !important;
+}
+
 .portal-screen input,
 .portal-screen select,
 .portal-screen textarea {
-  background: rgba(2, 6, 23, .58) !important;
+  background: rgba(1, 5, 15, .72) !important;
   border: 1px solid rgba(148, 163, 184, .14) !important;
-  border-radius: 18px !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .04),
+    0 10px 28px rgba(0,0,0,.12) !important;
 }
 
 .portal-screen input:focus,
 .portal-screen select:focus,
 .portal-screen textarea:focus {
-  border-color: rgba(96, 165, 250, .62) !important;
+  border-color: rgba(96, 165, 250, .70) !important;
   box-shadow:
-    0 0 0 4px rgba(37, 99, 235, .13),
-    0 14px 36px rgba(37, 99, 235, .10) !important;
+    0 0 0 4px rgba(37, 99, 235, .16),
+    0 16px 42px rgba(37, 99, 235, .13) !important;
 }
 
-/* Cards internos do painel */
+/* cards internos do painel */
 .live-card,
 .sidebar-card,
 .sidebar-mini-card,
@@ -109,17 +172,22 @@
 .capture-topbar-pro,
 .capture-main-pro .section,
 .stat-card,
-.kpi-card {
+.kpi-card,
+.command-grid > *,
+.dash-functional-grid > *,
+.command-side > *,
+.command-kpis > * {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(145deg, rgba(15, 23, 42, .88), rgba(3, 7, 18, .78)) !important;
-  border: 1px solid rgba(148, 163, 184, .13) !important;
+    radial-gradient(circle at 16% 0%, rgba(96, 165, 250, .095), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, .91), rgba(3, 7, 18, .80)) !important;
+  border: 1px solid rgba(148, 163, 184, .135) !important;
   box-shadow:
-    0 22px 70px rgba(2, 6, 23, .28),
-    inset 0 1px 0 rgba(255, 255, 255, .045) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+    0 24px 76px rgba(2, 6, 23, .34),
+    inset 0 1px 0 rgba(255, 255, 255, .055) !important;
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
 }
 
 .live-card:hover,
@@ -129,71 +197,164 @@
 .admin-card:hover,
 .report-card:hover,
 .stat-card:hover,
-.kpi-card:hover {
-  border-color: rgba(96, 165, 250, .25) !important;
+.kpi-card:hover,
+.command-grid > *:hover,
+.dash-functional-grid > *:hover,
+.command-side > *:hover,
+.command-kpis > *:hover {
+  border-color: rgba(96, 165, 250, .30) !important;
+  transform: translateY(-2px);
   box-shadow:
-    0 28px 80px rgba(2, 6, 23, .34),
-    0 0 34px rgba(37, 99, 235, .08),
-    inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+    0 30px 90px rgba(2, 6, 23, .42),
+    0 0 42px rgba(37, 99, 235, .09),
+    inset 0 1px 0 rgba(255, 255, 255, .065) !important;
 }
 
-/* Topbar/sidebar com aparência mais atual */
+/* Dashboard mais moderno */
+.command-topbar,
+.dash-action-strip-pro {
+  border-radius: 28px !important;
+  background:
+    linear-gradient(135deg, rgba(15,23,42,.82), rgba(2,6,23,.70)) !important;
+  border: 1px solid rgba(148,163,184,.13) !important;
+  box-shadow: 0 22px 70px rgba(2,6,23,.28) !important;
+  backdrop-filter: blur(18px);
+}
+
+.dash-action-tile-pro {
+  border-radius: 24px !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(96,165,250,.10), transparent 34%),
+    rgba(15,23,42,.58) !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+}
+
+.dash-action-tile-pro:hover {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(96,165,250,.18), transparent 38%),
+    rgba(30,41,59,.70) !important;
+  border-color: rgba(96,165,250,.28) !important;
+}
+
+/* topbar/sidebar */
 .topbar-inner,
 .sidebar-pro {
-  background: rgba(3, 7, 18, .86) !important;
+  background:
+    linear-gradient(180deg, rgba(3, 7, 18, .92), rgba(8, 13, 26, .86)) !important;
   border-color: rgba(148, 163, 184, .13) !important;
-  box-shadow: 0 18px 60px rgba(0, 0, 0, .26) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 20px 70px rgba(0, 0, 0, .30),
+    inset 0 1px 0 rgba(255,255,255,.04) !important;
+  backdrop-filter: blur(22px) saturate(1.14);
+  -webkit-backdrop-filter: blur(22px) saturate(1.14);
+}
+
+.sidebar-pro {
+  border-right-color: rgba(96,165,250,.10) !important;
 }
 
 .sidebar-nav .tab {
-  border-radius: 14px !important;
+  border-radius: 16px !important;
+  margin: 1px 0;
+}
+
+.sidebar-nav .tab:hover {
+  background: rgba(30, 41, 59, .52) !important;
 }
 
 .sidebar-nav .tab.active {
   background:
-    linear-gradient(135deg, rgba(37, 99, 235, .20), rgba(14, 165, 233, .09)) !important;
-  color: #bfdbfe !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    linear-gradient(135deg, rgba(37, 99, 235, .24), rgba(14, 165, 233, .10)) !important;
+  color: #dbeafe !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 10px 26px rgba(37,99,235,.12) !important;
 }
 
-/* Botões mais atuais */
+/* botões premium */
+button,
+a.btn,
 .btn-light,
 .ayres-icon-btn-pro,
 .ayres-topbar-btn-pro,
 .capture-action-btn-pro {
-  border-radius: 14px !important;
-  background: rgba(15, 23, 42, .72) !important;
+  border-radius: 15px !important;
+}
+
+.btn-light,
+.ayres-icon-btn-pro,
+.ayres-topbar-btn-pro,
+.capture-action-btn-pro {
+  background:
+    linear-gradient(180deg, rgba(30, 41, 59, .76), rgba(15, 23, 42, .70)) !important;
   border: 1px solid rgba(148, 163, 184, .14) !important;
   color: #e5e7eb !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04) !important;
 }
 
 .btn-light:hover,
 .ayres-icon-btn-pro:hover,
 .ayres-topbar-btn-pro:hover,
 .capture-action-btn-pro:hover {
-  background: rgba(30, 41, 59, .82) !important;
-  border-color: rgba(96, 165, 250, .26) !important;
+  background:
+    linear-gradient(180deg, rgba(51, 65, 85, .82), rgba(30, 41, 59, .76)) !important;
+  border-color: rgba(96, 165, 250, .31) !important;
 }
 
-/* Menos clássico nos títulos */
+.btn-blue,
+.primary-btn,
+.portal-screen button[type="submit"] {
+  border-radius: 18px !important;
+  background:
+    linear-gradient(135deg, #1d4ed8, #2563eb 48%, #60a5fa) !important;
+  box-shadow:
+    0 18px 44px rgba(37, 99, 235, .28),
+    inset 0 1px 0 rgba(255,255,255,.16) !important;
+}
+
+/* tipografia */
 .portal-screen h2,
 .portal-screen h3,
+.command-title h1,
 .dash-title h1,
 .capture-title-pro h1,
 .page-title,
 .section-title {
-  letter-spacing: -.055em;
+  letter-spacing: -.065em !important;
+}
+
+.portal-screen p,
+.command-title span,
+.capture-title-pro p,
+.panel-card p,
+.live-head p {
+  color: #94a3b8 !important;
+}
+
+/* pequenos chips/badges */
+.pending-badge,
+.cloud-mini,
+.capture-user-chip-pro,
+.command-search,
+.command-user {
+  border-radius: 999px !important;
+  border: 1px solid rgba(148,163,184,.13) !important;
+  background: rgba(15,23,42,.66) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
 }
 
 @media (max-width: 760px) {
   .portal-screen main .grid > button {
     min-height: 300px !important;
-    border-radius: 28px !important;
+    border-radius: 30px !important;
   }
 
   .portal-screen main > div[class*="max-w-md"] {
-    border-radius: 30px !important;
+    border-radius: 32px !important;
+  }
+
+  .command-topbar,
+  .dash-action-strip-pro {
+    border-radius: 22px !important;
   }
 }
