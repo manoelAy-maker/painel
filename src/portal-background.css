@@ -83,35 +83,62 @@
   height: 118px;
   z-index: 2;
   pointer-events: none;
-  opacity: .42;
+  opacity: .62;
   background:
-    /* faróis */
-    radial-gradient(circle, rgba(255,255,255,.85) 0 18%, transparent 20%) 280px 48px / 26px 18px no-repeat,
-    radial-gradient(circle, rgba(59,130,246,.55) 0 18%, transparent 22%) 294px 54px / 68px 22px no-repeat,
-
-    /* baú */
-    linear-gradient(135deg, rgba(226,232,240,.42), rgba(96,165,250,.16)) 8px 32px / 205px 56px no-repeat,
-    repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 28px) 20px 38px / 184px 44px no-repeat,
-
-    /* cabine */
-    linear-gradient(135deg, rgba(226,232,240,.62), rgba(96,165,250,.22)) 213px 24px / 82px 66px no-repeat,
+    radial-gradient(circle, rgba(255,255,255,.9) 0 18%, transparent 20%) 280px 48px / 26px 18px no-repeat,
+    radial-gradient(circle, rgba(59,130,246,.64) 0 18%, transparent 22%) 294px 54px / 74px 22px no-repeat,
+    linear-gradient(135deg, rgba(226,232,240,.52), rgba(96,165,250,.20)) 8px 32px / 205px 56px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 28px) 20px 38px / 184px 44px no-repeat,
+    linear-gradient(135deg, rgba(226,232,240,.72), rgba(96,165,250,.28)) 213px 24px / 82px 66px no-repeat,
     linear-gradient(135deg, rgba(2,6,23,.86), rgba(30,64,175,.50)) 232px 34px / 34px 26px no-repeat,
-
-    /* base */
     linear-gradient(90deg, rgba(15,23,42,.82), rgba(30,41,59,.64)) 0 84px / 306px 8px no-repeat,
-
-    /* rodas */
     radial-gradient(circle, #020617 0 36%, rgba(148,163,184,.72) 37% 52%, transparent 54%) 46px 76px / 48px 48px no-repeat,
     radial-gradient(circle, #020617 0 36%, rgba(148,163,184,.72) 37% 52%, transparent 54%) 224px 76px / 48px 48px no-repeat;
   filter: drop-shadow(0 18px 28px rgba(37,99,235,.20));
-  animation: ayresTruckPass 18s linear infinite;
+  animation: ayresTruckPass 15s linear infinite;
+}
+
+/* melhora o botão 'Esqueci minha senha' sem mexer no JSX */
+.min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) {
+  position: relative;
+}
+
+.min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) > .flex {
+  justify-content: flex-start !important;
+}
+
+.min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) button[type="button"] {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  border-radius: 999px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(15,23,42,.72);
+  padding: 8px 12px;
+  color: #93c5fd !important;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: .02em;
+  box-shadow: 0 8px 22px rgba(2,6,23,.28);
+  backdrop-filter: blur(10px);
+}
+
+.min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) button[type="button"]:hover {
+  border-color: rgba(96,165,250,.46);
+  background: rgba(30,64,175,.34);
+  color: #dbeafe !important;
+}
+
+.min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 input[type="password"] {
+  padding-right: 150px !important;
 }
 
 @keyframes ayresTruckPass {
   0% { transform: translateX(-12vw); opacity: 0; }
-  8% { opacity: .42; }
-  50% { opacity: .48; }
-  88% { opacity: .42; }
+  8% { opacity: .62; }
+  50% { opacity: .70; }
+  88% { opacity: .62; }
   100% { transform: translateX(calc(100vw + 760px)); opacity: 0; }
 }
 
@@ -126,12 +153,21 @@
     width: 260px;
     height: 94px;
     bottom: 42px;
-    opacity: .30;
+    opacity: .36;
     transform: scale(.78);
   }
 
   .portal-screen::after,
   .min-h-screen.flex.flex-col.relative.overflow-hidden::after {
     opacity: .32;
+  }
+
+  .min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 input[type="password"] {
+    padding-right: 132px !important;
+  }
+
+  .min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 > div:nth-of-type(2) button[type="button"] {
+    font-size: 9px;
+    padding: 7px 9px;
   }
 }
