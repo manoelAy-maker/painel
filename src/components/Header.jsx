@@ -7,6 +7,7 @@ import '../topbar-profile-pro.css'
 import '../topbar-clean-v2.css'
 
 const Icon = ({ children }) => <span aria-hidden="true">{children}</span>
+const cargoVisivel = (cargo) => cargo === 'Operador' || !cargo ? 'Analista Júnior' : cargo
 
 export default function Header({ onMenuMobile }) {
   const { usuarioAtual, logout } = useAuthContext()
@@ -30,7 +31,7 @@ export default function Header({ onMenuMobile }) {
             </button>
             <div className="ayres-topbar-brand-pro">
               <strong>AYRES</strong>
-              <span>{usuarioAtual?.filial || 'jatai-go'} · {usuarioAtual?.cargo || 'Operador'}</span>
+              <span>{usuarioAtual?.filial || 'jatai-go'} · {cargoVisivel(usuarioAtual?.cargo)}</span>
             </div>
           </div>
 
