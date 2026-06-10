@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect, lazy, Suspense } from 'react'
 import { useApp } from './context/AppContext'
 import { podeAdministrar } from './utils/roles'
-import Loader from './components/Loader'
 import { Login, SelecaoPainel } from './modules/portal'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -21,6 +20,8 @@ const Relatorios = lazy(() => import('./modules/admin/pages/Relatorios'))
 const Backup = lazy(() => import('./modules/admin/pages/Backup'))
 const Admin = lazy(() => import('./modules/admin/pages/Admin'))
 const Lixeira = lazy(() => import('./modules/admin/pages/Lixeira'))
+
+const FastFallback = () => null
 
 function isApkMobileMode() {
   try {
@@ -61,21 +62,15 @@ function AppMobileOperacional() {
       </header>
 
       <main className="ayres-mobile-content">
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<FastFallback />}>
           {aba === 'captacao' && <section className="ayres-mobile-panel"><Captacao /></section>}
           {aba === 'pendencia' && <section className="ayres-mobile-panel"><EstadiaALancar formRef={formALancarRef} /></section>}
         </Suspense>
       </main>
 
       <nav className="ayres-mobile-bottom">
-        <button className={`ayres-mobile-tab ${aba === 'captacao' ? 'active' : ''}`} onClick={() => setAba('captacao')}>
-          <i>📞</i>
-          <span>Captação</span>
-        </button>
-        <button className={`ayres-mobile-tab ${aba === 'pendencia' ? 'active' : ''}`} onClick={() => setAba('pendencia')}>
-          <i>📝</i>
-          <span>Pendência</span>
-        </button>
+        <button className={`ayres-mobile-tab ${aba === 'captacao' ? 'active' : ''}`} onClick={() => setAba('captacao')}><i>📞</i><span>Captação</span></button>
+        <button className={`ayres-mobile-tab ${aba === 'pendencia' ? 'active' : ''}`} onClick={() => setAba('pendencia')}><i>📝</i><span>Pendência</span></button>
       </nav>
     </div>
   )
@@ -110,7 +105,7 @@ function CaptacaoIsolada({ onPortal }) {
           </div>
         </section>
 
-        <section className="capture-panel-wrap-pro"><Suspense fallback={<Loader />}><Captacao /></Suspense></section>
+        <section className="capture-panel-wrap-pro"><Suspense fallback={<FastFallback />}><Captacao /></Suspense></section>
         <div className="capture-footer-pro">AYRES · Central de captação</div>
       </main>
     </div>
@@ -143,17 +138,14 @@ function PainelEstadia() {
   return (
     <div className="app" style={{ display: 'block' }}>
       {sidebarOpen && <div style={{ position: 'fixed', inset: 0, zIndex: 25, background: 'rgba(0,0,0,.4)' }} onClick={() => setSidebarOpen(false)} />}
-
-      <div className={`app-layout`}>
+      <div className="app-layout">
         <div style={sidebarOpen ? { transform: 'translateX(0)' } : {}}><Sidebar onFechar={() => setSidebarOpen(false)} /></div>
-
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(true)} />
           <main className="container">
             <LivePanel />
-
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback={<FastFallback />}>
               {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
               {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
               {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
@@ -163,7 +155,6 @@ function PainelEstadia() {
               {isAdmin && abaRender === 'backup' && <Backup />}
               {isAdmin && abaRender === 'admin' && <Admin />}
             </Suspense>
-
             <div className="footer">by Manoel</div>
           </main>
         </section>
