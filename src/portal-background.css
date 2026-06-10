@@ -1,60 +1,43 @@
 /* Fundo premium do portal AYRES
-   Mantém cards, textos e animações originais; muda de fato o fundo do portal. */
-.portal-screen {
-  position: relative;
-  isolation: isolate;
-  background:
+   Mantém cards, textos e animações originais; muda somente o fundo da tela do portal. */
+:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) {
+  background-color: #05070a !important;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.075) 1px, transparent 1px),
     radial-gradient(circle at 16% 18%, rgba(37, 99, 235, 0.34), transparent 31%),
     radial-gradient(circle at 85% 12%, rgba(14, 165, 233, 0.24), transparent 29%),
     radial-gradient(circle at 50% 112%, rgba(249, 115, 22, 0.18), transparent 36%),
     linear-gradient(135deg, #020617 0%, #05070a 42%, #07111f 100%) !important;
+  background-size:
+    56px 56px,
+    56px 56px,
+    auto,
+    auto,
+    auto,
+    auto !important;
+  background-position:
+    center,
+    center,
+    center,
+    center,
+    center,
+    center !important;
 }
 
-.portal-screen::before {
-  content: '';
-  position: fixed;
-  inset: -12%;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(148, 163, 184, 0.075) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.075) 1px, transparent 1px);
-  background-size: 56px 56px;
-  opacity: 0.58;
-  transform: rotate(-2deg);
-}
-
-.portal-screen::after {
-  content: '';
-  position: fixed;
-  width: 780px;
-  height: 780px;
-  right: -270px;
-  top: -270px;
-  z-index: -1;
-  pointer-events: none;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle, rgba(59, 130, 246, 0.34), transparent 63%),
-    conic-gradient(from 180deg, rgba(37, 99, 235, 0.16), rgba(14, 165, 233, 0.09), rgba(249, 115, 22, 0.08), rgba(37, 99, 235, 0.16));
-  filter: blur(2px);
-  opacity: 0.95;
-}
-
-.portal-screen > .fixed.inset-0.\-z-10.pointer-events-none {
+/* Remove a camada antiga do grid para não ficar competindo com o novo fundo. */
+:where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) > .fixed.inset-0.\-z-10.pointer-events-none {
   display: none !important;
 }
 
 @media (max-width: 640px) {
-  .portal-screen::before {
-    background-size: 42px 42px;
-    opacity: 0.42;
-  }
-
-  .portal-screen::after {
-    width: 520px;
-    height: 520px;
-    right: -230px;
-    top: -190px;
+  :where(.portal-screen, .min-h-screen.flex.flex-col.relative.overflow-hidden) {
+    background-size:
+      42px 42px,
+      42px 42px,
+      auto,
+      auto,
+      auto,
+      auto !important;
   }
 }
