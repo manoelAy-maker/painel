@@ -1,0 +1,54 @@
+/* Fundo premium do portal AYRES
+   Mantém a estrutura, cards e animações originais; altera somente o fundo atrás. */
+.min-h-screen > .fixed.inset-0.\-z-10.pointer-events-none {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(37, 99, 235, 0.28), transparent 30%),
+    radial-gradient(circle at 82% 14%, rgba(14, 165, 233, 0.18), transparent 28%),
+    radial-gradient(circle at 50% 108%, rgba(249, 115, 22, 0.13), transparent 34%),
+    linear-gradient(135deg, #020617 0%, #05070a 42%, #07111f 100%) !important;
+  background-size: auto !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+.min-h-screen > .fixed.inset-0.\-z-10.pointer-events-none::before {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: 0.45;
+  transform: rotate(-2deg);
+}
+
+.min-h-screen > .fixed.inset-0.\-z-10.pointer-events-none::after {
+  content: '';
+  position: absolute;
+  width: 760px;
+  height: 760px;
+  right: -260px;
+  top: -260px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(59, 130, 246, 0.28), transparent 64%),
+    conic-gradient(from 180deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.06), rgba(249, 115, 22, 0.05), rgba(37, 99, 235, 0.08));
+  filter: blur(2px);
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .min-h-screen > .fixed.inset-0.\-z-10.pointer-events-none::before {
+    background-size: 42px 42px;
+    opacity: 0.34;
+  }
+
+  .min-h-screen > .fixed.inset-0.\-z-10.pointer-events-none::after {
+    width: 520px;
+    height: 520px;
+    right: -230px;
+    top: -190px;
+  }
+}
