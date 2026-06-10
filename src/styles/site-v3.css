@@ -1,0 +1,464 @@
+/* AYRES Site V3 — organização real do painel interno */
+
+.app {
+  min-height: 100vh !important;
+  background: #05070a !important;
+  color: #f8fafc !important;
+}
+
+.app .app-layout {
+  display: grid !important;
+  grid-template-columns: 268px minmax(0, 1fr) !important;
+  min-height: 100vh !important;
+  background: #05070a !important;
+}
+
+.app .main-pro {
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: linear-gradient(180deg, rgba(15,23,42,.38), rgba(5,7,10,0) 260px) !important;
+}
+
+.app .container {
+  width: 100% !important;
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  padding: 20px 28px 56px !important;
+}
+
+/* Remove camadas que deixavam o painel parecendo remendo */
+.app .live-dashboard.live-command-center,
+.app .command-search,
+.app .command-user,
+.app .command-side,
+.app .sound-toggle,
+.app .cloud-mini,
+.app .ayres-topbar-center-pro,
+.app .ayres-icon-btn-pro,
+.app .ayres-topbar-btn-pro,
+.app .profile-pill.profile-action {
+  display: none !important;
+}
+
+/* SIDEBAR */
+.app .sidebar-pro {
+  width: 268px !important;
+  min-width: 268px !important;
+  height: 100vh !important;
+  position: sticky !important;
+  top: 0 !important;
+  background: #070a10 !important;
+  border-right: 1px solid rgba(148,163,184,.12) !important;
+  box-shadow: none !important;
+  overflow-y: auto !important;
+}
+
+.app .brand-pro {
+  padding: 22px 18px 18px !important;
+  border-bottom: 1px solid rgba(148,163,184,.10) !important;
+}
+
+.app .brand-mark-pro {
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+.app .brand-pro h1 {
+  color: #f8fafc !important;
+  font-size: 22px !important;
+  letter-spacing: -.7px !important;
+}
+
+.app .brand-pro p {
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+}
+
+.app .clickup-space-block,
+.app .sidebar-nav,
+.app .sidebar-status {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+.app .sidebar-section-label,
+.app .clickup-space-title {
+  color: #64748b !important;
+  font-size: 10px !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  font-weight: 900 !important;
+}
+
+.app .clickup-space-item,
+.app .sidebar-nav .tab {
+  min-height: 40px !important;
+  border-radius: 12px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.app .clickup-space-item:hover,
+.app .sidebar-nav .tab:hover {
+  background: rgba(255,255,255,.045) !important;
+  border-color: rgba(148,163,184,.10) !important;
+}
+
+.app .sidebar-nav .tab.active {
+  background: rgba(37,99,235,.15) !important;
+  border-color: rgba(96,165,250,.25) !important;
+  color: #ffffff !important;
+}
+
+.app .sidebar-mini-card,
+.app .sidebar-card,
+.app .sidebar-user-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(148,163,184,.10) !important;
+  background: rgba(15,23,42,.42) !important;
+  box-shadow: none !important;
+}
+
+/* TOPBAR */
+.app .clean-topbar,
+.app .ayres-topbar-pro {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 70 !important;
+  padding: 16px 28px 0 !important;
+  background: linear-gradient(180deg, #05070a 0%, rgba(5,7,10,.86) 70%, rgba(5,7,10,0) 100%) !important;
+  pointer-events: auto !important;
+}
+
+.app .clean-topbar .topbar-inner,
+.app .clean-topbar .ayres-topbar-inner-pro,
+.app .ayres-topbar-inner-pro {
+  width: 100% !important;
+  max-width: 1440px !important;
+  min-height: 64px !important;
+  margin: 0 auto !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.88) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+.app .ayres-topbar-left-pro {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.app .topbar-menu-btn,
+.app .topbar-link-btn,
+.app .topbar-exit-btn,
+.app .ayres-topbar-actions-pro .notif-button {
+  height: 38px !important;
+  min-height: 38px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(148,163,184,.13) !important;
+  background: rgba(255,255,255,.045) !important;
+  color: #e2e8f0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 0 11px !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+.app .topbar-menu-btn {
+  width: 38px !important;
+  padding: 0 !important;
+}
+
+.app .ayres-topbar-logo-pro {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 13px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: #2563eb !important;
+  color: #fff !important;
+  font-weight: 950 !important;
+  box-shadow: none !important;
+}
+
+.app .ayres-topbar-brand-pro {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+}
+
+.app .ayres-topbar-brand-pro strong {
+  color: #f8fafc !important;
+  font-size: 17px !important;
+  letter-spacing: -.55px !important;
+  line-height: 1 !important;
+}
+
+.app .ayres-topbar-brand-pro span {
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+}
+
+.app .ayres-topbar-actions-pro,
+.app .clean-topbar .top-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 7px !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  flex-wrap: nowrap !important;
+}
+
+.app .topbar-profile-btn {
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 13px !important;
+  border: 1px solid rgba(148,163,184,.13) !important;
+  background: rgba(255,255,255,.055) !important;
+  color: #f8fafc !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 4px 10px 4px 4px !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+.app .topbar-user-photo {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 11px !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  background: #2563eb !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+}
+
+.app .topbar-user-photo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.app .topbar-user-text {
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.05 !important;
+}
+
+.app .topbar-user-text strong {
+  color: #f8fafc !important;
+  font-size: 12px !important;
+}
+
+.app .topbar-user-text small {
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+  margin-top: 3px !important;
+}
+
+.app .topbar-exit-btn {
+  background: rgba(239,68,68,.10) !important;
+  border-color: rgba(239,68,68,.18) !important;
+  color: #fecaca !important;
+}
+
+/* CONTEÚDO */
+.app .command-topbar,
+.app .command-panel,
+.app .command-kpi,
+.app .box,
+.app .table-wrap,
+.app .admin-card,
+.app .backup-card,
+.app .trash-hero,
+.app .cap-stat-card,
+.app .cap-driver-card,
+.app .cap-intelligence-hero,
+.app .cap-conversion,
+.app .cap-action-now,
+.app .cap-simple-rules {
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.74) !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+}
+
+.app .command-topbar {
+  padding: 22px !important;
+  margin-bottom: 14px !important;
+}
+
+.app .command-title h1,
+.app .box-title h2,
+.app .command-panel-head h3,
+.app .capture-title-pro h1 {
+  color: #f8fafc !important;
+  letter-spacing: -.45px !important;
+}
+
+.app .command-title span,
+.app .box-title span,
+.app .command-panel-head span,
+.app .capture-title-pro p,
+.app small,
+.app .muted {
+  color: #94a3b8 !important;
+}
+
+.app .dash-action-strip-pro {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  padding: 0 !important;
+  margin-bottom: 14px !important;
+}
+
+.app .dash-action-tile-pro {
+  min-height: 96px !important;
+  padding: 14px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(13,17,23,.72) !important;
+  box-shadow: none !important;
+}
+
+.app .command-kpis {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+}
+
+.app .command-kpi {
+  border-radius: 16px !important;
+  min-height: 112px !important;
+}
+
+.app .estadia-command {
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+}
+
+.app .command-grid,
+.app .dash-functional-grid,
+.app .form-grid,
+.app .cap-stats,
+.app .cap-insights-grid {
+  gap: 10px !important;
+}
+
+.app input,
+.app select,
+.app textarea {
+  background: rgba(2,6,23,.45) !important;
+  border: 1px solid rgba(148,163,184,.14) !important;
+  color: #f8fafc !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.app thead th {
+  background: rgba(2,6,23,.70) !important;
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(148,163,184,.11) !important;
+}
+
+.app tbody td {
+  border-bottom: 1px solid rgba(148,163,184,.08) !important;
+}
+
+.app button {
+  box-shadow: none !important;
+}
+
+@media (max-width: 1100px) {
+  .app .app-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app .sidebar-pro {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    z-index: 90 !important;
+    transform: translateX(-105%);
+    transition: transform .2s ease;
+  }
+
+  .app .container {
+    padding: 16px 14px 46px !important;
+  }
+
+  .app .dash-action-strip-pro {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .app .clean-topbar,
+  .app .ayres-topbar-pro {
+    padding: 10px 10px 0 !important;
+  }
+
+  .app .clean-topbar .topbar-inner,
+  .app .clean-topbar .ayres-topbar-inner-pro,
+  .app .ayres-topbar-inner-pro {
+    min-height: 58px !important;
+    padding: 8px !important;
+    border-radius: 16px !important;
+  }
+
+  .app .ayres-topbar-logo-pro,
+  .app .topbar-menu-btn,
+  .app .topbar-link-btn,
+  .app .topbar-exit-btn,
+  .app .ayres-topbar-actions-pro .notif-button {
+    width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+  }
+
+  .app .ayres-topbar-brand-pro span,
+  .app .topbar-link-btn span,
+  .app .topbar-exit-btn span,
+  .app .topbar-user-text {
+    display: none !important;
+  }
+
+  .app .topbar-profile-btn {
+    width: 38px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 2px !important;
+    justify-content: center !important;
+  }
+
+  .app .dash-action-strip-pro {
+    grid-template-columns: 1fr !important;
+  }
+}
