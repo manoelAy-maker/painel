@@ -2,14 +2,15 @@ import { useRef, useState, useEffect, lazy, Suspense } from 'react'
 import { useApp } from './context/AppContext'
 import { podeAdministrar } from './utils/roles'
 import Loader from './components/Loader'
-import Login from './components/Login'
-import SelecaoPainel from './components/SelecaoPainel'
+import { Login, SelecaoPainel } from './modules/portal'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import LivePanel from './components/LivePanel'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
 import Dashboard from './pages/Dashboard'
+import './styles/app.css'
+import './cargo-options-runtime.js'
 
 const EstadiaLancada = lazy(() => import('./pages/EstadiaLancada'))
 const EstadiaALancar = lazy(() => import('./pages/EstadiaALancar'))
@@ -20,17 +21,6 @@ const Relatorios = lazy(() => import('./pages/Relatorios.jsx'))
 const Backup = lazy(() => import('./pages/Backup'))
 const Admin = lazy(() => import('./pages/Admin'))
 const Lixeira = lazy(() => import('./pages/Lixeira'))
-import './captacao-theme.css'
-import './estadia-mobile.css'
-import './pro-polish.css'
-import './sidebar-reference.css'
-import './tempo-estadia.css'
-import './live-command.css'
-import './admin-pro.css'
-import './mobile-app-apk.css'
-import './ayres-inner-minimal.css'
-import './portal-background.css'
-import './cargo-options-runtime.js'
 
 function isApkMobileMode() {
   try {
