@@ -16,11 +16,11 @@ const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 const Captacao = lazy(() => import('./modules/captacao/pages/Captacao'))
 const CaptacaoAdmin = lazy(() => import('./modules/captacao/pages/CaptacaoAdmin'))
-const Historico = lazy(() => import('./pages/Historico'))
-const Relatorios = lazy(() => import('./pages/Relatorios.jsx'))
-const Backup = lazy(() => import('./pages/Backup'))
-const Admin = lazy(() => import('./pages/Admin'))
-const Lixeira = lazy(() => import('./pages/Lixeira'))
+const Historico = lazy(() => import('./modules/admin/pages/Historico'))
+const Relatorios = lazy(() => import('./modules/admin/pages/Relatorios'))
+const Backup = lazy(() => import('./modules/admin/pages/Backup'))
+const Admin = lazy(() => import('./modules/admin/pages/Admin'))
+const Lixeira = lazy(() => import('./modules/admin/pages/Lixeira'))
 
 function isApkMobileMode() {
   try {
