@@ -1,4 +1,5 @@
 import { useApp } from '../context/AppContext'
+import { podeAdministrar } from '../utils/roles'
 
 const Svg = ({ children }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">{children}</svg>
@@ -35,7 +36,7 @@ const ADMIN_ABAS = [
 
 export default function Sidebar({ onFechar }) {
   const { abaAtiva, mudarAba, estadiasALancar, cloudStatus, cloudText, usuarioAtual, filiais } = useApp()
-  const isAdmin = usuarioAtual?.cargo === 'Admin'
+  const isAdmin = podeAdministrar(usuarioAtual)
   const abas = isAdmin ? ADMIN_ABAS : OPERADOR_ABAS
   const spaces = isAdmin ? filiais : filiais.filter(f => f.id === (usuarioAtual?.filial || 'jatai-go'))
 
