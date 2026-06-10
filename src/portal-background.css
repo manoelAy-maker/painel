@@ -1,15 +1,16 @@
-/* AYRES v1 - fundo simples, escuro e rápido.
-   Remove caminhão, rede animada e efeitos pesados para melhorar velocidade. */
+/* AYRES v1 - fundo escuro premium, leve e animado.
+   Sem caminhão. Apenas brilho, grid e partículas suaves. */
 .portal-screen,
 .min-h-screen.flex.flex-col.relative.overflow-hidden {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background-color: #020617 !important;
+  background-color: #01040b !important;
   background-image:
-    radial-gradient(circle at 22% 18%, rgba(37,99,235,.22), transparent 34%),
-    radial-gradient(circle at 82% 16%, rgba(14,165,233,.10), transparent 32%),
-    linear-gradient(135deg, #020617 0%, #050b16 48%, #08111f 100%) !important;
+    radial-gradient(circle at 18% 14%, rgba(37,99,235,.18), transparent 32%),
+    radial-gradient(circle at 82% 18%, rgba(14,165,233,.10), transparent 34%),
+    radial-gradient(circle at 50% 105%, rgba(37,99,235,.12), transparent 36%),
+    linear-gradient(135deg, #01040b 0%, #030712 48%, #050b16 100%) !important;
 }
 
 .portal-screen > header,
@@ -26,7 +27,6 @@
   z-index: 5;
 }
 
-/* desliga cena antiga pesada */
 .portal-live-bg,
 .portal-sky-glow,
 .portal-net-svg,
@@ -48,27 +48,31 @@
 .min-h-screen.flex.flex-col.relative.overflow-hidden::before {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: -20%;
   z-index: 1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(148,163,184,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,163,184,.035) 1px, transparent 1px);
-  background-size: 64px 64px;
-  opacity: .55;
-  mask-image: radial-gradient(circle at center, black, transparent 78%);
-  -webkit-mask-image: radial-gradient(circle at center, black, transparent 78%);
+    linear-gradient(rgba(96,165,250,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,165,250,.035) 1px, transparent 1px),
+    radial-gradient(circle, rgba(96,165,250,.32) 0 1px, transparent 2px);
+  background-size: 72px 72px, 72px 72px, 180px 180px;
+  opacity: .52;
+  mask-image: radial-gradient(circle at center, black, transparent 75%);
+  -webkit-mask-image: radial-gradient(circle at center, black, transparent 75%);
+  animation: ayresDarkDrift 18s linear infinite;
 }
 
 .portal-screen::after,
 .min-h-screen.flex.flex-col.relative.overflow-hidden::after {
   content: '';
   position: fixed;
-  inset: auto 0 0 0;
-  height: 34vh;
+  inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent, rgba(2,6,23,.84));
+  background:
+    radial-gradient(circle at 50% 42%, rgba(59,130,246,.10), transparent 24%),
+    linear-gradient(180deg, rgba(1,4,11,.08), rgba(1,4,11,.82));
+  animation: ayresPulseGlow 7s ease-in-out infinite alternate;
 }
 
 /* botão esqueci senha discreto */
@@ -85,7 +89,7 @@
   z-index: 2;
   border-radius: 999px;
   border: 1px solid rgba(59,130,246,.20);
-  background: rgba(15,23,42,.82);
+  background: rgba(3,7,18,.88);
   padding: 8px 12px;
   color: #93c5fd !important;
   font-size: 10px;
@@ -95,11 +99,21 @@
   padding-right: 150px !important;
 }
 
+@keyframes ayresDarkDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(72px, 72px, 0); }
+}
+
+@keyframes ayresPulseGlow {
+  from { opacity: .58; }
+  to { opacity: .92; }
+}
+
 @media (max-width: 760px) {
   .portal-screen::before,
   .min-h-screen.flex.flex-col.relative.overflow-hidden::before {
-    background-size: 48px 48px;
-    opacity: .35;
+    background-size: 56px 56px, 56px 56px, 150px 150px;
+    opacity: .38;
   }
   .min-h-screen.flex.flex-col.relative.overflow-hidden form.space-y-6 input[type="password"] {
     padding-right: 132px !important;
