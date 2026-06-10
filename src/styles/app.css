@@ -1,6 +1,6 @@
 /*
-  AYRES v1 - centralizador de estilos globais.
-  Ordem importa: estilos gerais primeiro, ajustes específicos depois, portal/modernização/limpeza por último.
+  AYRES - centralizador de estilos globais.
+  Login e portal ficam preservados. O painel interno usa Site V3.
 */
 
 @import '../mobile-polish.css';
@@ -24,5 +24,4 @@
 
 @import '../portal-background.css';
 @import './modern-cards.css';
-@import './internal-cleanup.css';
-@import './site-v2.css';
+@import './site-v3.css';
