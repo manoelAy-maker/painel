@@ -29,6 +29,7 @@ import './live-command.css'
 import './admin-pro.css'
 import './mobile-app-apk.css'
 import './ayres-inner-minimal.css'
+import './portal-background.css'
 import './cargo-options-runtime.js'
 
 function isApkMobileMode() {
