@@ -1,0 +1,5 @@
+export { default as Admin } from './pages/Admin'
+export { default as Relatorios } from './pages/Relatorios'
+export { default as Historico } from './pages/Historico'
+export { default as Lixeira } from './pages/Lixeira'
+export { default as Backup } from './pages/Backup'
