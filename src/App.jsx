@@ -81,7 +81,7 @@ function AppMobileOperacional() {
   )
 }
 
-function CaptacaoIsolada() {
+function CaptacaoIsolada({ onPortal }) {
   const { usuarioAtual, logout } = useApp()
 
   const sair = () => {
@@ -91,7 +91,7 @@ function CaptacaoIsolada() {
 
   const voltarAoPortal = () => {
     localStorage.removeItem('moduloInicialViaLog')
-    window.location.reload()
+    onPortal?.()
   }
 
   return (
@@ -174,17 +174,20 @@ function PainelEstadia() {
 
 export default function App() {
   const { usuarioAtual } = useApp()
-  const [loading, setLoading] = useState(true)
+  const [moduloInicial, setModuloInicial] = useState(() => localStorage.getItem('moduloInicialViaLog'))
+  const mobileApk = isApkMobileMode()
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 700)
-    return () => clearTimeout(t)
+    const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog'))
+    window.addEventListener('storage', syncModulo)
+    window.addEventListener('ayres:modulo', syncModulo)
+    return () => {
+      window.removeEventListener('storage', syncModulo)
+      window.removeEventListener('ayres:modulo', syncModulo)
+    }
   }, [])
 
-  if (loading) return <Loader />
-
-  const moduloInicial = localStorage.getItem('moduloInicialViaLog')
-  const mobileApk = isApkMobileMode()
+  const voltarPortal = () => setModuloInicial(null)
 
   return (
     <>
@@ -192,7 +195,7 @@ export default function App() {
       {!usuarioAtual && <Login />}
       {usuarioAtual && mobileApk && <AppMobileOperacional />}
       {usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}
-      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <CaptacaoIsolada />}
+      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <CaptacaoIsolada onPortal={voltarPortal} />}
       {usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}
       <Toast />
     </>
