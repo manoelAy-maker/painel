@@ -12,10 +12,10 @@ import Dashboard from './pages/Dashboard'
 import './styles/app.css'
 import './cargo-options-runtime.js'
 
-const EstadiaLancada = lazy(() => import('./pages/EstadiaLancada'))
-const EstadiaALancar = lazy(() => import('./pages/EstadiaALancar'))
-const Captacao = lazy(() => import('./pages/Captacao'))
-const CaptacaoAdmin = lazy(() => import('./pages/CaptacaoAdmin'))
+const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
+const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
+const Captacao = lazy(() => import('./modules/captacao/pages/Captacao'))
+const CaptacaoAdmin = lazy(() => import('./modules/captacao/pages/CaptacaoAdmin'))
 const Historico = lazy(() => import('./pages/Historico'))
 const Relatorios = lazy(() => import('./pages/Relatorios.jsx'))
 const Backup = lazy(() => import('./pages/Backup'))
