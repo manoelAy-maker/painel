@@ -1,8 +1,3 @@
-/*
-  AYRES - centralizador de estilos globais.
-  Login e portal ficam preservados. O painel interno usa Site V3.
-*/
-
 @import '../mobile-polish.css';
 @import '../mobile-captacao.css';
 @import '../login-mobile.css';
@@ -11,7 +6,6 @@
 @import '../captacao-leads-pro.css';
 @import '../captacao-simple-mode.css';
 @import '../captacao-desktop-pro.css';
-
 @import '../captacao-theme.css';
 @import '../estadia-mobile.css';
 @import '../pro-polish.css';
@@ -21,7 +15,7 @@
 @import '../admin-pro.css';
 @import '../mobile-app-apk.css';
 @import '../ayres-inner-minimal.css';
-
 @import '../portal-background.css';
 @import './modern-cards.css';
 @import './site-v3.css';
+@import './product-v4.css';
