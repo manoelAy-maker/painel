@@ -72,19 +72,26 @@
     grid-column: 1 / -1;
   }
 
-  #abaLancadas .estadia-calc-preview {
+  #abaLancadas .estadia-calc-preview,
+  #abaConsultaLancadas .estadia-calc-preview {
     display: grid;
     grid-template-columns: repeat(2, minmax(220px, 1fr));
     gap: 14px;
     margin-top: 16px;
   }
 
-  #abaLancadas .preview-card {
+  #abaConsultaLancadas .estadia-calc-preview {
+    grid-template-columns: repeat(6, minmax(130px, 1fr));
+  }
+
+  #abaLancadas .preview-card,
+  #abaConsultaLancadas .preview-card {
     padding: 15px 16px;
     border-radius: 18px;
   }
 
-  #abaLancadas .preview-card strong {
+  #abaLancadas .preview-card strong,
+  #abaConsultaLancadas .preview-card strong {
     font-size: 23px;
   }
 
@@ -101,12 +108,14 @@
     margin-top: 0;
   }
 
-  #abaLancadas .estadia-filter-box {
+  #abaLancadas .estadia-filter-box,
+  #abaConsultaLancadas .estadia-filter-box {
     padding: 18px 20px;
     border-radius: 24px;
   }
 
-  #abaLancadas .estadia-filters {
+  #abaLancadas .estadia-filters,
+  #abaConsultaLancadas .estadia-filters {
     display: grid;
     grid-template-columns: minmax(280px, 2fr) 150px 190px 145px 145px;
     gap: 10px;
@@ -114,38 +123,47 @@
   }
 
   #abaLancadas .estadia-filters input,
-  #abaLancadas .estadia-filters select {
+  #abaLancadas .estadia-filters select,
+  #abaConsultaLancadas .estadia-filters input,
+  #abaConsultaLancadas .estadia-filters select {
     height: 42px;
     min-height: 42px;
     font-size: 13px;
   }
 
-  #abaLancadas .estadia-table-wrap {
+  #abaLancadas .estadia-table-wrap,
+  #abaConsultaLancadas .estadia-table-wrap {
     border-radius: 24px;
     overflow: hidden;
   }
 
-  #abaLancadas .table-scroll {
+  #abaLancadas .table-scroll,
+  #abaConsultaLancadas .table-scroll {
     overflow-x: auto;
   }
 
-  #abaLancadas table {
+  #abaLancadas table,
+  #abaConsultaLancadas table {
     font-size: 12px;
     min-width: 1500px;
   }
 
-  #abaLancadas th {
+  #abaLancadas th,
+  #abaConsultaLancadas th {
     font-size: 10px;
     white-space: nowrap;
   }
 
   #abaLancadas th,
-  #abaLancadas td {
+  #abaLancadas td,
+  #abaConsultaLancadas th,
+  #abaConsultaLancadas td {
     padding: 9px 8px;
     vertical-align: top;
   }
 
-  #abaLancadas .actions {
+  #abaLancadas .actions,
+  #abaConsultaLancadas .actions {
     min-width: 178px;
     display: flex;
     flex-wrap: wrap;
@@ -153,9 +171,17 @@
   }
 
   #abaLancadas .actions .btn-small,
-  #abaLancadas .actions a {
+  #abaLancadas .actions a,
+  #abaConsultaLancadas .actions .btn-small,
+  #abaConsultaLancadas .actions a {
     padding: 7px 9px;
     font-size: 11px;
+  }
+
+  #abaConsultaLancadas details summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 900;
   }
 }
 
@@ -169,7 +195,8 @@
     grid-column: span 2;
   }
 
-  #abaLancadas table {
+  #abaLancadas table,
+  #abaConsultaLancadas table {
     min-width: 100%;
   }
 }
@@ -177,5 +204,11 @@
 @media (max-width: 1023px) {
   .estadia-form-hint {
     display: none;
+  }
+
+  #abaConsultaLancadas .estadia-calc-preview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 }
