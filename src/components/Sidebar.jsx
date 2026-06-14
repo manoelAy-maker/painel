@@ -3,7 +3,8 @@ import { podeAdministrar } from '../utils/roles'
 
 const icons = {
   inicio: '⌂',
-  lancadas: '▣',
+  lancadas: '＋',
+  consultaLancadas: '▣',
   alancar: '▤',
   captacaoAdmin: '◉',
   historico: '↺',
@@ -19,6 +20,7 @@ const OPERADOR_GRUPOS = [
     itens: [
       { id: 'inicio', label: 'Dashboard' },
       { id: 'lancadas', label: 'Lançar estadia' },
+      { id: 'consultaLancadas', label: 'Estadias lançadas' },
       { id: 'alancar', label: 'Pendências' },
     ],
   },
@@ -29,7 +31,8 @@ const ADMIN_GRUPOS = [
     titulo: 'Operação',
     itens: [
       { id: 'inicio', label: 'Dashboard' },
-      { id: 'lancadas', label: 'Estadias lançadas' },
+      { id: 'lancadas', label: 'Lançar estadia' },
+      { id: 'consultaLancadas', label: 'Estadias lançadas' },
       { id: 'alancar', label: 'Pendências' },
     ],
   },
