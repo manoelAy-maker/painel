@@ -185,6 +185,73 @@
   }
 }
 
+.consulta-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0,0,0,.62);
+  backdrop-filter: blur(10px);
+}
+
+.consulta-modal {
+  width: min(920px, 100%);
+  max-height: min(760px, 92vh);
+  overflow: auto;
+  padding: 22px;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(145deg, rgba(15,23,42,.98), rgba(2,6,23,.98));
+  box-shadow: 0 28px 90px rgba(0,0,0,.48);
+}
+
+.consulta-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.consulta-detail-grid > div,
+.consulta-history-item {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.035);
+}
+
+.consulta-detail-grid small,
+.consulta-history-item small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.consulta-detail-grid strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+.consulta-modal-section {
+  margin-top: 18px;
+}
+
+.consulta-modal-section h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+
+.consulta-history-item {
+  margin-bottom: 8px;
+}
+
 @media (min-width: 1500px) {
   #abaLancadas .estadia-form-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -210,5 +277,25 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+  }
+
+  .consulta-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .consulta-modal-backdrop {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .consulta-modal {
+    max-height: 88vh;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .consulta-detail-grid {
+    grid-template-columns: 1fr;
   }
 }
