@@ -13,6 +13,7 @@ import './cargo-options-runtime.js'
 import './login-dark-restore.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
+const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 const Captacao = lazy(() => import('./modules/captacao/pages/Captacao'))
 const CaptacaoAdmin = lazy(() => import('./modules/captacao/pages/CaptacaoAdmin'))
@@ -148,6 +149,7 @@ function PainelEstadia() {
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
             <Suspense fallback={<FastFallback />}>
               {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
+              {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas />}
               {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
               {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
               {isAdmin && abaRender === 'historico' && <Historico />}
