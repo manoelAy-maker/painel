@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { linkWhatsapp, dataISOTexto, tempoDecorrido } from '../utils/index'
 import { nomeFilial } from '../data/filiais'
+import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 import '../estadia-desktop-pro.css'
 
 function badgePago(p) {
@@ -59,13 +60,32 @@ function eventoHistorico(acao, usuario, detalhes = '') {
   return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes }
 }
 
+function dataLocalISO(date = new Date()) {
+  const d = new Date(date)
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+  return d.toISOString().slice(0, 10)
+}
+
+function resumoEstadia(e) {
+  return [
+    `Placa: ${e.placa || '-'}`,
+    `Motorista: ${e.motorista || '-'}`,
+    `NF: ${e.nf || e.numeroNf || '-'}`,
+    `Chamado: ${e.chamado || '-'}`,
+    `Transportadora: ${e.transportadora || '-'}`,
+    `Status: ${statusLabel(e.status)}`,
+    `Valor: ${e.valor || 'R$ 0,00'}`,
+  ].join('\n')
+}
+
 export default function ConsultaEstadiasLancadas() {
-  const { estadias, editarLancada, filiais, mudarAba, usuarioAtual, toast } = useApp()
+  const { estadias, editarLancada, excluirLancada, filiais, mudarAba, usuarioAtual, toast } = useApp()
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState('')
   const [filtroFilial, setFiltroFilial] = useState('')
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
+  const [detalhe, setDetalhe] = useState(null)
 
   const lista = useMemo(() => estadias.filter(e => {
     const txt = ((e.placa || '') + ' ' + (e.motorista || '') + ' ' + (e.chamado || '') + ' ' + (e.transportadora || '') + ' ' + (e.nf || e.numeroNf || '')).toUpperCase()
@@ -124,13 +144,34 @@ export default function ConsultaEstadiasLancadas() {
 
     try {
       await editarLancada(e.id, dados)
+      toast?.(`Status alterado para ${status}.`, 'ok')
     } catch {
       toast?.('Não consegui alterar o status dessa estadia.', 'err')
     }
   }
 
+  const arquivar = async (e) => {
+    if (!confirm(`Arquivar a estadia da placa ${e.placa || '-'}? Ela sairá da consulta e ficará na Lixeira.`)) return
+    try {
+      await arquivarEstadiaLancada(e, usuarioAtual?.usuario || '-', 'Arquivada pela consulta de estadias lançadas')
+      await excluirLancada(e.id)
+      toast?.('Estadia arquivada na Lixeira.', 'ok')
+    } catch {
+      toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err')
+    }
+  }
+
+  const copiar = async (e) => {
+    try {
+      await navigator.clipboard.writeText(resumoEstadia(e))
+      toast?.('Resumo copiado.', 'ok')
+    } catch {
+      toast?.('Não consegui copiar neste navegador.', 'warn')
+    }
+  }
+
   const periodoHoje = () => {
-    const hoje = new Date().toISOString().slice(0, 10)
+    const hoje = dataLocalISO()
     setDataInicio(hoje)
     setDataFim(hoje)
   }
@@ -139,8 +180,15 @@ export default function ConsultaEstadiasLancadas() {
     const fim = new Date()
     const ini = new Date()
     ini.setDate(fim.getDate() - 6)
-    setDataInicio(ini.toISOString().slice(0, 10))
-    setDataFim(fim.toISOString().slice(0, 10))
+    setDataInicio(dataLocalISO(ini))
+    setDataFim(dataLocalISO(fim))
+  }
+
+  const esteMes = () => {
+    const hoje = new Date()
+    const ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+    setDataInicio(dataLocalISO(ini))
+    setDataFim(dataLocalISO(hoje))
   }
 
   return (
@@ -149,7 +197,7 @@ export default function ConsultaEstadiasLancadas() {
         <div className="box-title">
           <div>
             <h2>Estadias lançadas</h2>
-            <span>Consulta separada do lançamento, com indicadores, filtros, status e histórico por estadia.</span>
+            <span>Consulta separada do lançamento, com indicadores, filtros, status, detalhes rápidos e histórico por estadia.</span>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="btn-green btn-small" onClick={() => mudarAba('lancadas')}>+ Lançar nova</button>
@@ -176,6 +224,7 @@ export default function ConsultaEstadiasLancadas() {
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
           <button className="btn-light btn-small" onClick={periodoHoje}>Hoje</button>
           <button className="btn-light btn-small" onClick={ultimos7}>Últimos 7 dias</button>
+          <button className="btn-light btn-small" onClick={esteMes}>Este mês</button>
         </div>
       </div>
 
@@ -205,12 +254,15 @@ export default function ConsultaEstadiasLancadas() {
                     <td><span className={`status ${classeStatus(e.status)}`}>{statusLabel(e.status)}</span>{e.emAnalisePor && <><br /><small>Análise por {e.emAnalisePor}</small></>}{e.feitoPor && <><br /><small>Feito por {e.feitoPor}</small></>}{e.finalizadoPor && <><br /><small>Finalizado por {e.finalizadoPor}</small></>}</td>
                     <td>{e.historicoItem?.length ? <details><summary>Ver</summary><div style={{ minWidth: 220 }}>{e.historicoItem.slice(0, 5).map((h, i) => <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,.08)', padding: '6px 0' }}><strong>{h.acao}</strong><br /><small>{h.usuario} · {h.data}</small>{h.detalhes && <><br /><small>{h.detalhes}</small></>}</div>)}</div></details> : <small>Sem histórico interno</small>}</td>
                     <td><div className="actions">
+                      <button className="btn-light btn-small" onClick={() => setDetalhe(e)}>Detalhes</button>
                       {(!e.status || e.status === 'Aberto') && <button className="btn-orange btn-small" onClick={() => atualizarStatus(e, 'Em análise')}>Em análise</button>}
                       {e.status !== 'Feito' && e.status !== 'Finalizado' && <button className="btn-green btn-small" onClick={() => atualizarStatus(e, 'Feito')}>Feito</button>}
                       {e.status === 'Feito' && <button className="btn-purple btn-small" onClick={() => atualizarStatus(e, 'Finalizado')}>Finalizar</button>}
                       {e.status !== 'Aberto' && <button className="btn-orange btn-small" onClick={() => atualizarStatus(e, 'Aberto')}>Reabrir</button>}
                       <button className="btn-light btn-small" onClick={() => editar(e)}>Editar</button>
+                      <button className="btn-light btn-small" onClick={() => copiar(e)}>Copiar</button>
                       {e.telefoneMotorista && <a className="btn btn-green btn-small" href={linkWhatsapp(e)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
+                      <button className="btn-red btn-small" onClick={() => arquivar(e)}>Arquivar</button>
                     </div></td>
                   </tr>
                 ))}
@@ -218,6 +270,36 @@ export default function ConsultaEstadiasLancadas() {
           </table>
         </div>
       </div>
+
+      {detalhe && <div className="consulta-modal-backdrop" onClick={() => setDetalhe(null)}>
+        <div className="consulta-modal" onClick={e => e.stopPropagation()}>
+          <div className="box-title">
+            <div>
+              <h2>{detalhe.placa || 'Estadia'}</h2>
+              <span>{detalhe.motorista || '-'} · {statusLabel(detalhe.status)}</span>
+            </div>
+            <button className="btn-light btn-small" onClick={() => setDetalhe(null)}>Fechar</button>
+          </div>
+          <div className="consulta-detail-grid">
+            <div><small>NF</small><strong>{detalhe.nf || detalhe.numeroNf || '-'}</strong></div>
+            <div><small>Chamado</small><strong>{detalhe.chamado || '-'}</strong></div>
+            <div><small>Transportadora</small><strong>{detalhe.transportadora || '-'}</strong></div>
+            <div><small>Filial</small><strong>{nomeFilial(detalhe.filial)}</strong></div>
+            <div><small>Peso</small><strong>{detalhe.peso || '-'}</strong></div>
+            <div><small>Horas</small><strong>{detalhe.horas || '0.00'} h</strong></div>
+            <div><small>Valor</small><strong>{detalhe.valor || 'R$ 0,00'}</strong></div>
+            <div><small>Pago por</small><strong>{detalhe.pagoPor || 'Logística'}</strong></div>
+          </div>
+          <div className="consulta-modal-section">
+            <h3>Histórico da estadia</h3>
+            {detalhe.historicoItem?.length ? detalhe.historicoItem.map((h, i) => <div key={i} className="consulta-history-item"><strong>{h.acao}</strong><small>{h.usuario} · {h.data}</small>{h.detalhes && <small>{h.detalhes}</small>}</div>) : <p>Sem histórico interno ainda.</p>}
+          </div>
+          {detalhe.anexos?.length > 0 && <div className="consulta-modal-section">
+            <h3>Anexos</h3>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{detalhe.anexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div>
+          </div>}
+        </div>
+      </div>}
     </section>
   )
 }
