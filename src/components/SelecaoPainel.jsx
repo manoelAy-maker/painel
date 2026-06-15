@@ -11,6 +11,7 @@ const Svg = ({ children, ...p }) => (
 const ICONES = {
   grid: <Svg><rect x="3" y="3" width="8" height="8" rx="1.5" /><rect x="13" y="3" width="8" height="8" rx="1.5" /><rect x="3" y="13" width="8" height="8" rx="1.5" /><rect x="13" y="13" width="8" height="8" rx="1.5" /></Svg>,
   chart: <Svg><path d="M4 19V9" /><path d="M10 19V5" /><path d="M16 19v-7" /><path d="M22 19h-20" /></Svg>,
+  maker: <Svg><path d="M12 3l1.6 4.7L18 6l-1.7 4.4L21 12l-4.7 1.6L18 18l-4.4-1.7L12 21l-1.6-4.7L6 18l1.7-4.4L3 12l4.7-1.6L6 6l4.4 1.7L12 3z" /><path d="M12 9v6" /><path d="M9 12h6" /></Svg>,
   arrowRight: <Svg width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6" /></Svg>,
   logout: <Svg width="16" height="16"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></Svg>,
   shield: <Svg width="16" height="16"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z" /></Svg>,
@@ -20,11 +21,13 @@ const ICONES = {
 const modulos = [
   { id: 'estadia', nome: 'Estadia', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operação', bullets: ['Estadias', 'A lançar', 'Histórico'] },
   { id: 'captacao', nome: 'Captação', subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento semanal.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Comercial', bullets: ['Motoristas', 'Contatos', 'Ranking'] },
+  { id: 'maker', nome: 'Maker', subtitulo: 'Área para criação, melhorias, ajustes rápidos e evolução visual do painel Ayres.', icon: 'maker', cor: 'purple', aba: 'inicio', etiqueta: 'Criação', bullets: ['Layouts', 'Ideias', 'Ajustes'] },
 ]
 
 const cores = {
-  blue: { texto: 'text-blue-300', iconeWrap: 'bg-blue-500/10 border-blue-400/20 text-blue-300', glow: 'hover:shadow-[0_35px_90px_-28px_rgba(59,130,246,0.75)] hover:border-blue-300/35', linha: 'from-blue-400/70 to-cyan-300/20' },
-  orange: { texto: 'text-orange-300', iconeWrap: 'bg-orange-500/10 border-orange-400/20 text-orange-300', glow: 'hover:shadow-[0_35px_90px_-28px_rgba(249,115,22,0.72)] hover:border-orange-300/35', linha: 'from-orange-400/75 to-amber-200/20' },
+  blue: { texto: 'text-blue-300', iconeWrap: 'bg-blue-500/10 border-blue-400/20 text-blue-300', glow: 'hover:shadow-[0_35px_90px_-28px_rgba(59,130,246,0.75)] hover:border-blue-300/35', linha: 'from-blue-400/70 to-cyan-300/20', brilho: 'rgba(59,130,246,.18)' },
+  orange: { texto: 'text-orange-300', iconeWrap: 'bg-orange-500/10 border-orange-400/20 text-orange-300', glow: 'hover:shadow-[0_35px_90px_-28px_rgba(249,115,22,0.72)] hover:border-orange-300/35', linha: 'from-orange-400/75 to-amber-200/20', brilho: 'rgba(249,115,22,.18)' },
+  purple: { texto: 'text-violet-300', iconeWrap: 'bg-violet-500/10 border-violet-400/20 text-violet-300', glow: 'hover:shadow-[0_35px_90px_-28px_rgba(139,92,246,0.76)] hover:border-violet-300/35', linha: 'from-violet-400/75 to-fuchsia-300/20', brilho: 'rgba(139,92,246,.20)' },
 }
 
 export default function SelecaoPainel() {
@@ -60,6 +63,7 @@ export default function SelecaoPainel() {
       <div className="fixed inset-0 -z-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px)', backgroundSize: '56px 56px', maskImage: 'radial-gradient(circle at center, black, transparent 78%)', WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 78%)' }} />
       <div className="fixed left-1/2 top-[-180px] -z-10 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-blue-600/12 blur-[120px]" />
       <div className="fixed bottom-[-220px] right-[-180px] -z-10 h-[520px] w-[520px] rounded-full bg-orange-500/10 blur-[130px]" />
+      <div className="fixed bottom-[20%] left-[-180px] -z-10 h-[430px] w-[430px] rounded-full bg-violet-500/10 blur-[130px]" />
 
       <header className="px-6 sm:px-10 py-7 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-4">
@@ -75,7 +79,7 @@ export default function SelecaoPainel() {
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6 py-8">
-        <section className={`w-full max-w-6xl mx-auto transition-all duration-1000 ease-out ${heroVisivel ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <section className={`w-full max-w-7xl mx-auto transition-all duration-1000 ease-out ${heroVisivel ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="text-center mb-9 sm:mb-12">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.045] px-4 py-2 text-[11px] font-black uppercase tracking-[.16em] text-slate-300 mb-6 backdrop-blur-xl">
               {ICONES.shield} Login salvo neste navegador
@@ -86,20 +90,21 @@ export default function SelecaoPainel() {
             <p className="text-slate-400 text-base sm:text-lg">Escolha o módulo para continuar.</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {modulos.map((m) => {
               const c = cores[m.cor]
               return (
-                <button key={m.id} type="button" onClick={() => acessar(m)} onMouseMove={moverGlow} className={`group relative overflow-hidden text-left p-8 sm:p-10 min-h-[390px] rounded-[2.5rem] border border-white/10 bg-[#0c111a]/90 backdrop-blur-xl cursor-pointer transition-all duration-500 hover:-translate-y-2 ${c.glow}`}>
+                <button key={m.id} type="button" onClick={() => acessar(m)} onMouseMove={moverGlow} className={`group relative overflow-hidden text-left p-8 sm:p-9 min-h-[390px] rounded-[2.5rem] border border-white/10 bg-[#0c111a]/90 backdrop-blur-xl cursor-pointer transition-all duration-500 hover:-translate-y-2 ${c.glow}`}>
                   <span className={`absolute left-8 right-8 top-0 h-px bg-gradient-to-r ${c.linha}`} />
-                  <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(circle at var(--x, 50%) var(--y, 50%), ${m.cor === 'blue' ? 'rgba(59,130,246,.16)' : 'rgba(249,115,22,.16)'}, transparent 43%)` }} />
+                  <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(circle at var(--x, 50%) var(--y, 50%), ${c.brilho}, transparent 43%)` }} />
+                  <span aria-hidden="true" className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ boxShadow: `inset 0 0 42px ${c.brilho}` }} />
                   <div className="relative flex min-h-[310px] flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between gap-5 mb-10">
                         <div className={`w-16 h-16 rounded-3xl flex items-center justify-center border ${c.iconeWrap}`}>{ICONES[m.icon]}</div>
                         <span className="rounded-full border border-white/10 bg-white/[.045] px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400">{m.etiqueta}</span>
                       </div>
-                      <h3 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight">Painel de <span className={c.texto}>{m.nome}</span></h3>
+                      <h3 className="text-4xl sm:text-[2.65rem] font-black mb-5 tracking-tight leading-none">Painel de <span className={c.texto}>{m.nome}</span></h3>
                       <p className="text-slate-400 text-base leading-relaxed max-w-md">{m.subtitulo}</p>
                     </div>
                     <div>
