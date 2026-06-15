@@ -1,62 +1,116 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
 
-const Svg = ({ children, ...p }) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+const Icon = ({ children, size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     {children}
   </svg>
 )
 
-const ICONES = {
-  truck: <Svg><path d="M3 7h11v9H3z" /><path d="M14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></Svg>,
-  chart: <Svg><path d="M4 19V9" /><path d="M9 19v-6" /><path d="M14 19v-9" /><path d="M19 19V5" /><path d="M4 15l5-5 4 3 6-7" /></Svg>,
-  arrowRight: <Svg width="18" height="18"><path d="M5 12h14" /><path d="M13 6l6 6-6 6" /></Svg>,
-  logout: <Svg width="16" height="16"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></Svg>,
-  shield: <Svg width="24" height="24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z" /><path d="M9 12l2 2 4-5" /></Svg>,
-  clock: <Svg width="24" height="24"><circle cx="12" cy="12" r="8" /><path d="M12 7v5l3 2" /></Svg>,
-  data: <Svg width="24" height="24"><path d="M4 19h16" /><path d="M7 16v-5" /><path d="M12 16V7" /><path d="M17 16v-8" /><path d="M6 8l3-3 4 4 5-6" /></Svg>,
-  user: <Svg width="16" height="16"><path d="M20 21a8 8 0 10-16 0" /><circle cx="12" cy="7" r="4" /></Svg>,
+const ICONS = {
+  truck: (
+    <Icon size={28}>
+      <path d="M3 7h11v10H3z" />
+      <path d="M14 10h4l3 3v4h-7z" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="18" cy="18" r="2" />
+    </Icon>
+  ),
+  chart: (
+    <Icon size={28}>
+      <path d="M4 19V5" />
+      <path d="M4 19h16" />
+      <path d="M8 16v-5" />
+      <path d="M12 16V8" />
+      <path d="M16 16v-7" />
+      <path d="M7 9l4-4 4 3 4-5" />
+    </Icon>
+  ),
+  arrow: (
+    <Icon size={18}>
+      <path d="M5 12h14" />
+      <path d="M13 6l6 6-6 6" />
+    </Icon>
+  ),
+  user: (
+    <Icon size={16}>
+      <path d="M20 21a8 8 0 0 0-16 0" />
+      <circle cx="12" cy="7" r="4" />
+    </Icon>
+  ),
+  logout: (
+    <Icon size={16}>
+      <path d="M17 16l4-4-4-4" />
+      <path d="M21 12H9" />
+      <path d="M13 20H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h7" />
+    </Icon>
+  ),
+  shield: (
+    <Icon size={22}>
+      <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z" />
+      <path d="M9 12l2 2 4-5" />
+    </Icon>
+  ),
+  zap: (
+    <Icon size={22}>
+      <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
+    </Icon>
+  ),
+  lock: (
+    <Icon size={22}>
+      <rect x="5" y="10" width="14" height="10" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </Icon>
+  ),
 }
 
 const modulos = [
   {
     id: 'estadia',
-    nome: 'Estadia',
-    destaque: 'Estadia',
-    subtitulo: 'Gerencie estadias, pátios, agendamentos e movimentações com total visibilidade e controle operacional.',
-    cor: 'blue',
+    title: 'Painel de Estadia',
+    highlight: 'Estadia',
+    subtitle: 'Controle de pendências, anexos, lançamentos e finalizações da operação.',
+    detail: 'Operacional',
+    color: 'blue',
+    icon: ICONS.truck,
     aba: 'inicio',
-    icon: 'truck',
+    tags: ['Lançamentos', 'Pendências', 'Histórico'],
+    metric: '48h',
+    metricLabel: 'controle de prazo',
   },
   {
     id: 'captacao',
-    nome: 'Captação',
-    destaque: 'Captação',
-    subtitulo: 'Acompanhe indicadores, desempenho e resultados da captação de cargas em tempo real.',
-    cor: 'orange',
+    title: 'Painel de Captação',
+    highlight: 'Captação',
+    subtitle: 'Acompanhe motoristas, contatos, cargas captadas e evolução semanal.',
+    detail: 'Comercial',
+    color: 'orange',
+    icon: ICONS.chart,
     aba: 'captacao',
-    icon: 'chart',
+    tags: ['Motoristas', 'Contatos', 'Ranking'],
+    metric: '100%',
+    metricLabel: 'visão da carteira',
   },
 ]
 
 export default function SelecaoPainel() {
   const { usuarioAtual, mudarAba, logout } = useApp()
-  const [heroVisivel, setHeroVisivel] = useState(false)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setHeroVisivel(true), 80)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setReady(true), 80)
+    return () => clearTimeout(timer)
   }, [])
 
-  const moverGlow = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    e.currentTarget.style.setProperty('--x', `${e.clientX - rect.left}px`)
-    e.currentTarget.style.setProperty('--y', `${e.clientY - rect.top}px`)
+  const moverGlow = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`)
+    event.currentTarget.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`)
   }
 
-  const acessar = (m) => {
-    localStorage.setItem('moduloInicialViaLog', m.id)
-    mudarAba(m.aba)
+  const acessar = (modulo) => {
+    localStorage.setItem('moduloInicialViaLog', modulo.id)
+    mudarAba(modulo.aba)
     window.dispatchEvent(new Event('ayres:modulo'))
   }
 
@@ -65,199 +119,691 @@ export default function SelecaoPainel() {
     logout()
   }
 
+  const nomeUsuario = usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'
+
   return (
-    <div className="ayres-portal">
+    <main className="ayresPortal">
       <style>{`
-        .ayres-portal, .ayres-portal *{box-sizing:border-box}
-        .ayres-portal{
-          min-height:100vh;
-          position:relative;
-          overflow:hidden;
-          color:#f8fafc;
-          font-family:'Inter','Plus Jakarta Sans',Arial,sans-serif;
+        .ayresPortal,
+        .ayresPortal * {
+          box-sizing: border-box;
+        }
+
+        .ayresPortal {
+          min-height: 100vh;
+          position: relative;
+          overflow: hidden;
+          color: #f8fafc;
+          font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           background:
-            radial-gradient(circle at 20% 20%, rgba(37,99,235,.20), transparent 28%),
-            radial-gradient(circle at 80% 30%, rgba(249,115,22,.16), transparent 30%),
-            radial-gradient(circle at 50% 80%, rgba(37,99,235,.10), transparent 35%),
-            #020711;
+            radial-gradient(circle at 16% 18%, rgba(37, 99, 235, .26), transparent 30%),
+            radial-gradient(circle at 82% 24%, rgba(249, 115, 22, .20), transparent 32%),
+            linear-gradient(135deg, #030712 0%, #07111f 45%, #020617 100%);
         }
-        .ayres-portal::before{
-          content:'';
-          position:absolute;
-          inset:0;
-          background-image:radial-gradient(rgba(59,130,246,.24) 1px, transparent 1px), radial-gradient(rgba(249,115,22,.18) 1px, transparent 1px);
-          background-size:18px 18px,24px 24px;
-          background-position:0 0,8px 6px;
-          opacity:.20;
-          mask-image:linear-gradient(to bottom, transparent 0%, black 18%, black 78%, transparent 100%);
-          -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 18%, black 78%, transparent 100%);
-          pointer-events:none;
+
+        .ayresPortal::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(148, 163, 184, .055) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, .055) 1px, transparent 1px);
+          background-size: 52px 52px;
+          mask-image: radial-gradient(circle at center, black 0 55%, transparent 82%);
+          -webkit-mask-image: radial-gradient(circle at center, black 0 55%, transparent 82%);
+          pointer-events: none;
         }
-        .ayres-portal::after{
-          content:'';
-          position:absolute;
-          inset:0;
-          background:linear-gradient(120deg, transparent 0 35%, rgba(47,125,255,.08) 45%, transparent 55%), linear-gradient(20deg, transparent 0 50%, rgba(255,122,24,.08) 58%, transparent 70%);
-          pointer-events:none;
+
+        .ayresPortal::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(120deg, transparent 0 42%, rgba(96, 165, 250, .08) 50%, transparent 61%),
+            linear-gradient(30deg, transparent 0 52%, rgba(251, 146, 60, .08) 60%, transparent 72%);
+          pointer-events: none;
         }
-        .ayres-wrap{position:relative;z-index:2;min-height:100vh;padding:34px 44px 26px;display:flex;flex-direction:column}
-        .ayres-header{display:flex;align-items:center;justify-content:space-between;gap:18px}
-        .ayres-logo{display:flex;align-items:center;gap:14px}
-        .ayres-logo-mark{position:relative;width:54px;height:54px;filter:drop-shadow(0 0 18px rgba(47,125,255,.55))}
-        .ayres-logo-mark::before,.ayres-logo-mark::after{content:'';position:absolute;background:linear-gradient(135deg,#1d4ed8,#60a5fa);border-radius:8px}
-        .ayres-logo-mark::before{width:20px;height:54px;transform:skewX(-25deg);left:7px}
-        .ayres-logo-mark::after{width:20px;height:42px;transform:skewX(25deg);right:7px;top:0}
-        .ayres-logo-text strong{display:block;font-size:38px;line-height:1;font-weight:900;letter-spacing:-1.8px}
-        .ayres-logo-text span{display:block;margin-top:5px;font-size:10px;letter-spacing:1.8px;color:#3b82f6;font-weight:900;text-transform:uppercase}
-        .ayres-top-actions{display:flex;align-items:center;gap:12px}
-        .ayres-user-chip,.ayres-logout{display:flex;align-items:center;gap:9px;padding:10px 15px;border:1px solid rgba(148,163,184,.28);border-radius:999px;color:#cbd5e1;background:rgba(2,6,23,.48);backdrop-filter:blur(12px);font-size:13px;font-weight:700}
-        .ayres-logout{cursor:pointer;color:#fecaca;transition:.25s}
-        .ayres-logout:hover{border-color:rgba(248,113,113,.45);background:rgba(239,68,68,.12);box-shadow:0 0 24px rgba(239,68,68,.14)}
-        .ayres-hero{text-align:center;margin-top:36px;transition:all .9s ease}
-        .ayres-hero.hide{opacity:0;transform:translateY(18px)}
-        .ayres-hero.show{opacity:1;transform:translateY(0)}
-        .ayres-hero h1{font-size:46px;font-weight:900;letter-spacing:-1.8px;line-height:1.08;margin:0}
-        .ayres-hero h1 span{color:#2f7dff;text-shadow:0 0 22px rgba(47,125,255,.45)}
-        .ayres-hero p{margin:14px 0 0;color:#a8b2c5;font-size:18px;line-height:1.55}
-        .ayres-cards{width:min(1280px,100%);margin:58px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:46px}
-        .ayres-card{
-          position:relative;
-          min-height:390px;
-          border-radius:20px;
-          padding:38px 40px;
-          overflow:hidden;
-          cursor:pointer;
-          text-align:left;
-          border:1px solid rgba(96,165,250,.28);
-          background:linear-gradient(135deg, rgba(10,20,36,.96), rgba(3,8,18,.72)), radial-gradient(circle at 78% 55%, rgba(47,125,255,.24), transparent 42%);
-          box-shadow:0 35px 110px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.08), 0 0 45px rgba(47,125,255,.10);
-          transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease;
+
+        .portalShell {
+          position: relative;
+          z-index: 2;
+          min-height: 100vh;
+          width: min(1280px, calc(100% - 48px));
+          margin: 0 auto;
+          padding: 32px 0 24px;
+          display: flex;
+          flex-direction: column;
         }
-        .ayres-card.orange{border-color:rgba(251,146,60,.28);background:linear-gradient(135deg, rgba(10,20,36,.96), rgba(3,8,18,.72)), radial-gradient(circle at 78% 55%, rgba(255,122,24,.24), transparent 42%);box-shadow:0 35px 110px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.08), 0 0 45px rgba(255,122,24,.10)}
-        .ayres-card:hover{transform:translateY(-10px);border-color:rgba(96,165,250,.55);box-shadow:0 42px 120px rgba(0,0,0,.55),0 0 62px rgba(47,125,255,.24),inset 0 1px 0 rgba(255,255,255,.1)}
-        .ayres-card.orange:hover{border-color:rgba(251,146,60,.58);box-shadow:0 42px 120px rgba(0,0,0,.55),0 0 62px rgba(255,122,24,.25),inset 0 1px 0 rgba(255,255,255,.1)}
-        .ayres-card::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg, rgba(255,255,255,.07), transparent 28%), radial-gradient(circle at 20% 100%, rgba(47,125,255,.10), transparent 45%);pointer-events:none}
-        .ayres-card.orange::before{background:linear-gradient(120deg, rgba(255,255,255,.07), transparent 28%), radial-gradient(circle at 20% 100%, rgba(255,122,24,.10), transparent 45%)}
-        .ayres-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .25s ease;background:radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(96,165,250,.26), transparent 35%);pointer-events:none}
-        .ayres-card.orange::after{background:radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(255,122,24,.27), transparent 35%)}
-        .ayres-card:hover::after{opacity:1}
-        .ayres-card-content{position:relative;z-index:3;width:46%}
-        .ayres-card-icon{width:64px;height:64px;border-radius:13px;display:grid;place-items:center;border:1px solid rgba(148,163,184,.24);background:linear-gradient(145deg, rgba(15,23,42,.96), rgba(30,41,59,.75));box-shadow:inset 0 1px 0 rgba(255,255,255,.08);margin-bottom:30px;color:#60a5fa}
-        .ayres-card.orange .ayres-card-icon{color:#fb923c}
-        .ayres-card h2{font-size:31px;line-height:1.05;font-weight:900;letter-spacing:-1px;margin:0;color:#fff}
-        .ayres-card h2 span{color:#2f7dff}
-        .ayres-card.orange h2 span{color:#ff7a18}
-        .ayres-line{width:36px;height:4px;border-radius:99px;background:#2f7dff;margin:20px 0 24px;box-shadow:0 0 16px rgba(47,125,255,.8)}
-        .ayres-card.orange .ayres-line{background:#ff7a18;box-shadow:0 0 16px rgba(255,122,24,.8)}
-        .ayres-card p{color:#aab4c7;font-size:15px;line-height:1.65;margin:0 0 40px}
-        .ayres-btn{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-width:190px;height:48px;border-radius:10px;color:white;text-decoration:none;font-size:14px;font-weight:900;background:linear-gradient(135deg,#1f6fff,#358cff);box-shadow:0 12px 30px rgba(47,125,255,.32),inset 0 1px 0 rgba(255,255,255,.18)}
-        .ayres-card.orange .ayres-btn{background:linear-gradient(135deg,#f97316,#ff8d1f);box-shadow:0 12px 30px rgba(255,122,24,.32),inset 0 1px 0 rgba(255,255,255,.18)}
-        .truck-scene{position:absolute;right:4px;bottom:24px;width:360px;height:270px;z-index:2;perspective:900px;transform:scale(1.08);transform-origin:right bottom;pointer-events:none}
-        .platform{position:absolute;left:36px;bottom:5px;width:250px;height:82px;border-radius:26px;background:linear-gradient(145deg,#1e293b,#020617);transform:rotateX(58deg) rotateZ(-14deg);box-shadow:0 0 0 2px rgba(59,130,246,.45),0 0 26px rgba(47,125,255,.9),0 24px 40px rgba(0,0,0,.65)}
-        .platform::after{content:'';position:absolute;inset:8px;border-radius:22px;border:1px solid rgba(147,197,253,.20)}
-        .truck{position:absolute;right:8px;bottom:92px;width:250px;height:120px;transform:skewY(-8deg);filter:drop-shadow(0 22px 24px rgba(0,0,0,.55))}
-        .cabin{position:absolute;left:0;bottom:0;width:92px;height:75px;border-radius:20px 14px 10px 12px;background:linear-gradient(145deg,#60a5fa,#1d4ed8 55%,#0f3b94)}
-        .cabin::before{content:'';position:absolute;left:17px;top:12px;width:52px;height:25px;border-radius:8px 8px 4px 4px;background:linear-gradient(135deg,#bfdbfe,#3b82f6)}
-        .cabin::after{content:'';position:absolute;left:8px;bottom:13px;width:74px;height:8px;background:#93c5fd;opacity:.7;border-radius:99px}
-        .container-box{position:absolute;right:0;bottom:28px;width:168px;height:82px;border-radius:8px 8px 4px 4px;background:repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 2px, transparent 2px 17px),linear-gradient(145deg,#2563eb,#0f3b94);box-shadow:inset 0 0 0 1px rgba(191,219,254,.30)}
-        .wheel{position:absolute;bottom:-13px;width:30px;height:30px;border-radius:50%;background:#020617;border:6px solid #334155;box-shadow:0 0 0 2px #111827}.w1{left:42px}.w2{right:78px}.w3{right:28px}
-        .glow-dots{position:absolute;right:82px;bottom:28px;display:flex;gap:10px}.glow-dots span{width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:0 0 14px #38bdf8}
-        .chart-scene{position:absolute;right:10px;bottom:24px;width:370px;height:275px;z-index:2;transform:scale(1.08);transform-origin:right bottom;pointer-events:none}
-        .chart-base{position:absolute;right:28px;bottom:0;width:250px;height:95px;border-radius:24px;background:linear-gradient(145deg,#111827,#020617);transform:rotateX(58deg) rotateZ(-12deg);box-shadow:0 0 0 2px rgba(255,122,24,.42),0 0 24px rgba(255,122,24,.75),0 26px 42px rgba(0,0,0,.65)}
-        .bars{position:absolute;right:55px;bottom:58px;display:flex;align-items:flex-end;gap:14px;transform:skewY(-10deg)}
-        .bar3d{width:38px;border-radius:7px 7px 2px 2px;background:linear-gradient(145deg,#64748b,#111827);box-shadow:9px 6px 0 rgba(0,0,0,.28)}.bar3d.orange{background:linear-gradient(145deg,#ffb347,#f97316)}.b1{height:58px}.b2{height:82px}.b3{height:108px}.b4{height:135px}.b5{height:166px}
-        .arrow-line{position:absolute;right:42px;top:34px;width:230px;height:140px}.arrow-line svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(255,122,24,.75))}
-        .ayres-features{width:min(1100px,100%);margin:40px auto 0;border:1px solid rgba(148,163,184,.20);border-radius:16px;background:rgba(5,13,25,.72);backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.24);padding:22px 30px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-        .ayres-feature{display:flex;align-items:flex-start;gap:14px}.ayres-feature-icon{min-width:45px;width:45px;height:45px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(59,130,246,.55);box-shadow:0 0 20px rgba(59,130,246,.18);color:#60a5fa}.ayres-feature:nth-child(3) .ayres-feature-icon{border-color:rgba(255,122,24,.60);box-shadow:0 0 20px rgba(255,122,24,.20);color:#fb923c}.ayres-feature strong{display:block;font-size:14px;font-weight:900;color:#cfe1ff}.ayres-feature:nth-child(3) strong{color:#ffb16f}.ayres-feature p{margin:4px 0 0;color:#9ca3af;font-size:12px;line-height:1.35}
-        .ayres-footer{width:min(1100px,100%);margin:24px auto 0;text-align:center;color:#7c879b;font-size:13px}.ayres-footer span{color:#3b82f6}
-        @media(max-width:1100px){.ayres-cards{grid-template-columns:1fr}.ayres-card{min-height:350px}.ayres-features{grid-template-columns:1fr 1fr}}
-        @media(max-width:700px){.ayres-wrap{padding:24px 18px}.ayres-header{align-items:flex-start;flex-direction:column}.ayres-top-actions{width:100%;justify-content:space-between}.ayres-logo-text strong{font-size:30px}.ayres-hero{margin-top:28px}.ayres-hero h1{font-size:32px}.ayres-hero p{font-size:15px}.ayres-cards{margin-top:34px;gap:24px}.ayres-card{padding:26px;min-height:590px}.ayres-card-content{width:100%}.truck-scene,.chart-scene{transform:scale(.85);right:0}.ayres-features{grid-template-columns:1fr}.ayres-user-chip{display:none}}
+
+        .portalHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+        }
+
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .brandMark {
+          width: 56px;
+          height: 56px;
+          border-radius: 18px;
+          position: relative;
+          display: grid;
+          place-items: center;
+          isolation: isolate;
+          background: linear-gradient(145deg, rgba(59, 130, 246, .95), rgba(29, 78, 216, .58));
+          box-shadow: 0 0 36px rgba(59, 130, 246, .35), inset 0 1px 0 rgba(255,255,255,.24);
+        }
+
+        .brandMark::before,
+        .brandMark::after {
+          content: '';
+          position: absolute;
+          border-radius: 7px;
+          background: rgba(255,255,255,.92);
+          transform: skewX(-22deg);
+        }
+
+        .brandMark::before {
+          width: 11px;
+          height: 34px;
+          left: 18px;
+        }
+
+        .brandMark::after {
+          width: 11px;
+          height: 24px;
+          right: 18px;
+          top: 12px;
+          opacity: .74;
+        }
+
+        .brandText strong {
+          display: block;
+          font-size: 36px;
+          line-height: .92;
+          letter-spacing: -1.8px;
+          font-weight: 950;
+        }
+
+        .brandText span {
+          display: block;
+          margin-top: 7px;
+          color: #60a5fa;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: .28em;
+          text-transform: uppercase;
+        }
+
+        .headerActions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .userBadge,
+        .logoutButton {
+          display: inline-flex;
+          align-items: center;
+          gap: 9px;
+          border: 1px solid rgba(148, 163, 184, .22);
+          background: rgba(15, 23, 42, .52);
+          color: #cbd5e1;
+          border-radius: 999px;
+          height: 42px;
+          padding: 0 15px;
+          font-size: 13px;
+          font-weight: 750;
+          backdrop-filter: blur(14px);
+        }
+
+        .logoutButton {
+          color: #fecaca;
+          cursor: pointer;
+          transition: .2s ease;
+        }
+
+        .logoutButton:hover {
+          border-color: rgba(248, 113, 113, .48);
+          background: rgba(239, 68, 68, .13);
+        }
+
+        .heroArea {
+          padding: 62px 0 42px;
+          text-align: center;
+          transition: .85s ease;
+        }
+
+        .heroArea.isHidden {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+
+        .heroArea.isReady {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .heroPill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 34px;
+          padding: 0 14px;
+          border-radius: 999px;
+          border: 1px solid rgba(148, 163, 184, .20);
+          background: rgba(15, 23, 42, .52);
+          color: #a8b5ca;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: .16em;
+          text-transform: uppercase;
+          backdrop-filter: blur(14px);
+          margin-bottom: 20px;
+        }
+
+        .heroTitle {
+          margin: 0;
+          font-size: clamp(40px, 6vw, 74px);
+          line-height: .94;
+          letter-spacing: -3.5px;
+          font-weight: 950;
+        }
+
+        .heroTitle span {
+          background: linear-gradient(135deg, #93c5fd, #3b82f6 58%, #fb923c);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          text-shadow: 0 0 40px rgba(59, 130, 246, .18);
+        }
+
+        .heroText {
+          margin: 18px auto 0;
+          max-width: 660px;
+          color: #9aa8bd;
+          font-size: 18px;
+          line-height: 1.65;
+        }
+
+        .cardsGrid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 34px;
+          align-items: stretch;
+        }
+
+        .portalCard {
+          --accent: #3b82f6;
+          --accentSoft: rgba(59, 130, 246, .20);
+          position: relative;
+          border: 1px solid rgba(148, 163, 184, .18);
+          min-height: 430px;
+          overflow: hidden;
+          border-radius: 32px;
+          background:
+            linear-gradient(145deg, rgba(15, 23, 42, .94), rgba(2, 6, 23, .78)),
+            radial-gradient(circle at 82% 24%, var(--accentSoft), transparent 32%);
+          padding: 34px;
+          text-align: left;
+          cursor: pointer;
+          color: inherit;
+          box-shadow: 0 32px 90px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.07);
+          transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+        }
+
+        .portalCard.orange {
+          --accent: #f97316;
+          --accentSoft: rgba(249, 115, 22, .21);
+        }
+
+        .portalCard:hover {
+          transform: translateY(-10px);
+          border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+          box-shadow: 0 42px 115px rgba(0,0,0,.48), 0 0 70px color-mix(in srgb, var(--accent) 20%, transparent), inset 0 1px 0 rgba(255,255,255,.1);
+        }
+
+        .portalCard::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--accent) 24%, transparent), transparent 35%),
+            linear-gradient(115deg, rgba(255,255,255,.10), transparent 22%);
+          opacity: 0;
+          transition: opacity .25s ease;
+          pointer-events: none;
+        }
+
+        .portalCard:hover::before {
+          opacity: 1;
+        }
+
+        .portalCard::after {
+          content: '';
+          position: absolute;
+          inset: 1px;
+          border-radius: 31px;
+          border: 1px solid rgba(255,255,255,.045);
+          pointer-events: none;
+        }
+
+        .cardInner {
+          position: relative;
+          z-index: 2;
+          min-height: 360px;
+          display: grid;
+          grid-template-columns: minmax(0, .92fr) minmax(230px, .78fr);
+          gap: 24px;
+          align-items: center;
+        }
+
+        .cardIcon {
+          width: 66px;
+          height: 66px;
+          display: grid;
+          place-items: center;
+          border-radius: 22px;
+          color: var(--accent);
+          border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+          background: color-mix(in srgb, var(--accent) 12%, rgba(15,23,42,.75));
+          box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 16%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
+          margin-bottom: 26px;
+        }
+
+        .cardLabel {
+          display: inline-flex;
+          margin-bottom: 18px;
+          color: color-mix(in srgb, var(--accent) 78%, white);
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: .18em;
+          text-transform: uppercase;
+        }
+
+        .cardTitle {
+          margin: 0;
+          font-size: clamp(34px, 4vw, 52px);
+          line-height: .96;
+          letter-spacing: -2.1px;
+          font-weight: 950;
+        }
+
+        .cardTitle span {
+          color: color-mix(in srgb, var(--accent) 78%, white);
+        }
+
+        .cardDescription {
+          max-width: 410px;
+          margin: 20px 0 28px;
+          color: #a4b0c2;
+          font-size: 15px;
+          line-height: 1.65;
+        }
+
+        .tagRow {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 26px;
+        }
+
+        .tag {
+          border: 1px solid rgba(148, 163, 184, .16);
+          background: rgba(255,255,255,.045);
+          color: #cbd5e1;
+          border-radius: 999px;
+          padding: 8px 11px;
+          font-size: 11px;
+          font-weight: 850;
+        }
+
+        .cardCta {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          min-height: 48px;
+          padding: 0 18px;
+          border-radius: 15px;
+          background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 74%, white));
+          color: #fff;
+          font-size: 13px;
+          font-weight: 950;
+          box-shadow: 0 16px 36px color-mix(in srgb, var(--accent) 28%, transparent), inset 0 1px 0 rgba(255,255,255,.22);
+        }
+
+        .mockup {
+          position: relative;
+          min-height: 270px;
+          border-radius: 28px;
+          border: 1px solid rgba(148, 163, 184, .15);
+          background: linear-gradient(145deg, rgba(15,23,42,.74), rgba(2,6,23,.88));
+          padding: 18px;
+          box-shadow: 0 24px 55px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+        }
+
+        .mockTop {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 18px;
+        }
+
+        .mockDots {
+          display: flex;
+          gap: 6px;
+        }
+
+        .mockDots span {
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          background: color-mix(in srgb, var(--accent) 70%, white);
+          opacity: .78;
+          box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent);
+        }
+
+        .mockPill {
+          width: 78px;
+          height: 10px;
+          border-radius: 999px;
+          background: rgba(148, 163, 184, .18);
+        }
+
+        .mockMetric {
+          border-radius: 22px;
+          padding: 20px;
+          background: radial-gradient(circle at 80% 0, color-mix(in srgb, var(--accent) 25%, transparent), transparent 44%), rgba(255,255,255,.055);
+          border: 1px solid rgba(255,255,255,.07);
+          margin-bottom: 14px;
+        }
+
+        .mockMetric strong {
+          display: block;
+          font-size: 42px;
+          line-height: 1;
+          letter-spacing: -2px;
+          color: #fff;
+          font-weight: 950;
+        }
+
+        .mockMetric span {
+          display: block;
+          margin-top: 8px;
+          color: #9aa8bd;
+          font-size: 12px;
+          font-weight: 750;
+          text-transform: uppercase;
+          letter-spacing: .12em;
+        }
+
+        .mockList {
+          display: grid;
+          gap: 10px;
+        }
+
+        .mockLine {
+          height: 42px;
+          border-radius: 16px;
+          background: rgba(255,255,255,.045);
+          border: 1px solid rgba(255,255,255,.06);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 0 12px;
+        }
+
+        .mockLine i {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+          background: var(--accent);
+          box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 80%, transparent);
+        }
+
+        .mockLine span {
+          height: 8px;
+          flex: 1;
+          border-radius: 999px;
+          background: rgba(203,213,225,.18);
+        }
+
+        .mockLine b {
+          width: 42px;
+          height: 8px;
+          border-radius: 999px;
+          background: color-mix(in srgb, var(--accent) 40%, rgba(203,213,225,.18));
+        }
+
+        .features {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+          margin-top: 34px;
+        }
+
+        .feature {
+          display: flex;
+          gap: 13px;
+          align-items: flex-start;
+          border: 1px solid rgba(148, 163, 184, .16);
+          background: rgba(15, 23, 42, .54);
+          border-radius: 22px;
+          padding: 18px;
+          backdrop-filter: blur(14px);
+        }
+
+        .featureIcon {
+          min-width: 44px;
+          height: 44px;
+          border-radius: 16px;
+          display: grid;
+          place-items: center;
+          color: #93c5fd;
+          background: rgba(59, 130, 246, .10);
+          border: 1px solid rgba(96, 165, 250, .18);
+        }
+
+        .feature:nth-child(3) .featureIcon {
+          color: #fdba74;
+          background: rgba(249, 115, 22, .10);
+          border-color: rgba(251, 146, 60, .18);
+        }
+
+        .feature strong {
+          display: block;
+          font-size: 14px;
+          color: #e5edf8;
+          font-weight: 950;
+        }
+
+        .feature p {
+          margin: 5px 0 0;
+          color: #8d9bb0;
+          font-size: 12px;
+          line-height: 1.4;
+        }
+
+        .footerText {
+          margin-top: auto;
+          padding-top: 22px;
+          text-align: center;
+          color: #64748b;
+          font-size: 12px;
+        }
+
+        .footerText span {
+          color: #60a5fa;
+          font-weight: 900;
+        }
+
+        @media (max-width: 1080px) {
+          .cardsGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .portalCard {
+            min-height: 390px;
+          }
+        }
+
+        @media (max-width: 760px) {
+          .portalShell {
+            width: min(100% - 32px, 1280px);
+            padding-top: 22px;
+          }
+
+          .portalHeader {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .headerActions {
+            width: 100%;
+            justify-content: space-between;
+          }
+
+          .userBadge {
+            max-width: calc(100% - 92px);
+            overflow: hidden;
+          }
+
+          .userBadge span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .heroArea {
+            padding: 42px 0 30px;
+          }
+
+          .heroTitle {
+            letter-spacing: -2.2px;
+          }
+
+          .heroText {
+            font-size: 15px;
+          }
+
+          .portalCard {
+            padding: 24px;
+            border-radius: 26px;
+            min-height: auto;
+          }
+
+          .cardInner {
+            grid-template-columns: 1fr;
+            min-height: auto;
+          }
+
+          .mockup {
+            min-height: 230px;
+          }
+
+          .features {
+            grid-template-columns: 1fr;
+          }
+        }
       `}</style>
 
-      <div className="ayres-wrap">
-        <header className="ayres-header">
-          <div className="ayres-logo">
-            <div className="ayres-logo-mark" />
-            <div className="ayres-logo-text">
+      <section className="portalShell">
+        <header className="portalHeader">
+          <div className="brand">
+            <div className="brandMark" aria-hidden="true" />
+            <div className="brandText">
               <strong>Ayres</strong>
               <span>Logística Inteligente</span>
             </div>
           </div>
 
-          <div className="ayres-top-actions">
-            <div className="ayres-user-chip">{ICONES.user}<span>{usuarioAtual?.nome || usuarioAtual?.usuario}</span></div>
-            <button type="button" className="ayres-logout" onClick={sair}>{ICONES.logout}<span>Sair</span></button>
+          <div className="headerActions">
+            <div className="userBadge">{ICONS.user}<span>{nomeUsuario}</span></div>
+            <button type="button" className="logoutButton" onClick={sair}>{ICONS.logout}<span>Sair</span></button>
           </div>
         </header>
 
-        <section className={`ayres-hero ${heroVisivel ? 'show' : 'hide'}`}>
-          <h1>Bem-vindo ao <span>Ayres</span></h1>
-          <p>Acesse os painéis estratégicos da plataforma<br />e gerencie suas operações com eficiência.</p>
+        <section className={`heroArea ${ready ? 'isReady' : 'isHidden'}`}>
+          <div className="heroPill">{ICONS.shield} Portal seguro</div>
+          <h1 className="heroTitle">Bem-vindo ao <span>Ayres</span></h1>
+          <p className="heroText">Escolha o painel para entrar e acompanhe sua operação com uma tela mais limpa, rápida e profissional.</p>
         </section>
 
-        <section className="ayres-cards">
-          {modulos.map((m) => (
-            <button key={m.id} type="button" className={`ayres-card ${m.cor === 'orange' ? 'orange' : ''}`} onMouseMove={moverGlow} onClick={() => acessar(m)}>
-              <div className="ayres-card-content">
-                <div className="ayres-card-icon">{ICONES[m.icon]}</div>
-                <h2>Painel de <span>{m.destaque}</span></h2>
-                <div className="ayres-line" />
-                <p>{m.subtitulo}</p>
-                <span className="ayres-btn">Acessar Painel {ICONES.arrowRight}</span>
-              </div>
+        <section className="cardsGrid">
+          {modulos.map((modulo) => (
+            <button
+              key={modulo.id}
+              type="button"
+              className={`portalCard ${modulo.color === 'orange' ? 'orange' : ''}`}
+              onMouseMove={moverGlow}
+              onClick={() => acessar(modulo)}
+            >
+              <div className="cardInner">
+                <div>
+                  <div className="cardIcon">{modulo.icon}</div>
+                  <span className="cardLabel">{modulo.detail}</span>
+                  <h2 className="cardTitle">Painel de <span>{modulo.highlight}</span></h2>
+                  <p className="cardDescription">{modulo.subtitle}</p>
+                  <div className="tagRow">
+                    {modulo.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
+                  </div>
+                  <span className="cardCta">Acessar painel {ICONS.arrow}</span>
+                </div>
 
-              {m.id === 'estadia' ? (
-                <div className="truck-scene">
-                  <div className="platform" />
-                  <div className="truck">
-                    <div className="container-box" />
-                    <div className="cabin" />
-                    <div className="wheel w1" />
-                    <div className="wheel w2" />
-                    <div className="wheel w3" />
+                <div className="mockup" aria-hidden="true">
+                  <div className="mockTop">
+                    <div className="mockDots"><span /><span /><span /></div>
+                    <div className="mockPill" />
                   </div>
-                  <div className="glow-dots"><span /><span /><span /></div>
-                </div>
-              ) : (
-                <div className="chart-scene">
-                  <div className="chart-base" />
-                  <div className="bars">
-                    <div className="bar3d b1" />
-                    <div className="bar3d b2" />
-                    <div className="bar3d orange b3" />
-                    <div className="bar3d b4" />
-                    <div className="bar3d orange b5" />
+                  <div className="mockMetric">
+                    <strong>{modulo.metric}</strong>
+                    <span>{modulo.metricLabel}</span>
                   </div>
-                  <div className="arrow-line">
-                    <svg viewBox="0 0 240 150" fill="none">
-                      <path d="M18 126 L60 72 L96 90 L132 45 L169 53 L214 14" stroke="#ff7a18" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M214 14 L201 47 L233 29 Z" fill="#ff7a18" />
-                      <path d="M18 126 L60 72 L96 90 L132 45 L169 53 L214 14" stroke="#ffd08a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <div className="mockList">
+                    <div className="mockLine"><i /><span /><b /></div>
+                    <div className="mockLine"><i /><span /><b /></div>
+                    <div className="mockLine"><i /><span /><b /></div>
                   </div>
                 </div>
-              )}
+              </div>
             </button>
           ))}
         </section>
 
-        <section className="ayres-features">
-          <div className="ayres-feature">
-            <div className="ayres-feature-icon">{ICONES.shield}</div>
-            <div><strong>Segurança Avançada</strong><p>Seus dados protegidos com tecnologia de ponta a ponta.</p></div>
-          </div>
-          <div className="ayres-feature">
-            <div className="ayres-feature-icon">{ICONES.clock}</div>
-            <div><strong>Tempo Real</strong><p>Informações atualizadas para decisões mais assertivas.</p></div>
-          </div>
-          <div className="ayres-feature">
-            <div className="ayres-feature-icon">{ICONES.data}</div>
-            <div><strong>Inteligência de Dados</strong><p>Relatórios e dashboards inteligentes para impulsionar resultados.</p></div>
-          </div>
+        <section className="features">
+          <article className="feature">
+            <div className="featureIcon">{ICONS.lock}</div>
+            <div>
+              <strong>Visual mais limpo</strong>
+              <p>Entrada direta, sem excesso de elementos na tela.</p>
+            </div>
+          </article>
+
+          <article className="feature">
+            <div className="featureIcon">{ICONS.zap}</div>
+            <div>
+              <strong>Acesso rápido</strong>
+              <p>Dois painéis principais em destaque para entrar sem demora.</p>
+            </div>
+          </article>
+
+          <article className="feature">
+            <div className="featureIcon">{ICONS.chart}</div>
+            <div>
+              <strong>Operação organizada</strong>
+              <p>Base visual preparada para crescer sem ficar bagunçada.</p>
+            </div>
+          </article>
         </section>
 
-        <footer className="ayres-footer">© 2026 <span>Ayres</span>. Todos os direitos reservados.</footer>
-      </div>
-    </div>
+        <div className="footerText">© 2026 <span>Ayres</span>. Painel operacional.</div>
+      </section>
+    </main>
   )
 }
