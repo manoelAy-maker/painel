@@ -2,6 +2,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { useApp } from '../context/AppContext'
 import { dinheiro, moedaNumero } from '../utils/index'
 import { podeAdministrar } from '../utils/roles'
+import { filtrarPorAcesso, gerarResumoProdutividade, resumirAlertasPrazo } from '../utils/regrasOperacionais'
 import '../estadia-dashboard-pro.css'
 import '../operator-simple.css'
 import '../dashboard-functional.css'
@@ -105,8 +106,27 @@ function ListaPendencias({ itens, onAbrir }) {
   )
 }
 
-function OperatorHome({ usuarioAtual, totalEstadias, totalPendentes, cloudStatus, usuariosOnline, onNovaLancada, onNovaPendencia }) {
+function ListaProdutividade({ itens }) {
+  if (!itens.length) return <div className="dash-empty-pro">Sem produtividade registrada ainda.</div>
+  return (
+    <div className="dash-list-pro">
+      {itens.slice(0, 6).map((u, index) => (
+        <div key={u.usuario} className="dash-row-pro">
+          <div className="dash-row-icon-pro">#{index + 1}</div>
+          <div className="dash-row-main-pro">
+            <strong>{u.usuario}</strong>
+            <span>{u.lancadas} lançadas · {u.pendencias} pendências · {u.finalizadas} finalizadas</span>
+          </div>
+          <span className="dash-row-badge-pro done">{u.total}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function OperatorHome({ usuarioAtual, totalEstadias, totalPendentes, cloudStatus, usuariosOnline, alertasPrazo, produtividade, onNovaLancada, onNovaPendencia }) {
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || 'Operador'
+  const meuResumo = produtividade.find(p => p.usuario === usuarioAtual?.usuario) || produtividade[0]
   return (
     <section className="aba active operator-home">
       <div className="operator-hero">
@@ -142,6 +162,8 @@ function OperatorHome({ usuarioAtual, totalEstadias, totalPendentes, cloudStatus
       <div className="operator-mini-stats">
         <div className="operator-mini-stat"><span>Estadias lançadas</span><strong>{totalEstadias}</strong></div>
         <div className="operator-mini-stat"><span>Pendências abertas</span><strong>{totalPendentes}</strong></div>
+        <div className="operator-mini-stat"><span>Alertas críticos</span><strong style={{ color: alertasPrazo.critico ? '#ef4444' : '#22c55e' }}>{alertasPrazo.critico}</strong></div>
+        <div className="operator-mini-stat"><span>Minha produtividade</span><strong>{meuResumo?.total || 0}</strong></div>
         <div className="operator-mini-stat"><span>Status da nuvem</span><strong style={{ color: cloudStatus === 'online' ? '#22c55e' : '#f97316' }}>{cloudStatus === 'online' ? 'Online' : 'Offline'}</strong></div>
         <div className="operator-mini-stat"><span>Usuários online</span><strong>{usuariosOnline.length}</strong></div>
       </div>
@@ -152,21 +174,25 @@ function OperatorHome({ usuarioAtual, totalEstadias, totalPendentes, cloudStatus
 export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
   const { estadias, estadiasALancar, usuarioAtual, usuariosOnline, cloudStatus, mudarAba, activityFeed } = useApp()
   const isAdmin = podeAdministrar(usuarioAtual)
+  const estadiasVisiveis = filtrarPorAcesso(estadias, usuarioAtual)
+  const pendenciasVisiveis = filtrarPorAcesso(estadiasALancar, usuarioAtual)
 
-  const abertas = estadias.filter(e => e.status === 'Aberto').length
-  const feitas = estadias.filter(e => e.status === 'Feito').length
-  const finalizadas = estadias.filter(e => e.status === 'Finalizado').length
-  const valorTotal = dinheiro(estadias.reduce((s, e) => s + moedaNumero(e.valor), 0))
-  const totalEstadias = estadias.length
-  const totalPendentes = estadiasALancar.length
+  const abertas = estadiasVisiveis.filter(e => e.status === 'Aberto').length
+  const feitas = estadiasVisiveis.filter(e => e.status === 'Feito').length
+  const finalizadas = estadiasVisiveis.filter(e => e.status === 'Finalizado').length
+  const valorTotal = dinheiro(estadiasVisiveis.reduce((s, e) => s + moedaNumero(e.valor), 0))
+  const totalEstadias = estadiasVisiveis.length
+  const totalPendentes = pendenciasVisiveis.length
   const totalConcluidas = feitas + finalizadas
-  const urgentes = estadiasALancar.filter(e => e.prioridade === 'Urgente').length
-  const medias = estadiasALancar.filter(e => e.prioridade === 'Média').length
-  const normais = estadiasALancar.filter(e => e.prioridade === 'Normal').length
+  const urgentes = pendenciasVisiveis.filter(e => e.prioridade === 'Urgente').length
+  const medias = pendenciasVisiveis.filter(e => e.prioridade === 'Média').length
+  const normais = pendenciasVisiveis.filter(e => e.prioridade === 'Normal').length
+  const alertasPrazo = resumirAlertasPrazo(pendenciasVisiveis)
+  const produtividade = gerarResumoProdutividade(estadiasVisiveis, pendenciasVisiveis)
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || 'Usuário'
 
   if (!isAdmin) {
-    return <OperatorHome usuarioAtual={usuarioAtual} totalEstadias={totalEstadias} totalPendentes={totalPendentes} cloudStatus={cloudStatus} usuariosOnline={usuariosOnline} onNovaLancada={onNovaLancada} onNovaPendencia={onNovaPendencia} />
+    return <OperatorHome usuarioAtual={usuarioAtual} totalEstadias={totalEstadias} totalPendentes={totalPendentes} cloudStatus={cloudStatus} usuariosOnline={usuariosOnline} alertasPrazo={alertasPrazo} produtividade={produtividade} onNovaLancada={onNovaLancada} onNovaPendencia={onNovaPendencia} />
   }
 
   const statusDados = [
@@ -186,13 +212,17 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
     { titulo: 'Sistema conectado', texto: cloudStatus === 'online' ? 'Dados sincronizados com a nuvem.' : 'Aguardando conexão estável.', icone: '☁️', tempo: 'agora' },
     { titulo: 'Estadias monitoradas', texto: `${totalEstadias} registro(s) no painel atual.`, icone: '📦', tempo: 'hoje' },
     { titulo: 'Pendências de lançamento', texto: `${totalPendentes} item(ns) aguardando lançamento.`, icone: '📋', tempo: 'hoje' },
+    { titulo: 'Alertas críticos', texto: `${alertasPrazo.critico} pendência(s) acima do prazo ou urgente.`, icone: '🚨', tempo: 'hoje' },
     { titulo: 'Usuários online', texto: `${usuariosOnline.length} pessoa(s) conectada(s).`, icone: '👥', tempo: 'online' },
   ]
 
-  const ultimasEstadias = [...estadias].reverse().slice(0, 8)
-  const pendenciasPrioridade = [...estadiasALancar].sort((a, b) => {
-    const peso = { Urgente: 3, Média: 2, Normal: 1 }
-    return (peso[b.prioridade] || 1) - (peso[a.prioridade] || 1)
+  const ultimasEstadias = [...estadiasVisiveis].reverse().slice(0, 8)
+  const pendenciasPrioridade = [...pendenciasVisiveis].sort((a, b) => {
+    const pesoAlerta = { critico: 4, atencao: 3, normal: 2, ok: 1 }
+    const pesoPrioridade = { Urgente: 3, Média: 2, Normal: 1 }
+    const pa = pesoAlerta[resumirAlertasPrazo([a]).critico ? 'critico' : resumirAlertasPrazo([a]).atencao ? 'atencao' : 'normal'] || 1
+    const pb = pesoAlerta[resumirAlertasPrazo([b]).critico ? 'critico' : resumirAlertasPrazo([b]).atencao ? 'atencao' : 'normal'] || 1
+    return (pb - pa) || ((pesoPrioridade[b.prioridade] || 1) - (pesoPrioridade[a.prioridade] || 1))
   })
 
   return (
@@ -214,6 +244,7 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
         <Kpi primary label="Valor total" value={valorTotal} sub={`${totalEstadias} estadias registradas`} icon="$" />
         <Kpi label="Total lançadas" value={totalEstadias} sub="registros no painel" icon="▧" color="#2563eb" />
         <Kpi label="A lançar" value={totalPendentes} sub="pendências abertas" icon="▣" color="#a855f7" />
+        <Kpi label="Críticas" value={alertasPrazo.critico} sub="urgentes ou acima de 48h" icon="!" color="#ef4444" />
         <Kpi label="Concluídas" value={totalConcluidas} sub="feitas/finalizadas" icon="✓" color="#22c55e" />
       </div>
 
@@ -229,9 +260,13 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
               </div>
             </Panel>
 
-            <Panel title="Prioridade" subtitle="Pendências por urgência" onAction={() => mudarAba('alancar')} action="Abrir">
+            <Panel title="Alertas de prazo" subtitle="Pendências vencidas e em atenção" onAction={() => mudarAba('alancar')} action="Abrir">
               <div className="command-priority-bars">
-                {prios.map(p => <div key={p.name} className="command-priority-row"><span>{p.name}</span><div className="command-bar"><i style={{ width: `${Math.max(8, (p.value / maxPrio) * 100)}%`, background: p.color }} /></div><strong>{p.value}</strong></div>)}
+                {[
+                  { name: 'Crítico', value: alertasPrazo.critico, color: '#ef4444' },
+                  { name: 'Atenção', value: alertasPrazo.atencao, color: '#f97316' },
+                  { name: 'No prazo', value: alertasPrazo.normal, color: '#22c55e' },
+                ].map(p => <div key={p.name} className="command-priority-row"><span>{p.name}</span><div className="command-bar"><i style={{ width: `${Math.max(8, (p.value / Math.max(alertasPrazo.total, 1)) * 100)}%`, background: p.color }} /></div><strong>{p.value}</strong></div>)}
               </div>
             </Panel>
           </div>
@@ -254,11 +289,16 @@ export default function Dashboard({ onNovaLancada, onNovaPendencia }) {
             </div>
           </Panel>
 
+          <Panel title="Produtividade" subtitle="Ranking por usuário">
+            <ListaProdutividade itens={produtividade} />
+          </Panel>
+
           <Panel title="Resumo da operação" subtitle="Indicadores úteis" action="Admin" onAction={() => mudarAba('admin')}>
             <div className="dash-list-pro">
               <div className="dash-row-pro"><div className="dash-row-icon-pro">☁️</div><div className="dash-row-main-pro"><strong>Nuvem</strong><span>Sincronização do banco</span></div><span className={`dash-row-badge-pro ${cloudStatus === 'online' ? 'done' : 'urgent'}`}>{cloudStatus === 'online' ? 'Online' : 'Offline'}</span></div>
               <div className="dash-row-pro"><div className="dash-row-icon-pro">👥</div><div className="dash-row-main-pro"><strong>Usuários online</strong><span>Pessoas conectadas agora</span></div><span className="dash-row-badge-pro">{usuariosOnline.length}</span></div>
-              <div className="dash-row-pro"><div className="dash-row-icon-pro">⚠️</div><div className="dash-row-main-pro"><strong>Urgentes</strong><span>Pendências marcadas como urgentes</span></div><span className={`dash-row-badge-pro ${urgentes ? 'urgent' : ''}`}>{urgentes}</span></div>
+              <div className="dash-row-pro"><div className="dash-row-icon-pro">🚨</div><div className="dash-row-main-pro"><strong>Críticas</strong><span>Urgentes ou acima de 48h</span></div><span className={`dash-row-badge-pro ${alertasPrazo.critico ? 'urgent' : ''}`}>{alertasPrazo.critico}</span></div>
+              <div className="dash-row-pro"><div className="dash-row-icon-pro">⚠️</div><div className="dash-row-main-pro"><strong>Atenção</strong><span>Entre 24h e 48h ou média</span></div><span className={`dash-row-badge-pro ${alertasPrazo.atencao ? 'urgent' : ''}`}>{alertasPrazo.atencao}</span></div>
             </div>
           </Panel>
         </aside>
