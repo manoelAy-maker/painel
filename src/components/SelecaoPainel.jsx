@@ -25,53 +25,71 @@ function TruckArt() {
   return (
     <svg className="artSvg truckSvg" viewBox="0 0 390 290" fill="none" aria-hidden="true">
       <defs>
-        <linearGradient id="truckBody" x1="120" x2="278" y1="80" y2="205" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#73B7FF" />
-          <stop offset=".45" stopColor="#1F6FFF" />
-          <stop offset="1" stopColor="#123CA2" />
+        <linearGradient id="truckTop" x1="76" x2="292" y1="62" y2="192" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#DBEAFE" />
+          <stop offset=".28" stopColor="#60A5FA" />
+          <stop offset=".7" stopColor="#2563EB" />
+          <stop offset="1" stopColor="#0F2F82" />
         </linearGradient>
-        <linearGradient id="truckBox" x1="220" x2="344" y1="45" y2="171" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#7BC2FF" />
-          <stop offset=".35" stopColor="#2563EB" />
-          <stop offset="1" stopColor="#062A78" />
+        <linearGradient id="truckSide" x1="113" x2="327" y1="125" y2="230" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#2563EB" />
+          <stop offset="1" stopColor="#061B4F" />
         </linearGradient>
-        <linearGradient id="platformBlue" x1="68" x2="338" y1="190" y2="262" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#0A1226" />
+        <linearGradient id="glass" x1="103" x2="152" y1="79" y2="124" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#E0F2FE" />
+          <stop offset="1" stopColor="#38BDF8" />
+        </linearGradient>
+        <linearGradient id="baseBlue" x1="45" x2="350" y1="188" y2="265" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#07111F" />
+          <stop offset=".55" stopColor="#0F2F82" />
           <stop offset="1" stopColor="#1D4ED8" />
         </linearGradient>
-        <filter id="blueGlow" x="0" y="0" width="390" height="290" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-          <feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#1D4ED8" floodOpacity=".48" />
-          <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#60A5FA" floodOpacity=".45" />
+        <filter id="softTruckGlow" x="0" y="0" width="390" height="290" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+          <feDropShadow dx="0" dy="20" stdDeviation="16" floodColor="#1D4ED8" floodOpacity=".36" />
+          <feDropShadow dx="0" dy="0" stdDeviation="9" floodColor="#60A5FA" floodOpacity=".32" />
         </filter>
       </defs>
 
-      <g filter="url(#blueGlow)">
-        <path d="M76 205L184 153C196 147 214 146 228 151L328 188C342 193 343 205 331 212L221 272C209 278 189 280 175 275L80 236C65 230 63 212 76 205Z" fill="url(#platformBlue)" />
-        <path d="M87 208L186 162C198 156 214 155 227 160L315 192C326 196 326 204 316 210L216 263C205 269 189 270 177 266L91 232C78 227 77 213 87 208Z" fill="#101B33" stroke="#60A5FA" strokeOpacity=".55" strokeWidth="2" />
-        <path d="M97 229L176 260C190 266 208 265 221 258L314 209" stroke="#60A5FA" strokeOpacity=".88" strokeWidth="5" strokeLinecap="round" />
+      <g filter="url(#softTruckGlow)">
+        <path d="M55 207L166 154C181 147 206 146 223 153L338 196C353 202 353 214 338 222L226 273C209 281 184 281 167 274L57 231C42 225 40 214 55 207Z" fill="url(#baseBlue)" opacity=".98" />
+        <path d="M75 209L174 164C188 158 205 158 220 163L315 198C327 202 327 211 315 217L218 262C204 268 187 268 173 263L78 229C66 225 64 214 75 209Z" fill="#0B1224" stroke="#60A5FA" strokeOpacity=".48" strokeWidth="2" />
+        <path d="M91 231L173 261C190 267 204 266 220 258L306 218" stroke="#93C5FD" strokeOpacity=".72" strokeWidth="4" strokeLinecap="round" />
       </g>
 
-      <g transform="translate(62 30)" filter="url(#blueGlow)">
-        <path d="M111 121L178 92L214 112L145 146L111 121Z" fill="#0B1733" />
-        <path d="M168 54L292 20L292 120L168 160V54Z" fill="url(#truckBox)" stroke="#93C5FD" strokeOpacity=".45" />
-        <path d="M168 54L128 34L252 4L292 20L168 54Z" fill="#91D4FF" />
-        <path d="M292 20L318 35L318 128L292 120V20Z" fill="#0B3C9C" />
-        {Array.from({ length: 8 }).map((_, i) => (
-          <path key={i} d={`M${181 + i * 13} 58V151`} stroke="#0F3B94" strokeOpacity=".55" />
-        ))}
-        <path d="M57 130L108 102L156 116L156 166L98 195L57 174V130Z" fill="url(#truckBody)" />
-        <path d="M75 119L110 100L144 110L112 128L75 119Z" fill="#B9E2FF" />
-        <path d="M76 129L110 111L137 119L103 139L76 129Z" fill="#07162E" opacity=".86" />
-        <path d="M57 174L98 195V151L57 130V174Z" fill="#0F3B94" />
-        <path d="M98 151L156 123V166L98 195V151Z" fill="#1D4ED8" />
-        <path d="M32 175L98 206L208 151" stroke="#0B1020" strokeWidth="18" strokeLinecap="round" />
-        {[74, 116, 240, 278].map((x, i) => (
-          <g key={i}>
-            <circle cx={x} cy={190 - (i > 1 ? 15 : 0)} r="18" fill="#020617" />
-            <circle cx={x} cy={190 - (i > 1 ? 15 : 0)} r="10" fill="#334155" />
-            <circle cx={x} cy={190 - (i > 1 ? 15 : 0)} r="4" fill="#94A3B8" />
-          </g>
-        ))}
+      <g filter="url(#softTruckGlow)">
+        <path d="M112 76L242 38C252 35 266 36 276 41L329 66C338 70 337 78 327 81L194 121C184 124 171 123 162 119L109 94C100 90 102 79 112 76Z" fill="url(#truckTop)" />
+        <path d="M194 121L327 81V167L194 213V121Z" fill="url(#truckSide)" />
+        <path d="M109 94L162 119C171 123 184 124 194 121V213L111 176C103 172 98 164 98 155V102C98 95 102 91 109 94Z" fill="#0D3B95" />
+        <path d="M118 111L158 130V160L118 142V111Z" fill="url(#glass)" opacity=".92" />
+        <path d="M118 111L158 130L184 122L142 104L118 111Z" fill="#BFDBFE" opacity=".84" />
+        <path d="M213 125L305 97" stroke="#93C5FD" strokeOpacity=".24" strokeWidth="2" />
+        <path d="M213 146L305 116" stroke="#93C5FD" strokeOpacity=".18" strokeWidth="2" />
+        <path d="M213 167L305 136" stroke="#93C5FD" strokeOpacity=".16" strokeWidth="2" />
+        <path d="M213 188L305 156" stroke="#93C5FD" strokeOpacity=".14" strokeWidth="2" />
+        <path d="M194 121L327 81" stroke="#BFDBFE" strokeOpacity=".45" strokeWidth="2" />
+        <path d="M98 154L194 199L327 153" stroke="#07111F" strokeWidth="20" strokeLinecap="round" opacity=".82" />
+
+        <g>
+          <circle cx="128" cy="178" r="20" fill="#020617" />
+          <circle cx="128" cy="178" r="12" fill="#334155" />
+          <circle cx="128" cy="178" r="5" fill="#CBD5E1" />
+        </g>
+        <g>
+          <circle cx="182" cy="203" r="20" fill="#020617" />
+          <circle cx="182" cy="203" r="12" fill="#334155" />
+          <circle cx="182" cy="203" r="5" fill="#CBD5E1" />
+        </g>
+        <g>
+          <circle cx="274" cy="171" r="20" fill="#020617" />
+          <circle cx="274" cy="171" r="12" fill="#334155" />
+          <circle cx="274" cy="171" r="5" fill="#CBD5E1" />
+        </g>
+      </g>
+
+      <g opacity=".9">
+        <circle cx="66" cy="190" r="4" fill="#38BDF8" />
+        <circle cx="84" cy="183" r="3" fill="#60A5FA" />
+        <circle cx="101" cy="176" r="2.5" fill="#BFDBFE" />
       </g>
     </svg>
   )
