@@ -28,6 +28,15 @@ function csvEscape(v) {
   return `"${String(v ?? '').replaceAll('"', '""')}"`
 }
 
+function htmlEscape(v) {
+  return String(v ?? '-')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
+
 function RankingCard({ titulo, subtitulo, dados }) {
   const maior = Math.max(...dados.map(d => d.qtd), 1)
   return (
@@ -87,7 +96,8 @@ export default function Relatorios() {
     return base.filter(item => {
       const data = dataISOTexto(item.dataLancamento || item.dataCriacao || item.dataFinalizado || item.dataFeito || '')
       const responsavel = item.lancadoPor || item.criadoPor || item.feitoPor || item.finalizadoPor || ''
-      const texto = [item.chamado, item.motorista, item.transportadora, item.placa, item.filial, item.motivoEstadia, item.localEstadia, item.tipoFrete, item.pagoPor, item.status, responsavel].join(' ').toUpperCase()
+      const nf = item.nf || item.numeroNf || ''
+      const texto = [item.chamado, nf, item.motorista, item.transportadora, item.placa, item.filial, item.motivoEstadia, item.localEstadia, item.tipoFrete, item.pagoPor, item.status, responsavel].join(' ').toUpperCase()
       return (!dataInicio || data >= dataInicio)
         && (!dataFim || data <= dataFim)
         && (!statusFiltro || item.status === statusFiltro)
@@ -107,6 +117,9 @@ export default function Relatorios() {
     transportadora: item.transportadora || '',
     motorista: item.motorista || '',
     placa: item.placa || '',
+    nf: item.nf || item.numeroNf || '',
+    chamado: item.chamado || '',
+    peso: item.peso || '',
     horas: item.horas || '',
     valorEstadia: item.valor || '',
     status: item.status || '',
@@ -141,8 +154,8 @@ export default function Relatorios() {
   }
 
   const exportarCSV = () => {
-    const header = ['Origem', 'Data', 'Filial', 'Local', 'Motivo', 'Tipo frete', 'Transportadora', 'Placa', 'Motorista', 'Horas', 'Valor estadia', 'Status', 'Responsável']
-    const body = linhas.map(l => [l.origem, l.data, l.filial, l.local, l.motivo, l.tipoFrete, l.transportadora, l.placa, l.motorista, l.horas, l.valorEstadia, l.status, l.responsavel].map(csvEscape).join(';'))
+    const header = ['Origem', 'Data', 'NF', 'Chamado', 'Filial', 'Local', 'Motivo', 'Tipo frete', 'Transportadora', 'Placa', 'Motorista', 'Peso', 'Horas', 'Valor estadia', 'Status', 'Responsável']
+    const body = linhas.map(l => [l.origem, l.data, l.nf, l.chamado, l.filial, l.local, l.motivo, l.tipoFrete, l.transportadora, l.placa, l.motorista, l.peso, l.horas, l.valorEstadia, l.status, l.responsavel].map(csvEscape).join(';'))
     baixarArquivo(`relatorio-estadias-${new Date().toISOString().slice(0, 10)}.csv`, [header.map(csvEscape).join(';'), ...body].join('\n'), 'text/csv;charset=utf-8')
   }
 
@@ -159,21 +172,47 @@ export default function Relatorios() {
       porLocal,
       porFrete,
       porTransportadora,
+      caminhões: linhas,
     }
     baixarArquivo(`resumo-executivo-estadias-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(resumo, null, 2), 'application/json')
   }
 
   const exportarPDF = () => {
+    const periodoTxt = dataInicio || dataFim ? `${dataInicio || 'início'} até ${dataFim || 'hoje'}` : 'Todos os períodos'
     const htmlRank = (titulo, dados) => `
-      <section class="rank"><h2>${titulo}</h2>${dados.slice(0, 8).map((d, i) => `<div class="row"><span>${i + 1}. ${d.nome}</span><strong>${d.qtd}</strong><em>${dinheiro(d.valor)}</em></div>`).join('') || '<p>Sem dados.</p>'}</section>
+      <section class="rank"><h2>${htmlEscape(titulo)}</h2>${dados.slice(0, 8).map((d, i) => `<div class="row"><span>${i + 1}. ${htmlEscape(d.nome)}</span><strong>${d.qtd}</strong><em>${dinheiro(d.valor)}</em></div>`).join('') || '<p>Sem dados.</p>'}</section>
     `
+    const linhasDetalhadas = linhas.slice(0, 180).map((l, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${htmlEscape(l.data || '-')}</td>
+        <td><strong>${htmlEscape(l.placa || '-')}</strong></td>
+        <td>${htmlEscape(l.motorista || '-')}</td>
+        <td>${htmlEscape(l.transportadora || '-')}</td>
+        <td>${htmlEscape(l.nf || '-')}</td>
+        <td>${htmlEscape(l.chamado || '-')}</td>
+        <td>${htmlEscape(l.filial || '-')}</td>
+        <td>${htmlEscape(l.peso || '-')}</td>
+        <td>${htmlEscape(l.horas || '-')}</td>
+        <td><strong>${htmlEscape(l.valorEstadia || '-')}</strong></td>
+        <td>${htmlEscape(l.status || '-')}</td>
+        <td>${htmlEscape(l.responsavel || '-')}</td>
+      </tr>
+    `).join('')
+
     const html = `<!doctype html><html><head><meta charset="utf-8"/><title>Relatório Via Log</title><style>
-      *{box-sizing:border-box} body{font-family:Inter,Arial,sans-serif;margin:0;background:#f8fafc;color:#0f172a} .cover{padding:36px;background:linear-gradient(135deg,#020617,#1d4ed8);color:white} .cover h1{font-size:34px;margin:0 0 8px}.cover p{opacity:.78;margin:0}.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:22px}.kpi{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:18px}.kpi span{display:block;color:#64748b;font-size:12px}.kpi strong{font-size:24px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 22px 22px}.rank{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:18px}.rank h2{font-size:17px;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr 44px 110px;gap:10px;border-top:1px solid #e2e8f0;padding:9px 0;font-size:12px}.table{padding:0 22px 30px} table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden} th,td{border-bottom:1px solid #e2e8f0;padding:9px;font-size:11px;text-align:left} th{background:#f1f5f9;color:#475569;text-transform:uppercase} @media print{button{display:none}.cover{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+      *{box-sizing:border-box} body{font-family:Inter,Arial,sans-serif;margin:0;background:#f8fafc;color:#0f172a}.cover{padding:34px 36px;background:linear-gradient(135deg,#020617,#1d4ed8);color:white}.cover h1{font-size:32px;margin:0 0 8px}.cover p{opacity:.82;margin:0 0 4px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);border-radius:999px;padding:6px 10px;font-size:11px}.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:22px}.kpi{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:16px}.kpi span{display:block;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.04em}.kpi strong{font-size:22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 22px 18px}.rank{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:16px}.rank h2{font-size:16px;margin:0 0 10px}.row{display:grid;grid-template-columns:1fr 44px 105px;gap:10px;border-top:1px solid #e2e8f0;padding:8px 0;font-size:11px}.section-title{padding:0 22px 10px}.section-title h2{font-size:18px;margin:0}.section-title p{margin:4px 0 0;color:#64748b;font-size:12px}.table{padding:0 22px 30px}table{width:100%;border-collapse:collapse;background:white;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden}th,td{border-bottom:1px solid #e2e8f0;padding:7px 8px;font-size:9.5px;text-align:left;vertical-align:top}th{background:#f1f5f9;color:#475569;text-transform:uppercase;font-size:8px;letter-spacing:.04em}.total-row{background:#eff6ff;font-weight:800}.obs{padding:0 22px 24px;color:#64748b;font-size:11px}@page{size:A4 landscape;margin:10mm}@media print{button{display:none}.cover{print-color-adjust:exact;-webkit-print-color-adjust:exact}body{background:white}.table{page-break-inside:auto}tr{page-break-inside:avoid;page-break-after:auto}}
     </style></head><body>
-      <div class="cover"><h1>Relatório Executivo de Estadias</h1><p>Via Log · Gerado em ${new Date().toLocaleString('pt-BR')}</p></div>
-      <div class="kpis"><div class="kpi"><span>Valor total</span><strong>${dinheiro(valorTotal)}</strong></div><div class="kpi"><span>Registros</span><strong>${totalEstadias}</strong></div><div class="kpi"><span>Horas totais</span><strong>${horasTotal.toFixed(2)}h</strong></div><div class="kpi"><span>Críticos</span><strong>${alertasPrazo.critico}</strong></div><div class="kpi"><span>Atenção</span><strong>${alertasPrazo.atencao}</strong></div></div>
+      <div class="cover">
+        <h1>Relatório Executivo de Estadias</h1>
+        <p>Via Log · Gerado em ${new Date().toLocaleString('pt-BR')}</p>
+        <div class="meta"><span class="pill">Período: ${htmlEscape(periodoTxt)}</span><span class="pill">Base: ${htmlEscape(tipoBase)}</span><span class="pill">Status: ${htmlEscape(statusFiltro || 'Todos')}</span><span class="pill">Filial: ${htmlEscape(filialFiltro ? nomeFilial(filialFiltro) : 'Todas')}</span><span class="pill">Responsável: ${htmlEscape(responsavelFiltro || 'Todos')}</span></div>
+      </div>
+      <div class="kpis"><div class="kpi"><span>Valor total</span><strong>${dinheiro(valorTotal)}</strong></div><div class="kpi"><span>Caminhões/registros</span><strong>${totalEstadias}</strong></div><div class="kpi"><span>Horas totais</span><strong>${horasTotal.toFixed(2)}h</strong></div><div class="kpi"><span>Críticos</span><strong>${alertasPrazo.critico}</strong></div><div class="kpi"><span>Atenção</span><strong>${alertasPrazo.atencao}</strong></div></div>
       <div class="grid">${htmlRank('Filiais com mais estadia', porFilial)}${htmlRank('Responsáveis / produtividade', porResponsavel)}${htmlRank('Motivos mais frequentes', porMotivo)}${htmlRank('Transportadoras', porTransportadora)}</div>
-      <div class="table"><table><thead><tr><th>Data</th><th>Filial</th><th>Placa</th><th>Motorista</th><th>Valor</th><th>Status</th><th>Responsável</th></tr></thead><tbody>${linhas.slice(0, 100).map(l => `<tr><td>${l.data || '-'}</td><td>${l.filial}</td><td>${l.placa || '-'}</td><td>${l.motorista || '-'}</td><td>${l.valorEstadia || '-'}</td><td>${l.status || '-'}</td><td>${l.responsavel || '-'}</td></tr>`).join('')}</tbody></table></div>
+      <div class="section-title"><h2>Detalhamento por caminhão</h2><p>Lista com placa, motorista, NF, chamado e valor individual de cada registro filtrado.</p></div>
+      <div class="table"><table><thead><tr><th>#</th><th>Data</th><th>Placa</th><th>Motorista</th><th>Transportadora</th><th>NF</th><th>Chamado</th><th>Filial</th><th>Peso</th><th>Horas</th><th>Valor</th><th>Status</th><th>Responsável</th></tr></thead><tbody>${linhasDetalhadas || '<tr><td colspan="13">Sem dados no filtro.</td></tr>'}<tr class="total-row"><td colspan="9">Total filtrado</td><td>${horasTotal.toFixed(2)}h</td><td>${dinheiro(valorTotal)}</td><td colspan="2">${totalEstadias} registro(s)</td></tr></tbody></table></div>
+      <div class="obs">Observação: o PDF imprime até 180 registros por vez para não travar o navegador. Para base completa, use Exportar CSV.</div>
       <script>setTimeout(()=>window.print(),400)</script>
     </body></html>`
     const w = window.open('', '_blank')
@@ -217,7 +256,7 @@ export default function Relatorios() {
           <select value={statusFiltro} onChange={e => setStatusFiltro(e.target.value)}><option value="">Todos os status</option>{opcoes.status.map(s => <option key={s} value={s}>{s}</option>)}</select>
           <select value={filialFiltro} onChange={e => setFilialFiltro(e.target.value)}><option value="">Todas as filiais</option>{opcoes.filiais.map(f => <option key={f} value={f}>{nomeFilial(f)}</option>)}</select>
           <select value={responsavelFiltro} onChange={e => setResponsavelFiltro(e.target.value)}><option value="">Todos os responsáveis</option>{opcoes.responsaveis.map(r => <option key={r} value={r}>{r}</option>)}</select>
-          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar filial, status, responsável, placa..." />
+          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar filial, status, responsável, placa, NF ou chamado..." />
         </div>
       </div>
 
@@ -230,7 +269,7 @@ export default function Relatorios() {
         <RankingCard titulo="Transportadoras" subtitulo="Ranking por ocorrência" dados={porTransportadora} />
       </div>
 
-      <div className="report-table-card"><div className="table-scroll"><table><thead><tr><th>Origem</th><th>Data</th><th>Filial</th><th>Local</th><th>Motivo</th><th>Transportadora</th><th>Placa</th><th>Motorista</th><th>Horas</th><th>Valor</th><th>Status</th><th>Responsável</th></tr></thead><tbody>{linhas.length === 0 ? <tr><td colSpan={12} className="empty">Nenhum dado nesse filtro.</td></tr> : linhas.slice(0, 120).map((l, i) => <tr key={`${l.origem}-${l.placa}-${i}`}><td><span className="badge badge-logistica">{l.origem}</span></td><td>{l.data || '-'}</td><td>{l.filial}</td><td>{l.local || '-'}</td><td>{l.motivo || '-'}</td><td>{l.transportadora || '-'}</td><td><span className="plate">{l.placa || '-'}</span></td><td>{l.motorista || '-'}</td><td>{l.horas || '-'}</td><td><strong>{l.valorEstadia || '-'}</strong></td><td>{l.status || '-'}</td><td>{l.responsavel || '-'}</td></tr>)}</tbody></table></div></div>
+      <div className="report-table-card"><div className="table-scroll"><table><thead><tr><th>Origem</th><th>Data</th><th>NF</th><th>Chamado</th><th>Filial</th><th>Transportadora</th><th>Placa</th><th>Motorista</th><th>Peso</th><th>Horas</th><th>Valor</th><th>Status</th><th>Responsável</th></tr></thead><tbody>{linhas.length === 0 ? <tr><td colSpan={13} className="empty">Nenhum dado nesse filtro.</td></tr> : linhas.slice(0, 120).map((l, i) => <tr key={`${l.origem}-${l.placa}-${i}`}><td><span className="badge badge-logistica">{l.origem}</span></td><td>{l.data || '-'}</td><td>{l.nf || '-'}</td><td>{l.chamado || '-'}</td><td>{l.filial}</td><td>{l.transportadora || '-'}</td><td><span className="plate">{l.placa || '-'}</span></td><td>{l.motorista || '-'}</td><td>{l.peso || '-'}</td><td>{l.horas || '-'}</td><td><strong>{l.valorEstadia || '-'}</strong></td><td>{l.status || '-'}</td><td>{l.responsavel || '-'}</td></tr>)}</tbody></table></div></div>
     </section>
   )
 }
