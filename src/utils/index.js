@@ -12,10 +12,35 @@ export const formatarData = (d, h) => {
 
 export const dataISOTexto = (txt) => {
   if (!txt) return ''
-  const dia = String(txt).split(',')[0] || ''
-  const p = dia.split('/')
-  if (p.length !== 3) return ''
-  return `${p[2]}-${p[1]}-${p[0]}`
+  if (txt instanceof Date && !Number.isNaN(txt.getTime())) {
+    const d = new Date(txt)
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+    return d.toISOString().slice(0, 10)
+  }
+
+  const raw = String(txt).trim()
+  if (!raw) return ''
+
+  // Já veio no formato usado por input date: 2026-06-16
+  const isoCurto = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (isoCurto) return `${isoCurto[1]}-${isoCurto[2]}-${isoCurto[3]}`
+
+  // Formato brasileiro: 16/06/2026, 13:45 ou 16/06/2026 13:45
+  const br = raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)
+  if (br) {
+    const dia = br[1].padStart(2, '0')
+    const mes = br[2].padStart(2, '0')
+    return `${br[3]}-${mes}-${dia}`
+  }
+
+  // Última tentativa: Date nativo do navegador
+  const dt = new Date(raw)
+  if (!Number.isNaN(dt.getTime())) {
+    dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset())
+    return dt.toISOString().slice(0, 10)
+  }
+
+  return ''
 }
 
 export const parseDataBR = (txt) => {
