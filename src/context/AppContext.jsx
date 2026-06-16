@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useEffect, useRef, useCallback }
 import { defaultUsers, ADMIN_USERNAME } from '../data/defaultUsers'
 import { FILIAIS } from '../data/filiais'
 import { gerarId, baixarArquivo, dataISOTexto, calcularEstadia } from '../utils/index'
+import { podeAdministrar } from '../utils/roles'
 import * as sb from '../lib/supabase'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
 
@@ -14,6 +15,26 @@ const isHash = (s) => /^[a-f0-9]{64}$/.test(s || '')
 
 const load = (key, fallback) => {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback } catch { return fallback }
+}
+
+const chaveRegistro = (item) => String(item?.id || item?.local_id || item?.localId || '')
+const dataRegistroMs = (item) => {
+  const raw = item?.updated_at || item?.updatedAt || item?.dataLancamento || item?.dataCriacao || item?.dataFinalizado || item?.dataFeito || ''
+  const dt = new Date(raw)
+  return Number.isNaN(dt.getTime()) ? 0 : dt.getTime()
+}
+
+const mesclarRegistros = (locais = [], remotos = []) => {
+  const map = new Map()
+  locais.forEach(item => {
+    const chave = chaveRegistro(item)
+    if (chave) map.set(chave, item)
+  })
+  remotos.forEach(item => {
+    const chave = chaveRegistro(item)
+    if (chave) map.set(chave, { ...map.get(chave), ...item })
+  })
+  return [...map.values()].sort((a, b) => dataRegistroMs(b) - dataRegistroMs(a))
 }
 
 const initialState = {
@@ -125,13 +146,15 @@ export function AppProvider({ children }) {
     if (!navigator.onLine) return false
     try {
       const usuario = usuarioRef.current
-      const isAdmin = usuario?.cargo === 'Admin'
+      const isAdmin = podeAdministrar(usuario)
       const filial = isAdmin ? null : (usuario?.filial || 'jatai-go')
       const data = await sb.baixarTodos(filial)
 
       recebendoNuvem.current = true
-      const lancadas = data.filter(x => x.tipo === 'lancada').map(x => x.dados).filter(Boolean)
-      const pendentes = data.filter(x => x.tipo === 'a_lancar').map(x => x.dados).filter(Boolean)
+      const lancadasRemotas = data.filter(x => x.tipo === 'lancada').map(x => x.dados).filter(Boolean)
+      const pendentesRemotas = data.filter(x => x.tipo === 'a_lancar').map(x => x.dados).filter(Boolean)
+      const lancadas = mesclarRegistros(stateRef.current.estadias, lancadasRemotas)
+      const pendentes = mesclarRegistros(stateRef.current.estadiasALancar, pendentesRemotas)
       dispatch({ type: 'SET_ESTADIAS', payload: lancadas })
       dispatch({ type: 'SET_A_LANCAR', payload: pendentes })
       recebendoNuvem.current = false
@@ -196,6 +219,7 @@ export function AppProvider({ children }) {
       }
 
       await sincronizarFila()
+      await baixarNuvem(false)
       setCloud('online', 'Conectado. Salvamento automático ativo.')
       toast('Nuvem conectada.', 'ok')
       return true
