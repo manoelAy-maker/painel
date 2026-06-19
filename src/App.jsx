@@ -114,7 +114,7 @@ function CaptacaoIsolada({ onPortal }) {
   )
 }
 
-function PainelEstadia() {
+function PainelEstadia({ moduloInicial }) {
   const { abaAtiva, mudarAba, usuarioAtual } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const formLancadaRef = useRef()
@@ -136,6 +136,10 @@ function PainelEstadia() {
   useEffect(() => {
     if (!isAdmin && abaProtegida) mudarAba('inicio')
   }, [isAdmin, abaProtegida, mudarAba])
+
+  useEffect(() => {
+    if (moduloInicial === 'captacao' && abaAtiva !== 'captacao') mudarAba('captacao')
+  }, [moduloInicial, abaAtiva, mudarAba])
 
   return (
     <div className="app" style={{ display: 'block' }}>
@@ -182,16 +186,13 @@ export default function App() {
     }
   }, [])
 
-  const voltarPortal = () => setModuloInicial(null)
-
   return (
     <>
       <SoundManager />
       {!usuarioAtual && <Login />}
       {usuarioAtual && mobileApk && <AppMobileOperacional />}
       {usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}
-      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <CaptacaoIsolada onPortal={voltarPortal} />}
-      {usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}
+      {usuarioAtual && !mobileApk && moduloInicial && <PainelEstadia moduloInicial={moduloInicial} />}
       <Toast />
     </>
   )
