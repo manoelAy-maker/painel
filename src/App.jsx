@@ -151,6 +151,7 @@ function PainelEstadia() {
               {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
               {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas />}
               {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
+              {abaRender === 'captacao' && <Captacao />}
               {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
               {isAdmin && abaRender === 'historico' && <Historico />}
               {isAdmin && abaRender === 'relatorios' && <Relatorios />}
