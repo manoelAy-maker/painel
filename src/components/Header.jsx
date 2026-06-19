@@ -11,8 +11,10 @@ const cargoVisivel = (cargo) => cargo === 'Operador' || !cargo ? 'Analista Júni
 const TITULOS = {
   inicio: ['Dashboard', 'Resumo da operação'],
   lancadas: ['Estadias lançadas', 'Controle de lançamentos e anexos'],
+  consultaLancadas: ['Consulta de estadias', 'Busca e acompanhamento de registros'],
   alancar: ['Pendências', 'Itens aguardando lançamento'],
-  captacaoAdmin: ['Captação', 'Motoristas, leads e motivos'],
+  captacao: ['Captação', 'Motoristas, leads e próximas ações'],
+  captacaoAdmin: ['Captação geral', 'Motoristas, leads e motivos'],
   relatorios: ['Relatórios', 'Análises e exportações'],
   historico: ['Histórico', 'Eventos e alterações'],
   lixeira: ['Lixeira', 'Registros removidos'],
