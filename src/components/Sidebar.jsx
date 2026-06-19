@@ -6,6 +6,7 @@ const icons = {
   lancadas: '＋',
   consultaLancadas: '▣',
   alancar: '▤',
+  captacao: '◉',
   captacaoAdmin: '◉',
   historico: '↺',
   relatorios: '▦',
@@ -24,6 +25,12 @@ const OPERADOR_GRUPOS = [
       { id: 'alancar', label: 'Pendências' },
     ],
   },
+  {
+    titulo: 'Captação',
+    itens: [
+      { id: 'captacao', label: 'Motoristas e leads' },
+    ],
+  },
 ]
 
 const ADMIN_GRUPOS = [
@@ -39,7 +46,8 @@ const ADMIN_GRUPOS = [
   {
     titulo: 'Comercial',
     itens: [
-      { id: 'captacaoAdmin', label: 'Captação' },
+      { id: 'captacaoAdmin', label: 'Captação geral' },
+      { id: 'captacao', label: 'Captação rápida' },
     ],
   },
   {
