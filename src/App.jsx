@@ -123,6 +123,11 @@ function PainelEstadia() {
   const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin', 'lixeira'].includes(abaAtiva)
   const abaRender = !isAdmin && abaProtegida ? 'inicio' : abaAtiva
 
+  useEffect(() => {
+    document.body.classList.toggle('sidebar-open', sidebarOpen)
+    return () => document.body.classList.remove('sidebar-open')
+  }, [sidebarOpen])
+
   const focarLancada = () => {
     mudarAba('lancadas')
     setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
@@ -141,7 +146,7 @@ function PainelEstadia() {
     <div className="app" style={{ display: 'block' }}>
       {sidebarOpen && <div style={{ position: 'fixed', inset: 0, zIndex: 25, background: 'rgba(0,0,0,.4)' }} onClick={() => setSidebarOpen(false)} />}
       <div className="app-layout">
-        <div style={sidebarOpen ? { transform: 'translateX(0)' } : {}}><Sidebar onFechar={() => setSidebarOpen(false)} /></div>
+        <Sidebar onFechar={() => setSidebarOpen(false)} />
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(true)} />
           <main className="container">
