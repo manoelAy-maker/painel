@@ -1,5 +1,6 @@
 import { useAuthContext, useCloudContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import { podeAdministrar } from '../utils/roles'
+import AyresLogo from './AyresLogo'
 
 const Ic = ({ d, d2, size = 18, ...p }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p}>
@@ -22,45 +23,11 @@ const ICONS = {
   admin:         <Ic d="M12 15a3 3 0 100-6 3 3 0 000 6z" d2="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />,
 }
 
-const OPERADOR_GRUPOS = [
-  {
-    titulo: 'Operação',
-    itens: [
-      { id: 'inicio', label: 'Dashboard' },
-      { id: 'lancadas', label: 'Lançar estadia' },
-      { id: 'consultaLancadas', label: 'Estadias lançadas' },
-      { id: 'alancar', label: 'Pendências' },
-    ],
-  },
-]
-
+const OPERADOR_GRUPOS = [{ titulo: 'Operação', itens: [{ id: 'inicio', label: 'Dashboard' }, { id: 'lancadas', label: 'Lançar estadia' }, { id: 'consultaLancadas', label: 'Estadias lançadas' }, { id: 'alancar', label: 'Pendências' }] }]
 const ADMIN_GRUPOS = [
-  {
-    titulo: 'Operação',
-    itens: [
-      { id: 'inicio', label: 'Dashboard' },
-      { id: 'lancadas', label: 'Lançar estadia' },
-      { id: 'consultaLancadas', label: 'Estadias lançadas' },
-      { id: 'alancar', label: 'Pendências' },
-    ],
-  },
-  {
-    titulo: 'Comercial',
-    itens: [
-      { id: 'captacaoAdmin', label: 'Captação geral' },
-      { id: 'captacao', label: 'Captação rápida' },
-    ],
-  },
-  {
-    titulo: 'Gestão',
-    itens: [
-      { id: 'relatorios', label: 'Relatórios' },
-      { id: 'historico', label: 'Histórico' },
-      { id: 'lixeira', label: 'Lixeira' },
-      { id: 'backup', label: 'Backup' },
-      { id: 'admin', label: 'Usuários e cargos' },
-    ],
-  },
+  { titulo: 'Operação', itens: [{ id: 'inicio', label: 'Dashboard' }, { id: 'lancadas', label: 'Lançar estadia' }, { id: 'consultaLancadas', label: 'Estadias lançadas' }, { id: 'alancar', label: 'Pendências' }] },
+  { titulo: 'Comercial', itens: [{ id: 'captacaoAdmin', label: 'Captação geral' }, { id: 'captacao', label: 'Captação rápida' }] },
+  { titulo: 'Gestão', itens: [{ id: 'relatorios', label: 'Relatórios' }, { id: 'historico', label: 'Histórico' }, { id: 'lixeira', label: 'Lixeira' }, { id: 'backup', label: 'Backup' }, { id: 'admin', label: 'Usuários e cargos' }] },
 ]
 
 const CloudIcon = ({ status }) => {
@@ -77,17 +44,13 @@ export default function Sidebar({ onFechar }) {
   const isAdmin = podeAdministrar(usuarioAtual)
   const grupos = isAdmin ? ADMIN_GRUPOS : OPERADOR_GRUPOS
 
-  const handleTab = (id) => {
-    mudarAba(id)
-    onFechar?.()
-  }
-
+  const handleTab = (id) => { mudarAba(id); onFechar?.() }
   const filialLabel = (usuarioAtual?.filial || 'jatai-go').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())
 
   return (
     <aside className="sidebar-pro ayres-sidebar-v4" id="sidebarPro">
       <div className="brand-pro ayres-side-brand-v4">
-        <div className="sidebar-logo-mark">A</div>
+        <div className="sidebar-logo-mark"><AyresLogo size={44} /></div>
         <div>
           <h1>AYRES</h1>
           <p>{filialLabel} · {usuarioAtual?.cargo || 'Operador'}</p>
@@ -102,9 +65,7 @@ export default function Sidebar({ onFechar }) {
               <button key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)}>
                 <span className="tab-icon">{ICONS[a.id]}</span>
                 <span className="tab-label">{a.label}</span>
-                {a.id === 'alancar' && estadiasALancar.length > 0 && (
-                  <span className="pending-badge">{estadiasALancar.length}</span>
-                )}
+                {a.id === 'alancar' && estadiasALancar.length > 0 && <span className="pending-badge">{estadiasALancar.length}</span>}
               </button>
             ))}
           </div>
@@ -112,22 +73,8 @@ export default function Sidebar({ onFechar }) {
       </nav>
 
       <div className="sidebar-status ayres-side-status-v4">
-        <div className="sidebar-card">
-          <div className="sidebar-card-title">
-            <CloudIcon status={cloudStatus} />
-            <span>{cloudStatus === 'online' ? 'Nuvem online' : cloudStatus === 'syncing' ? 'Sincronizando' : 'Offline'}</span>
-          </div>
-          <small>{cloudText}</small>
-        </div>
-        <div className="sidebar-user-card">
-          <div className="avatar" style={{ width: 36, height: 36, fontSize: 13, flexShrink: 0 }}>
-            {usuarioAtual?.avatar || '?'}
-          </div>
-          <div style={{ overflow: 'hidden', flex: 1 }}>
-            <div className="sidebar-user-name">{usuarioAtual?.nome || 'Usuário'}</div>
-            <div className="sidebar-user-role">{usuarioAtual?.cargo || ''}</div>
-          </div>
-        </div>
+        <div className="sidebar-card"><div className="sidebar-card-title"><CloudIcon status={cloudStatus} /><span>{cloudStatus === 'online' ? 'Nuvem online' : cloudStatus === 'syncing' ? 'Sincronizando' : 'Offline'}</span></div><small>{cloudText}</small></div>
+        <div className="sidebar-user-card"><div className="avatar" style={{ width: 36, height: 36, fontSize: 13, flexShrink: 0 }}>{usuarioAtual?.avatar || '?'}</div><div style={{ overflow: 'hidden', flex: 1 }}><div className="sidebar-user-name">{usuarioAtual?.nome || 'Usuário'}</div><div className="sidebar-user-role">{usuarioAtual?.cargo || ''}</div></div></div>
       </div>
     </aside>
   )
