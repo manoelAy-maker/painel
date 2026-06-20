@@ -1,0 +1,410 @@
+.consulta-pro{
+  display:grid;
+  gap:16px;
+}
+
+.consulta-pro-head,
+.consulta-pro-kpis,
+.consulta-pro-filters,
+.consulta-pro-card{
+  border:1px solid rgba(148,163,184,.12);
+  background:linear-gradient(180deg, rgba(15,23,42,.80), rgba(5,10,20,.70));
+  border-radius:24px;
+  box-shadow:0 18px 55px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.consulta-pro-head{
+  padding:24px 26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+
+.consulta-pro-head span{
+  display:block;
+  color:#60a5fa;
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  margin-bottom:6px;
+}
+
+.consulta-pro-head h2{
+  margin:0;
+  color:#f8fafc;
+  font-size:28px;
+  font-weight:950;
+  letter-spacing:-.04em;
+}
+
+.consulta-pro-head p{
+  margin:6px 0 0;
+  color:#94a3b8;
+  font-size:13px;
+}
+
+.consulta-pro-head-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.consulta-pro-primary,
+.consulta-pro-light,
+.consulta-pro-action,
+.consulta-pro-whats,
+.consulta-pro-danger{
+  border:1px solid transparent;
+  border-radius:13px;
+  min-height:38px;
+  padding:0 14px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  white-space:nowrap;
+}
+
+.consulta-pro-primary{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  color:#fff;
+}
+
+.consulta-pro-light{
+  background:rgba(255,255,255,.055);
+  border-color:rgba(148,163,184,.14);
+  color:#e2e8f0;
+}
+
+.consulta-pro-light.small,
+.consulta-pro-danger.small{
+  min-height:32px;
+  padding:0 10px;
+  border-radius:10px;
+}
+
+.consulta-pro-action.warn{
+  background:linear-gradient(135deg,#d97706,#f97316);
+  color:#fff;
+}
+
+.consulta-pro-action.ok{
+  background:linear-gradient(135deg,#15803d,#22c55e);
+  color:#fff;
+}
+
+.consulta-pro-action.done{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  color:#fff;
+}
+
+.consulta-pro-whats{
+  background:rgba(34,197,94,.15);
+  border-color:rgba(74,222,128,.24);
+  color:#86efac;
+}
+
+.consulta-pro-danger{
+  background:rgba(239,68,68,.14);
+  border-color:rgba(248,113,113,.25);
+  color:#fecaca;
+}
+
+.consulta-pro-kpis{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:0;
+  overflow:hidden;
+}
+
+.consulta-pro-kpis div{
+  padding:18px 18px;
+  border-right:1px solid rgba(148,163,184,.10);
+}
+
+.consulta-pro-kpis div:last-child{
+  border-right:0;
+}
+
+.consulta-pro-kpis span{
+  display:block;
+  color:#94a3b8;
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.consulta-pro-kpis strong{
+  display:block;
+  margin-top:8px;
+  color:#f8fafc;
+  font-size:24px;
+  line-height:1;
+}
+
+.consulta-pro-kpis .money strong{
+  color:#bbf7d0;
+  font-size:21px;
+}
+
+.consulta-pro-filters{
+  padding:14px;
+  display:grid;
+  grid-template-columns:minmax(260px,1.5fr) 160px 190px 150px 150px auto;
+  gap:10px;
+  align-items:center;
+}
+
+.consulta-pro-filters input,
+.consulta-pro-filters select{
+  height:42px;
+  border:1px solid rgba(148,163,184,.14)!important;
+  background:rgba(2,6,23,.48)!important;
+  color:#e5e7eb!important;
+  border-radius:13px!important;
+  padding:0 13px;
+  outline:none;
+}
+
+.consulta-pro-filters input:focus,
+.consulta-pro-filters select:focus{
+  border-color:rgba(96,165,250,.55)!important;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12)!important;
+}
+
+.consulta-pro-periods{
+  display:flex;
+  gap:6px;
+}
+
+.consulta-pro-periods button{
+  height:42px;
+  border:1px solid rgba(148,163,184,.12);
+  background:rgba(255,255,255,.045);
+  color:#cbd5e1;
+  border-radius:12px;
+  padding:0 10px;
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.consulta-pro-list{
+  display:grid;
+  gap:12px;
+}
+
+.consulta-pro-card{
+  padding:18px;
+  display:grid;
+  grid-template-columns:minmax(280px,1.2fr) minmax(360px,.95fr) minmax(260px,.7fr);
+  gap:18px;
+  align-items:center;
+}
+
+.consulta-pro-card:hover{
+  border-color:rgba(96,165,250,.25);
+}
+
+.consulta-pro-topline{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.consulta-pro-plate{
+  display:inline-flex;
+  align-items:center;
+  height:32px;
+  border-radius:999px;
+  padding:0 14px;
+  background:rgba(37,99,235,.16);
+  color:#dbeafe;
+  border:1px solid rgba(96,165,250,.25);
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:.06em;
+}
+
+.consulta-pro-main h3{
+  margin:0;
+  color:#f8fafc;
+  font-size:18px;
+  font-weight:930;
+  letter-spacing:-.02em;
+}
+
+.consulta-pro-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:11px;
+}
+
+.consulta-pro-meta span{
+  display:inline-flex;
+  gap:4px;
+  align-items:center;
+  min-height:26px;
+  padding:0 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+  color:#94a3b8;
+  font-size:12px;
+}
+
+.consulta-pro-meta b{
+  color:#e2e8f0;
+}
+
+.consulta-pro-data{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.consulta-pro-data div{
+  border:1px solid rgba(148,163,184,.10);
+  background:rgba(2,6,23,.28);
+  border-radius:15px;
+  padding:12px;
+}
+
+.consulta-pro-data span,
+.consulta-pro-owner span{
+  display:block;
+  color:#94a3b8;
+  font-size:10.5px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  margin-bottom:5px;
+}
+
+.consulta-pro-data strong{
+  color:#f8fafc;
+  font-size:14px;
+}
+
+.consulta-pro-data strong.ok{color:#86efac}
+.consulta-pro-data strong.warn{color:#fde68a}
+.consulta-pro-data strong.danger{color:#fecaca}
+
+.consulta-pro-side{
+  display:grid;
+  gap:12px;
+  justify-items:end;
+}
+
+.consulta-pro-owner{
+  text-align:right;
+}
+
+.consulta-pro-owner strong{
+  color:#f8fafc;
+  font-size:13px;
+}
+
+.consulta-pro-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.consulta-pro-empty{
+  border:1px solid rgba(148,163,184,.12);
+  background:rgba(15,23,42,.60);
+  border-radius:20px;
+  padding:28px;
+  color:#94a3b8;
+  text-align:center;
+}
+
+.consulta-modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:80;
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.consulta-modal{
+  width:min(860px,100%);
+  max-height:88vh;
+  overflow:auto;
+  border:1px solid rgba(148,163,184,.14);
+  background:#0d1117;
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 30px 90px rgba(0,0,0,.45);
+}
+
+.consulta-detail-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:10px;
+  margin:16px 0;
+}
+
+.consulta-detail-grid div,
+.consulta-history-item{
+  border:1px solid rgba(148,163,184,.10);
+  background:rgba(2,6,23,.30);
+  border-radius:15px;
+  padding:12px;
+}
+
+.consulta-detail-grid small,
+.consulta-history-item small{
+  display:block;
+  color:#94a3b8;
+  margin-bottom:4px;
+}
+
+.consulta-detail-grid strong,
+.consulta-history-item strong{
+  color:#f8fafc;
+}
+
+.consulta-modal-section{
+  margin-top:16px;
+}
+
+.consulta-modal-section h3{
+  margin:0 0 10px;
+  color:#f8fafc;
+  font-size:16px;
+}
+
+@media(max-width:1260px){
+  .consulta-pro-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .consulta-pro-filters{grid-template-columns:1fr 1fr 1fr}
+  .consulta-pro-card{grid-template-columns:1fr}
+  .consulta-pro-side{justify-items:start}
+  .consulta-pro-owner{text-align:left}
+  .consulta-pro-actions{justify-content:flex-start}
+}
+
+@media(max-width:720px){
+  .consulta-pro-head{flex-direction:column;align-items:stretch;padding:18px}
+  .consulta-pro-head-actions{flex-direction:column}
+  .consulta-pro-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .consulta-pro-kpis div{border-right:0;border-bottom:1px solid rgba(148,163,184,.10)}
+  .consulta-pro-filters{grid-template-columns:1fr}
+  .consulta-pro-periods{display:grid;grid-template-columns:repeat(3,1fr)}
+  .consulta-pro-card{padding:14px;border-radius:18px}
+  .consulta-pro-data{grid-template-columns:1fr}
+}
