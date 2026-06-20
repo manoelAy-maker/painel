@@ -1,51 +1,62 @@
 export default function AyresLogo({ size = 42, showWord = false, className = '' }) {
-  const w = showWord ? size * 3.1 : size
+  const w = showWord ? size * 3.25 : size
   return (
     <svg
       className={`ayres-logo-svg ${className}`}
       width={w}
       height={size}
-      viewBox={showWord ? '0 0 180 64' : '0 0 64 64'}
+      viewBox={showWord ? '0 0 208 72' : '0 0 72 72'}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="AYRES"
     >
       <defs>
-        <linearGradient id="ayresA" x1="14" y1="8" x2="52" y2="58" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#19A7FF" />
-          <stop offset="0.52" stopColor="#2563EB" />
+        <linearGradient id="ayresIconMain" x1="17" y1="10" x2="55" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#35C4FF" />
+          <stop offset="0.48" stopColor="#2563EB" />
           <stop offset="1" stopColor="#7C3AED" />
         </linearGradient>
-        <linearGradient id="ayresRoad" x1="8" y1="50" x2="56" y2="24" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#EAF6FF" />
-          <stop offset="0.6" stopColor="#FFFFFF" />
-          <stop offset="1" stopColor="#DCEBFF" />
+        <linearGradient id="ayresIconDeep" x1="16" y1="56" x2="48" y2="14" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#061B5C" />
+          <stop offset="0.55" stopColor="#1647D9" />
+          <stop offset="1" stopColor="#3B82F6" />
         </linearGradient>
-        <linearGradient id="ayresText" x1="76" y1="20" x2="174" y2="48" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#EAF2FF" />
-          <stop offset="1" stopColor="#A5B4FC" />
+        <linearGradient id="ayresIconPurple" x1="43" y1="32" x2="61" y2="61" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#2563EB" />
+          <stop offset="1" stopColor="#8B5CF6" />
         </linearGradient>
-        <filter id="ayresGlow" x="-18" y="-18" width="100" height="100" filterUnits="userSpaceOnUse">
-          <feGaussianBlur stdDeviation="3.2" result="blur" />
-          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.22 0 0 0 0 0.47 0 0 0 0 1 0 0 0 .38 0" />
+        <linearGradient id="ayresArrow" x1="16" y1="47" x2="60" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FFFFFF" />
+          <stop offset="0.58" stopColor="#EAF6FF" />
+          <stop offset="1" stopColor="#A7F3FF" />
+        </linearGradient>
+        <linearGradient id="ayresWord" x1="83" y1="22" x2="204" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#F8FAFC" />
+          <stop offset="0.58" stopColor="#3B82F6" />
+          <stop offset="1" stopColor="#A78BFA" />
+        </linearGradient>
+        <filter id="ayresSoftGlow" x="-20" y="-20" width="112" height="112" filterUnits="userSpaceOnUse">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.16 0 0 0 0 0.42 0 0 0 0 1 0 0 0 .42 0" />
           <feBlend in="SourceGraphic" />
         </filter>
       </defs>
 
-      <g filter="url(#ayresGlow)">
-        <path d="M31.9 5.5c1.7 0 3.2.96 4.02 2.46l21.1 40.76c1.55 3-.6 6.58-3.98 6.58h-8.08L32.02 29.68 19.4 55.3H11.05c-3.37 0-5.54-3.58-3.98-6.58L27.9 7.96A4.53 4.53 0 0131.9 5.5z" fill="url(#ayresA)" />
-        <path d="M13.6 47.9c11.2-11.02 25.38-18.62 42.72-22.9l-4.25 5.64c-14.82 3.42-27.55 9.94-38.47 19.94v-2.68z" fill="url(#ayresRoad)" />
-        <path d="M47.65 23.26l9.92 5.42-9.1 6.68 1.6-5.02c-9.88 1.8-19.25 5.5-28.1 11.16 7.72-8.16 16.85-14.08 27.42-17.77l-1.74-.47z" fill="white" />
-        <path d="M25.3 42.7c6.24-3.75 13.02-6.62 20.33-8.58" stroke="#1D4ED8" strokeWidth="2.2" strokeLinecap="round" strokeDasharray="5 5" opacity=".8" />
+      <g filter="url(#ayresSoftGlow)">
+        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconMain)" />
+        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l7.66 15.65-8.3 5.22-3.08-6.5L15.7 65.38h-4.56c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconDeep)" opacity=".96" />
+        <path d="M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z" fill="url(#ayresIconPurple)" />
+        <path d="M15.4 50.55c10.82-10.8 24.9-18.46 42.22-22.98l-3.76 5.8C40.2 36.95 28.03 43.15 17.34 52.05l-1.94-1.5z" fill="url(#ayresArrow)" />
+        <path d="M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z" fill="#FFFFFF" />
+        <path d="M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25" stroke="#0B3EA8" strokeWidth="2.4" strokeLinecap="round" opacity=".72" />
       </g>
 
       {showWord && (
-        <g fill="url(#ayresText)">
-          <path d="M80.8 45h-5.2l11.6-26h5.2l11.6 26h-5.4l-2.42-5.7H83.24L80.8 45zm4.26-10.05h9.3L89.7 24.1l-4.64 10.85z" />
-          <path d="M111.7 45V34.9L101.5 19h5.9l7.05 11.2L121.6 19h5.7l-10.35 15.9V45h-5.25z" />
-          <path d="M131.6 45V19h13.2c3.2 0 5.7.75 7.46 2.24 1.76 1.5 2.64 3.6 2.64 6.3 0 2.03-.48 3.72-1.44 5.05-.96 1.32-2.33 2.28-4.1 2.87l6.1 9.54h-5.95l-5.43-8.78h-7.22V45h-5.26zm5.26-13.2h7.52c1.7 0 2.98-.34 3.82-1.03.84-.68 1.26-1.7 1.26-3.05 0-1.32-.42-2.32-1.26-3-.84-.68-2.12-1.02-3.82-1.02h-7.52v8.1z" />
-          <path d="M162.7 45V19h20.1v4.62h-14.85v5.76h13.15v4.42h-13.15v6.58h15.3V45H162.7z" />
+        <g fill="url(#ayresWord)">
+          <path d="M86.5 52H77l18.7-40h9.9l18.6 40h-10l-3.5-8.1H90L86.5 52zm6.5-15.3h14.6l-7.3-16.8L93 36.7z" />
+          <path d="M136.6 52V36.4L120.4 12h10.3l10.7 16.6L152.2 12h9.8l-16.4 24.4V52h-9z" />
+          <path d="M166.7 52V12h20.5c5.1 0 9.05 1.15 11.83 3.44 2.78 2.3 4.17 5.52 4.17 9.66 0 3.05-.73 5.58-2.2 7.59-1.46 2-3.54 3.45-6.22 4.34L204.4 52h-10.1l-8.42-13.65h-10.25V52h-8.93zm8.93-21.2h10.55c2.5 0 4.38-.48 5.63-1.45 1.25-.97 1.88-2.4 1.88-4.29 0-1.86-.63-3.27-1.88-4.23-1.25-.96-3.13-1.43-5.63-1.43h-10.55v11.4z" />
         </g>
       )}
     </svg>
