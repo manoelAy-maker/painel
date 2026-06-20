@@ -144,11 +144,11 @@ function PainelEstadia() {
 
   return (
     <div className="app" style={{ display: 'block' }}>
-      {sidebarOpen && <div style={{ position: 'fixed', inset: 0, zIndex: 25, background: 'rgba(0,0,0,.4)' }} onClick={() => setSidebarOpen(false)} />}
+      {sidebarOpen && <button className="sidebar-backdrop" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
       <div className="app-layout">
         <Sidebar onFechar={() => setSidebarOpen(false)} />
         <section className="main-pro">
-          <Header onMenuMobile={() => setSidebarOpen(true)} />
+          <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
             <LivePanel />
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
