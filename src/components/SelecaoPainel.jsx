@@ -17,28 +17,70 @@ const ICONES = {
   user: <Svg width="16" height="16"><path d="M20 21a8 8 0 10-16 0" /><circle cx="12" cy="7" r="4" /></Svg>,
 }
 
-const modulos = [
-  {
-    id: 'estadia',
-    nome: 'Estadia',
-    subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.',
-    icon: 'grid',
-    cor: 'blue',
-    aba: 'inicio',
-    etiqueta: 'Operação',
-    bullets: ['Estadias', 'Pendências', 'Relatórios'],
+const TRADUCOES = {
+  pt: {
+    marca: 'Operações',
+    saudacao: 'Olá',
+    escolher: 'Escolha o módulo para continuar.',
+    entrar: 'ENTRAR NO MÓDULO',
+    sessao: 'Sua sessão continua ativa até clicar em',
+    sair: 'Sair',
+    logout: 'SAIR',
+    modulos: [
+      {
+        id: 'estadia',
+        nome: 'Estadia',
+        subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.',
+        icon: 'grid',
+        cor: 'blue',
+        aba: 'inicio',
+        etiqueta: 'Operação',
+        bullets: ['Estadias', 'Pendências', 'Relatórios'],
+      },
+      {
+        id: 'captacao',
+        nome: 'Captação',
+        subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento da operação.',
+        icon: 'chart',
+        cor: 'orange',
+        aba: 'captacao',
+        etiqueta: 'Comercial',
+        bullets: ['Motoristas', 'Contatos', 'Ranking'],
+      },
+    ],
   },
-  {
-    id: 'captacao',
-    nome: 'Captação',
-    subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento da operação.',
-    icon: 'chart',
-    cor: 'orange',
-    aba: 'captacao',
-    etiqueta: 'Comercial',
-    bullets: ['Motoristas', 'Contatos', 'Ranking'],
+  en: {
+    marca: 'Operations',
+    saudacao: 'Hello',
+    escolher: 'Choose a module to continue.',
+    entrar: 'OPEN MODULE',
+    sessao: 'Your session remains active until you click',
+    sair: 'Sign out',
+    logout: 'SIGN OUT',
+    modulos: [
+      {
+        id: 'estadia',
+        nome: 'Stay Control',
+        subtitulo: 'Pending items, records, attachments and completions in one place.',
+        icon: 'grid',
+        cor: 'blue',
+        aba: 'inicio',
+        etiqueta: 'Operations',
+        bullets: ['Records', 'Pending', 'Reports'],
+      },
+      {
+        id: 'captacao',
+        nome: 'Capture',
+        subtitulo: 'Drivers, contacts, captured loads and operational follow-up.',
+        icon: 'chart',
+        cor: 'orange',
+        aba: 'captacao',
+        etiqueta: 'Commercial',
+        bullets: ['Drivers', 'Contacts', 'Ranking'],
+      },
+    ],
   },
-]
+}
 
 const cores = {
   blue: { texto: 'text-blue-300', iconeWrap: 'bg-blue-500/10 border-blue-400/20 text-blue-300', glow: 'hover:shadow-[0_35px_90px_-28px_rgba(59,130,246,0.75)] hover:border-blue-300/35', linha: 'from-blue-400/70 to-cyan-300/20' },
@@ -48,6 +90,8 @@ const cores = {
 export default function SelecaoPainel() {
   const { usuarioAtual, mudarAba, logout } = useApp()
   const [heroVisivel, setHeroVisivel] = useState(false)
+  const [idioma, setIdioma] = useState(() => localStorage.getItem('idiomaAyres') || 'pt')
+  const t = TRADUCOES[idioma] || TRADUCOES.pt
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'usuário'
   const filialLabel = usuarioAtual?.filial === 'oleo' ? 'Operação do Óleo' : (usuarioAtual?.filial || 'jatai-go')
 
@@ -55,6 +99,10 @@ export default function SelecaoPainel() {
     const t = setTimeout(() => setHeroVisivel(true), 60)
     return () => clearTimeout(t)
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('idiomaAyres', idioma)
+  }, [idioma])
 
   const moverGlow = (e) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -83,13 +131,17 @@ export default function SelecaoPainel() {
       <header className="px-6 sm:px-10 py-7 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-800 rounded-2xl flex items-center justify-center shadow-[0_0_28px_rgba(37,99,235,0.45)]"><span className="text-2xl font-extrabold">A</span></div>
-          <div><h1 className="text-2xl font-black tracking-tight">AYRES</h1><p className="text-[10px] uppercase tracking-[0.3em] text-blue-300 font-black">Operações</p></div>
+          <div><h1 className="text-2xl font-black tracking-tight">AYRES</h1><p className="text-[10px] uppercase tracking-[0.3em] text-blue-300 font-black">{t.marca}</p></div>
         </div>
         <div className="flex items-center gap-3">
+          <div className="flex items-center rounded-full border border-white/10 bg-white/[.045] p-1 text-[11px] font-black backdrop-blur-xl">
+            <button type="button" onClick={() => setIdioma('pt')} className={`px-3 py-1.5 rounded-full transition-all ${idioma === 'pt' ? 'bg-blue-500/25 text-blue-100' : 'text-slate-500 hover:text-slate-200'}`}>PT</button>
+            <button type="button" onClick={() => setIdioma('en')} className={`px-3 py-1.5 rounded-full transition-all ${idioma === 'en' ? 'bg-blue-500/25 text-blue-100' : 'text-slate-500 hover:text-slate-200'}`}>EN</button>
+          </div>
           <div className="hidden sm:flex items-center gap-2 rounded-full border border-white/10 bg-white/[.045] px-4 py-2 text-xs text-slate-300 backdrop-blur-xl">
             {ICONES.user}<span>{usuarioAtual?.nome || usuarioAtual?.usuario}</span>
           </div>
-          <button type="button" onClick={sair} className="bg-white/[.045] border border-white/10 rounded-full px-4 py-2.5 text-xs font-bold flex items-center gap-2 hover:bg-red-500/10 hover:border-red-400/20 transition-all text-red-300">{ICONES.logout}<span className="hidden sm:inline">SAIR</span></button>
+          <button type="button" onClick={sair} className="bg-white/[.045] border border-white/10 rounded-full px-4 py-2.5 text-xs font-bold flex items-center gap-2 hover:bg-red-500/10 hover:border-red-400/20 transition-all text-red-300">{ICONES.logout}<span className="hidden sm:inline">{t.logout}</span></button>
         </div>
       </header>
 
@@ -100,13 +152,13 @@ export default function SelecaoPainel() {
               {ICONES.shield} {filialLabel}
             </div>
             <h2 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight mb-4">
-              Olá, <span className="text-blue-300">{primeiroNome}</span>
+              {t.saudacao}, <span className="text-blue-300">{primeiroNome}</span>
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">Escolha o módulo para continuar.</p>
+            <p className="text-slate-400 text-base sm:text-lg">{t.escolher}</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-            {modulos.map((m) => {
+            {t.modulos.map((m) => {
               const c = cores[m.cor]
               return (
                 <button key={m.id} type="button" onClick={() => acessar(m)} onMouseMove={moverGlow} className={`group relative overflow-hidden text-left p-8 sm:p-10 min-h-[390px] rounded-[2.5rem] border border-white/10 bg-[#0c111a]/90 backdrop-blur-xl cursor-pointer transition-all duration-500 hover:-translate-y-2 ${c.glow}`}>
@@ -118,14 +170,14 @@ export default function SelecaoPainel() {
                         <div className={`w-16 h-16 rounded-3xl flex items-center justify-center border ${c.iconeWrap}`}>{ICONES[m.icon]}</div>
                         <span className="rounded-full border border-white/10 bg-white/[.045] px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400">{m.etiqueta}</span>
                       </div>
-                      <h3 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight">Painel de <span className={c.texto}>{m.nome}</span></h3>
+                      <h3 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight">{idioma === 'pt' ? 'Painel de' : 'Panel'} <span className={c.texto}>{m.nome}</span></h3>
                       <p className="text-slate-400 text-base leading-relaxed max-w-md">{m.subtitulo}</p>
                     </div>
                     <div>
                       <div className="flex flex-wrap gap-2 mb-6">
                         {m.bullets.map((b) => <span key={b} className="rounded-full border border-white/10 bg-white/[.04] px-3 py-1.5 text-xs font-bold text-slate-300">{b}</span>)}
                       </div>
-                      <div className={`flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.045] px-5 py-4 font-black text-sm ${c.texto}`}><span>ENTRAR NO MÓDULO</span>{ICONES.arrowRight}</div>
+                      <div className={`flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.045] px-5 py-4 font-black text-sm ${c.texto}`}><span>{t.entrar}</span>{ICONES.arrowRight}</div>
                     </div>
                   </div>
                 </button>
@@ -133,7 +185,7 @@ export default function SelecaoPainel() {
             })}
           </div>
 
-          <p className="text-center text-[11px] text-slate-600 mt-8">Sua sessão continua ativa até clicar em <span className="text-slate-400">Sair</span>.</p>
+          <p className="text-center text-[11px] text-slate-600 mt-8">{t.sessao} <span className="text-slate-400">{t.sair}</span>.</p>
         </section>
       </main>
     </div>
