@@ -4,12 +4,7 @@ import { linkWhatsapp, dataISOTexto, tempoDecorrido } from '../utils/index'
 import { nomeFilial } from '../data/filiais'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 import '../estadia-desktop-pro.css'
-
-function badgePago(p) {
-  return p === 'Transportes'
-    ? <span className="badge badge-transportes">Transportes</span>
-    : <span className="badge badge-logistica">Logística</span>
-}
+import '../consulta-estadias-pro.css'
 
 function classePrio(p) {
   if (p === 'Urgente') return 'prio-urgente'
@@ -28,28 +23,21 @@ function statusLabel(s) {
   return s || 'Aberto'
 }
 
-function TempoInfo({ label, data, compacto = false }) {
-  return (
-    <div className={`tempo-info ${compacto ? 'tempo-compacto' : ''}`}>
-      <strong>{tempoDecorrido(data)}</strong>
-      <small>{label}</small>
-    </div>
-  )
-}
-
 function parseValor(valor) {
   const n = String(valor || '').replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.')
   return Number(n) || 0
 }
 
-function tempoParado(e) {
+function tempoParadoTexto(e) {
   const horas = Number(String(e.horas || '0').replace(',', '.')) || 0
-  const style = horas > 24
-    ? { color: '#fecaca', background: 'rgba(239,68,68,.14)', borderColor: 'rgba(248,113,113,.28)' }
-    : horas > 12
-      ? { color: '#fde68a', background: 'rgba(245,158,11,.14)', borderColor: 'rgba(251,191,36,.28)' }
-      : { color: '#bbf7d0', background: 'rgba(34,197,94,.13)', borderColor: 'rgba(74,222,128,.26)' }
-  return <span className="badge" style={style}>{horas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}h</span>
+  return `${horas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}h`
+}
+
+function tempoParadoClasse(e) {
+  const horas = Number(String(e.horas || '0').replace(',', '.')) || 0
+  if (horas > 24) return 'danger'
+  if (horas > 12) return 'warn'
+  return 'ok'
 }
 
 function agoraHistorico() {
@@ -191,84 +179,95 @@ export default function ConsultaEstadiasLancadas() {
     setDataFim(dataLocalISO(hoje))
   }
 
+  const proximaAcao = (e) => {
+    if (!e.status || e.status === 'Aberto') return { label: 'Analisar', status: 'Em análise', classe: 'warn' }
+    if (e.status === 'Em análise') return { label: 'Marcar feito', status: 'Feito', classe: 'ok' }
+    if (e.status === 'Feito') return { label: 'Finalizar', status: 'Finalizado', classe: 'done' }
+    return null
+  }
+
   return (
-    <section className="aba active" id="abaConsultaLancadas">
-      <div className="box estadia-filter-box">
-        <div className="box-title">
-          <div>
-            <h2>Estadias lançadas</h2>
-            <span>Consulta separada do lançamento, com indicadores, filtros, status, detalhes rápidos e histórico por estadia.</span>
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="btn-green btn-small" onClick={() => mudarAba('lancadas')}>+ Lançar nova</button>
-            <button className="btn-light btn-small" onClick={limpar}>Limpar filtros</button>
-          </div>
+    <section className="aba active consulta-pro" id="abaConsultaLancadas">
+      <div className="consulta-pro-head">
+        <div>
+          <span>Controle de estadias</span>
+          <h2>Estadias lançadas</h2>
+          <p>Visual limpo para acompanhar status, valor e tempo parado sem tabela espremida.</p>
         </div>
-
-        <div className="calc-preview estadia-calc-preview" style={{ marginBottom: 16 }}>
-          <div className="preview-card"><span>Total filtrado</span><strong>{stats.total}</strong></div>
-          <div className="preview-card"><span>Abertas</span><strong>{stats.abertas}</strong></div>
-          <div className="preview-card"><span>Em análise</span><strong>{stats.analise}</strong></div>
-          <div className="preview-card"><span>Feitas</span><strong>{stats.feitas}</strong></div>
-          <div className="preview-card"><span>Finalizadas</span><strong>{stats.finalizadas}</strong></div>
-          <div className="preview-card"><span>Valor total</span><strong>{stats.valor}</strong></div>
-        </div>
-
-        <div className="filters estadia-filters">
-          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Pesquisar placa, motorista, chamado, NF..." />
-          <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="">Todos status</option><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select>
-          <select value={filtroFilial} onChange={e => setFiltroFilial(e.target.value)}><option value="">Todas as filiais</option>{filiais.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select>
-          <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
-          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
-        </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
-          <button className="btn-light btn-small" onClick={periodoHoje}>Hoje</button>
-          <button className="btn-light btn-small" onClick={ultimos7}>Últimos 7 dias</button>
-          <button className="btn-light btn-small" onClick={esteMes}>Este mês</button>
+        <div className="consulta-pro-head-actions">
+          <button className="consulta-pro-primary" onClick={() => mudarAba('lancadas')}>+ Lançar nova</button>
+          <button className="consulta-pro-light" onClick={limpar}>Limpar filtros</button>
         </div>
       </div>
 
-      <div className="table-wrap estadia-table-wrap">
-        <div className="table-scroll">
-          <table>
-            <thead><tr><th>NF</th><th>Chamado</th><th>Motorista</th><th>Transportadora</th><th>Placa</th><th>Peso</th><th>Tempo parado</th><th>Valor</th><th>Pago por</th><th>Prioridade</th><th>Filial</th><th>Anexos</th><th>Lançado por</th><th>Lançada há</th><th>Status</th><th>Histórico</th><th>Ações</th></tr></thead>
-            <tbody>
-              {lista.length === 0
-                ? <tr><td colSpan={17} className="empty">Nenhuma estadia encontrada.</td></tr>
-                : lista.map(e => (
-                  <tr key={e.id}>
-                    <td><strong>{e.nf || e.numeroNf || '-'}</strong></td>
-                    <td><strong>{e.chamado || '-'}</strong><br /><small>{e.dataLancamento || ''}</small></td>
-                    <td>{e.motorista || '-'}<br /><small>Chegada: {e.chegada || '-'}<br />Saída: {e.saida || '-'}</small></td>
-                    <td>{e.transportadora || '-'}</td>
-                    <td><span className="plate">{e.placa || '-'}</span><br /><TempoInfo label="lançada há" data={e.dataLancamento} compacto /></td>
-                    <td>{e.peso || '-'}</td>
-                    <td>{tempoParado(e)}</td>
-                    <td><strong>{e.valor || 'R$ 0,00'}</strong></td>
-                    <td>{badgePago(e.pagoPor)}</td>
-                    <td><span className={`prio ${classePrio(e.prioridade)}`}>{e.prioridade || 'Normal'}</span></td>
-                    <td><span className="badge badge-logistica">{nomeFilial(e.filial)}</span></td>
-                    <td>{e.anexos?.length ? e.anexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>) : '-'}</td>
-                    <td>{e.lancadoPor || '-'}</td>
-                    <td><TempoInfo label="desde o lançamento" data={e.dataLancamento} /></td>
-                    <td><span className={`status ${classeStatus(e.status)}`}>{statusLabel(e.status)}</span>{e.emAnalisePor && <><br /><small>Análise por {e.emAnalisePor}</small></>}{e.feitoPor && <><br /><small>Feito por {e.feitoPor}</small></>}{e.finalizadoPor && <><br /><small>Finalizado por {e.finalizadoPor}</small></>}</td>
-                    <td>{e.historicoItem?.length ? <details><summary>Ver</summary><div style={{ minWidth: 220 }}>{e.historicoItem.slice(0, 5).map((h, i) => <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,.08)', padding: '6px 0' }}><strong>{h.acao}</strong><br /><small>{h.usuario} · {h.data}</small>{h.detalhes && <><br /><small>{h.detalhes}</small></>}</div>)}</div></details> : <small>Sem histórico interno</small>}</td>
-                    <td><div className="actions">
-                      <button className="btn-light btn-small" onClick={() => setDetalhe(e)}>Detalhes</button>
-                      {(!e.status || e.status === 'Aberto') && <button className="btn-orange btn-small" onClick={() => atualizarStatus(e, 'Em análise')}>Em análise</button>}
-                      {e.status !== 'Feito' && e.status !== 'Finalizado' && <button className="btn-green btn-small" onClick={() => atualizarStatus(e, 'Feito')}>Feito</button>}
-                      {e.status === 'Feito' && <button className="btn-purple btn-small" onClick={() => atualizarStatus(e, 'Finalizado')}>Finalizar</button>}
-                      {e.status !== 'Aberto' && <button className="btn-orange btn-small" onClick={() => atualizarStatus(e, 'Aberto')}>Reabrir</button>}
-                      <button className="btn-light btn-small" onClick={() => editar(e)}>Editar</button>
-                      <button className="btn-light btn-small" onClick={() => copiar(e)}>Copiar</button>
-                      {e.telefoneMotorista && <a className="btn btn-green btn-small" href={linkWhatsapp(e)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
-                      <button className="btn-red btn-small" onClick={() => arquivar(e)}>Arquivar</button>
-                    </div></td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+      <div className="consulta-pro-kpis">
+        <div><span>Total</span><strong>{stats.total}</strong></div>
+        <div><span>Abertas</span><strong>{stats.abertas}</strong></div>
+        <div><span>Em análise</span><strong>{stats.analise}</strong></div>
+        <div><span>Feitas</span><strong>{stats.feitas}</strong></div>
+        <div><span>Finalizadas</span><strong>{stats.finalizadas}</strong></div>
+        <div className="money"><span>Valor total</span><strong>{stats.valor}</strong></div>
+      </div>
+
+      <div className="consulta-pro-filters">
+        <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar placa, motorista, chamado ou NF..." />
+        <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="">Todos status</option><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select>
+        <select value={filtroFilial} onChange={e => setFiltroFilial(e.target.value)}><option value="">Todas as filiais</option>{filiais.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select>
+        <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
+        <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+        <div className="consulta-pro-periods">
+          <button onClick={periodoHoje}>Hoje</button>
+          <button onClick={ultimos7}>7 dias</button>
+          <button onClick={esteMes}>Mês</button>
         </div>
+      </div>
+
+      <div className="consulta-pro-list">
+        {lista.length === 0 && <div className="consulta-pro-empty">Nenhuma estadia encontrada.</div>}
+
+        {lista.map(e => {
+          const acao = proximaAcao(e)
+          return (
+            <article key={e.id} className="consulta-pro-card">
+              <div className="consulta-pro-main">
+                <div className="consulta-pro-topline">
+                  <span className="consulta-pro-plate">{e.placa || '-'}</span>
+                  <span className={`status ${classeStatus(e.status)}`}>{statusLabel(e.status)}</span>
+                  <span className={`prio ${classePrio(e.prioridade)}`}>{e.prioridade || 'Normal'}</span>
+                </div>
+                <h3>{e.motorista || 'Motorista não informado'}</h3>
+                <div className="consulta-pro-meta">
+                  <span>NF <b>{e.nf || e.numeroNf || '-'}</b></span>
+                  <span>Chamado <b>{e.chamado || '-'}</b></span>
+                  <span>{e.transportadora || 'Transportadora não informada'}</span>
+                </div>
+              </div>
+
+              <div className="consulta-pro-data">
+                <div><span>Valor</span><strong>{e.valor || 'R$ 0,00'}</strong></div>
+                <div><span>Tempo parado</span><strong className={tempoParadoClasse(e)}>{tempoParadoTexto(e)}</strong></div>
+                <div><span>Filial</span><strong>{nomeFilial(e.filial)}</strong></div>
+                <div><span>Lançada há</span><strong>{tempoDecorrido(e.dataLancamento)}</strong></div>
+              </div>
+
+              <div className="consulta-pro-side">
+                <div className="consulta-pro-owner">
+                  <span>Lançado por</span>
+                  <strong>{e.lancadoPor || '-'}</strong>
+                </div>
+                <div className="consulta-pro-actions">
+                  {acao && <button className={`consulta-pro-action ${acao.classe}`} onClick={() => atualizarStatus(e, acao.status)}>{acao.label}</button>}
+                  {e.status !== 'Aberto' && <button className="consulta-pro-light small" onClick={() => atualizarStatus(e, 'Aberto')}>Reabrir</button>}
+                  <button className="consulta-pro-light small" onClick={() => setDetalhe(e)}>Detalhes</button>
+                  <button className="consulta-pro-light small" onClick={() => editar(e)}>Editar</button>
+                  <button className="consulta-pro-light small" onClick={() => copiar(e)}>Copiar</button>
+                  {e.telefoneMotorista && <a className="consulta-pro-whats" href={linkWhatsapp(e)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
+                  <button className="consulta-pro-danger small" onClick={() => arquivar(e)}>Arquivar</button>
+                </div>
+              </div>
+            </article>
+          )
+        })}
       </div>
 
       {detalhe && <div className="consulta-modal-backdrop" onClick={() => setDetalhe(null)}>
