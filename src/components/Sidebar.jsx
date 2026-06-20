@@ -32,12 +32,6 @@ const OPERADOR_GRUPOS = [
       { id: 'alancar', label: 'Pendências' },
     ],
   },
-  {
-    titulo: 'Captação',
-    itens: [
-      { id: 'captacao', label: 'Motoristas e leads' },
-    ],
-  },
 ]
 
 const ADMIN_GRUPOS = [
