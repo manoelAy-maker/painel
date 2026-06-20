@@ -67,12 +67,23 @@ export default function Header({ onMenuMobile }) {
     logout()
   }
 
+  const alternarMenuLateral = () => {
+    try {
+      if (window.matchMedia('(min-width: 1101px)').matches) {
+        document.body.classList.toggle('sidebar-open')
+        return
+      }
+    } catch {}
+
+    onMenuMobile?.()
+  }
+
   return (
     <>
       <header className="topbar ayres-topbar-pro clean-topbar ayres-header-v4">
         <div className="topbar-inner ayres-topbar-inner-pro ayres-header-inner-v4">
           <div className="ayres-header-left-v4">
-            <button className="topbar-menu-btn" onClick={onMenuMobile} title="Abrir menu">
+            <button className="topbar-menu-btn" onClick={alternarMenuLateral} title="Abrir ou fechar menu">
               <MenuIcon />
             </button>
             <div className="ayres-topbar-logo-pro">A</div>
