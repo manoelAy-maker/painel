@@ -64,6 +64,34 @@
   font-weight: 950;
 }
 
+/* Dropdown buttons with SVG icons */
+.app .ayres-user-dropdown-v4 button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.app .ayres-user-dropdown-v4 button svg {
+  flex-shrink: 0;
+  opacity: .7;
+}
+
+.app .ayres-user-dropdown-v4 button:hover svg {
+  opacity: 1;
+}
+
+/* Header search kbd shortcut */
+.app .ayres-header-search-v4 kbd {
+  margin-left: auto;
+  border: 1px solid rgba(148,163,184,.16);
+  background: rgba(255,255,255,.04);
+  color: rgba(148,163,184,.6);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: inherit;
+}
+
 @media (max-width: 900px) {
   .topbar-profile-label,
   .profile-pill .profile-text small {
