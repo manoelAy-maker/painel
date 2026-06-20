@@ -6,49 +6,7 @@ import { useApp } from '../context/AppContext'
 import { ADMIN_USERNAME } from '../data/defaultUsers'
 
 const funcionarioVazio = { usuario: '', senha: '', nome: '', cargo: 'Operador', filial: '' }
-
-const limparTelefone = (v) => String(v || '').replace(/[^0-9]/g, '')
-const texto = (v) => String(v || '').trim()
-const isCarregou = (status) => String(status || '').toLowerCase().includes('carregou')
-
-function montarMotoristasQueCarregam(captacoes) {
-  const map = new Map()
-
-  captacoes
-    .filter(c => isCarregou(c.status))
-    .forEach(c => {
-      const nome = texto(c.nome || c.motorista || 'Motorista sem nome')
-      const telefone = texto(c.numero || c.telefone || c.telefoneMotorista || '')
-      const telLimpo = limparTelefone(telefone)
-      const chave = telLimpo || `${nome.toLowerCase()}-${c.filial || 'jatai-go'}`
-      const atual = map.get(chave) || {
-        chave,
-        nome,
-        telefone,
-        operacoes: new Set(),
-        filiais: new Set(),
-        captadores: new Set(),
-        carregamentos: 0,
-        primeiraData: c.data || c.dataISO || '',
-        ultimaData: c.ultimaAtualizacao || c.data || c.dataISO || '',
-        obs: '',
-      }
-
-      atual.nome = nome || atual.nome
-      atual.telefone = telefone || atual.telefone
-      atual.operacoes.add(c.operacao || c.produto || 'Não informado')
-      atual.filiais.add(c.filial || 'jatai-go')
-      atual.captadores.add(c.nomeCaptador || c.nomeUsuario || c.captador || c.usuario || '-')
-      atual.carregamentos += 1
-      atual.ultimaData = c.ultimaAtualizacao || c.data || c.dataISO || atual.ultimaData
-      if (c.obs || c.observacao || c.ultimaObs) atual.obs = c.obs || c.observacao || c.ultimaObs
-      map.set(chave, atual)
-    })
-
-  return [...map.values()]
-    .map(m => ({ ...m, operacoesLista: [...m.operacoes], filiaisLista: [...m.filiais], captadoresLista: [...m.captadores] }))
-    .sort((a, b) => b.carregamentos - a.carregamentos || a.nome.localeCompare(b.nome))
-}
+const FILIAL_OLEO = 'oleo'
 
 function SlaMini({ resumo }) {
   const total = resumo.normal + resumo.atencao + resumo.urgente + resumo.critico || 1
@@ -61,8 +19,12 @@ function SlaMini({ resumo }) {
         ['Crítico', resumo.critico, '#dc2626'],
       ].map(([label, value, cor]) => (
         <div key={label}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}><span>{label}</span><strong style={{ color: cor }}>{value}</strong></div>
-          <div style={{ height: 6, borderRadius: 999, background: 'rgba(148,163,184,.14)', overflow: 'hidden' }}><i style={{ display: 'block', width: `${Math.max(4, (value / total) * 100)}%`, height: '100%', background: cor }} /></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>
+            <span>{label}</span><strong style={{ color: cor }}>{value}</strong>
+          </div>
+          <div style={{ height: 6, borderRadius: 999, background: 'rgba(148,163,184,.14)', overflow: 'hidden' }}>
+            <i style={{ display: 'block', width: `${Math.max(4, (value / total) * 100)}%`, height: '100%', background: cor }} />
+          </div>
         </div>
       ))}
     </div>
@@ -76,8 +38,6 @@ export default function Admin() {
   const [carregando, setCarregando] = useState(true)
   const [filialFiltro, setFilialFiltro] = useState('')
   const [busca, setBusca] = useState('')
-  const [buscaMotorista, setBuscaMotorista] = useState('')
-  const [filtroOperacaoMotorista, setFiltroOperacaoMotorista] = useState('')
   const [novaFilial, setNovaFilial] = useState({ id: '', nome: '', cidade: '', estado: '' })
   const [funcionario, setFuncionario] = useState(funcionarioVazio)
   const [editandoUsuario, setEditandoUsuario] = useState(null)
@@ -99,16 +59,11 @@ export default function Admin() {
 
   const lancadas = rows.filter(r => r.tipo === 'lancada').map(r => ({ ...r.dados, filial: r.filial })).filter(Boolean)
   const pendentes = rows.filter(r => r.tipo === 'a_lancar').map(r => ({ ...r.dados, filial: r.filial })).filter(Boolean)
-  const captacoes = rows.filter(r => r.tipo === 'captacao').map(r => ({ ...r.dados, filial: r.filial || r.dados?.filial })).filter(Boolean)
-
-  const motoristasQueCarregam = montarMotoristasQueCarregam(captacoes)
-  const operacoesMotoristas = [...new Set(motoristasQueCarregam.flatMap(m => m.operacoesLista))].filter(Boolean)
-  const motoristasFiltrados = motoristasQueCarregam.filter(m => {
-    const t = [m.nome, m.telefone, m.obs, m.operacoesLista.join(' '), m.filiaisLista.map(nomeFilial).join(' '), m.captadoresLista.join(' ')].join(' ').toUpperCase()
-    return (!buscaMotorista || t.includes(buscaMotorista.toUpperCase())) && (!filtroOperacaoMotorista || m.operacoesLista.includes(filtroOperacaoMotorista))
-  })
-
-  const filiaisAtivas = [...new Set([...rows.map(r => r.filial || 'jatai-go'), ...pendentes.map(p => p.filial || 'jatai-go')])]
+  const filiaisCadastradas = filiais?.length ? filiais : [
+    { id: 'jatai-go', nome: 'Jataí', cidade: 'Jataí', estado: 'GO' },
+    { id: FILIAL_OLEO, nome: 'Operação do Óleo', cidade: 'Jataí', estado: 'GO' },
+  ]
+  const filiaisAtivas = [...new Set([...filiaisCadastradas.map(f => f.id), ...rows.map(r => r.filial || 'jatai-go'), ...pendentes.map(p => p.filial || 'jatai-go')])]
   const slaGlobal = resumirSLA(pendentes)
 
   const statsGlobal = {
@@ -118,8 +73,8 @@ export default function Admin() {
     valorTotal: dinheiro(lancadas.reduce((s, e) => s + moedaNumero(e.valor), 0)),
     urgentes: pendentes.filter(e => e.prioridade === 'Urgente').length,
     abertas: lancadas.filter(e => e.status === 'Aberto').length,
-    motoristasCarregam: motoristasQueCarregam.length,
     criticas: slaGlobal.critico,
+    oleo: lancadas.filter(e => e.filial === FILIAL_OLEO).length + pendentes.filter(e => e.filial === FILIAL_OLEO).length,
   }
 
   const statsFilial = (filial) => {
@@ -146,7 +101,14 @@ export default function Admin() {
   })
 
   const limparFuncionario = () => { setFuncionario(funcionarioVazio); setEditandoUsuario(null) }
-  const iniciarEdicao = (u) => { setEditandoUsuario(u.usuario); setFuncionario({ usuario: u.usuario, senha: '', nome: u.nome || '', cargo: u.cargo || 'Operador', filial: u.filial || '' }) }
+  const iniciarEdicao = (u) => {
+    setEditandoUsuario(u.usuario)
+    setFuncionario({ usuario: u.usuario, senha: '', nome: u.nome || '', cargo: u.cargo || 'Operador', filial: u.filial || '' })
+  }
+
+  const aplicarEtiquetaOleo = () => {
+    setFuncionario(p => ({ ...p, filial: FILIAL_OLEO }))
+  }
 
   const handleSalvarFuncionario = async () => {
     if (!funcionario.nome || !funcionario.filial || !funcionario.cargo) { alert('Preencha nome, cargo e filial.'); return }
@@ -160,12 +122,24 @@ export default function Admin() {
     if (criarFilial(novaFilial)) setNovaFilial({ id: '', nome: '', cidade: '', estado: '' })
   }
 
-  if (carregando) return <section className="aba active"><div className="box" style={{ textAlign: 'center', padding: 40 }}><p>Carregando dados de todas as filiais...</p><small style={{ color: 'var(--muted)' }}>Aguarde até 8 segundos</small></div></section>
+  const criarFilialOleo = () => {
+    criarFilial({ id: FILIAL_OLEO, nome: 'Operação do Óleo', cidade: 'Jataí', estado: 'GO' })
+  }
+
+  if (carregando) {
+    return <section className="aba active"><div className="box" style={{ textAlign: 'center', padding: 40 }}><p>Carregando dados de todas as filiais...</p><small style={{ color: 'var(--muted)' }}>Aguarde até 8 segundos</small></div></section>
+  }
 
   return (
     <section className="aba active">
       <div className="box" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', color: '#fff', border: 'none' }}>
-        <div className="box-title"><div><h2 style={{ color: '#fff', fontSize: 22 }}>🏢 Painel Administrativo</h2><span style={{ color: 'rgba(255,255,255,.7)' }}>Visão consolidada de todas as filiais, SLA e motoristas confiáveis</span></div><button className="btn-light btn-small" onClick={carregar}>↺ Atualizar</button></div>
+        <div className="box-title">
+          <div>
+            <h2 style={{ color: '#fff', fontSize: 22 }}>🏢 Painel Administrativo</h2>
+            <span style={{ color: 'rgba(255,255,255,.7)' }}>Visão consolidada de filiais, SLA e permissões de acesso</span>
+          </div>
+          <button className="btn-light btn-small" onClick={carregar}>↺ Atualizar</button>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginTop: 16 }}>
           {[
             { label: 'Filiais ativas', value: statsGlobal.filiais, cor: '#4ade80' },
@@ -174,8 +148,20 @@ export default function Admin() {
             { label: 'Valor total', value: statsGlobal.valorTotal, cor: '#a78bfa' },
             { label: 'Abertas', value: statsGlobal.abertas, cor: '#fb923c' },
             { label: 'SLA crítico', value: statsGlobal.criticas, cor: '#f87171' },
-            { label: 'Motoristas carregam', value: statsGlobal.motoristasCarregam, cor: '#22c55e' },
+            { label: 'Operação do Óleo', value: statsGlobal.oleo, cor: '#38bdf8' },
           ].map(s => <div key={s.label} style={{ background: 'rgba(255,255,255,.08)', borderRadius: 10, padding: '12px 16px' }}><div style={{ fontSize: 11, color: 'rgba(255,255,255,.6)', marginBottom: 4 }}>{s.label}</div><div style={{ fontSize: 20, fontWeight: 700, color: s.cor }}>{s.value}</div></div>)}
+        </div>
+      </div>
+
+      <div className="box">
+        <div className="box-title">
+          <div><h2>🛢️ Acesso da Operação do Óleo</h2><span>Use a etiqueta abaixo para colocar colaboradores na filial do óleo. Eles verão apenas dados da filial <strong>oleo</strong>.</span></div>
+          <button className="btn-light btn-small" onClick={criarFilialOleo}>Garantir filial óleo</button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+          <div className="box" style={{ margin: 0, background: 'var(--bg)' }}><strong>Etiqueta</strong><p style={{ color: 'var(--muted)', marginTop: 6 }}>Operação do Óleo</p><span className="badge badge-logistica">filial: oleo</span></div>
+          <div className="box" style={{ margin: 0, background: 'var(--bg)' }}><strong>Regra</strong><p style={{ color: 'var(--muted)', marginTop: 6 }}>Quem estiver com filial <b>oleo</b> acessa somente registros do óleo.</p></div>
+          <div className="box" style={{ margin: 0, background: 'var(--bg)' }}><strong>Admin geral</strong><p style={{ color: 'var(--muted)', marginTop: 6 }}>Admin fora do óleo continua vendo o painel completo.</p></div>
         </div>
       </div>
 
@@ -196,22 +182,30 @@ export default function Admin() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginBottom: 24 }}>
-        {filiaisAtivas.map(filial => { const s = statsFilial(filial); return <div key={filial} className="box" style={{ margin: 0 }}><div className="box-title"><h2 style={{ fontSize: 16 }}>🏭 {s.nome}</h2><span className="badge badge-logistica">{filial}</span></div><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>{[{ label: 'Lançadas', value: s.lancadas }, { label: 'A lançar', value: s.pendentes }, { label: 'Abertas', value: s.abertas }, { label: 'Finalizadas', value: s.finalizadas }].map(i => <div key={i.label} style={{ background: 'var(--bg)', borderRadius: 8, padding: '8px 12px' }}><div style={{ fontSize: 11, color: 'var(--muted)' }}>{i.label}</div><div style={{ fontSize: 18, fontWeight: 700 }}>{i.value}</div></div>)}</div><div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 13, color: 'var(--muted)' }}>Valor total</span><strong style={{ color: '#4ade80' }}>{s.valor}</strong></div>{s.urgentes > 0 && <div style={{ marginTop: 6, color: '#f87171', fontSize: 13 }}>⚠️ {s.urgentes} urgente(s)</div>}</div> })}
+      <div className="box">
+        <div className="box-title"><h2>Todas as estadias</h2><span>{listaFiltrada.length} registro(s)</span></div>
+        <div className="filters"><input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Pesquisar placa, motorista, chamado..." /><select value={filialFiltro} onChange={e => setFilialFiltro(e.target.value)}><option value="">Todas as filiais</option>{filiaisAtivas.map(f => <option key={f} value={f}>{nomeFilial(f)}</option>)}</select><button className="btn-light btn-small" onClick={() => { setBusca(''); setFilialFiltro('') }}>Limpar</button></div>
+        <div className="table-wrap" style={{ marginTop: 12 }}><div className="table-scroll"><table><thead><tr><th>Filial</th><th>Chamado</th><th>Motorista</th><th>Placa</th><th>Valor</th><th>Status</th><th>Lançado por</th></tr></thead><tbody>{listaFiltrada.length === 0 ? <tr><td colSpan={7} className="empty">Nenhuma estadia encontrada.</td></tr> : listaFiltrada.map(e => <tr key={e.id}><td><span className="badge badge-logistica">{nomeFilial(e.filial)}</span></td><td><strong>{e.chamado || '-'}</strong></td><td>{e.motorista || '-'}</td><td><span className="plate">{e.placa || '-'}</span></td><td><strong>{e.valor || 'R$ 0,00'}</strong></td><td><span className={`status ${e.status === 'Finalizado' ? 'status-finalizado' : e.status === 'Feito' ? 'status-feito' : 'status-aberto'}`}>{e.status}</span></td><td>{e.lancadoPor || '-'}</td></tr>)}</tbody></table></div></div>
       </div>
 
       <div className="box">
-        <div className="box-title"><div><h2>🚛 Motoristas que realmente carregaram</h2><span>Cadastro oficial gerado automaticamente pelas captações marcadas como “Carregou”.</span></div><span className="badge badge-logistica">{motoristasFiltrados.length} motorista(s)</span></div>
-        <div className="filters"><input value={buscaMotorista} onChange={e => setBuscaMotorista(e.target.value)} placeholder="Buscar nome, telefone, operação, captador..." /><select value={filtroOperacaoMotorista} onChange={e => setFiltroOperacaoMotorista(e.target.value)}><option value="">Todas operações</option>{operacoesMotoristas.map(op => <option key={op} value={op}>{op}</option>)}</select><button className="btn-light btn-small" onClick={() => { setBuscaMotorista(''); setFiltroOperacaoMotorista('') }}>Limpar</button></div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginTop: 14 }}>{[{ label: 'Motoristas confiáveis', value: motoristasQueCarregam.length, icon: '👤' }, { label: 'Carregamentos confirmados', value: motoristasQueCarregam.reduce((s, m) => s + m.carregamentos, 0), icon: '✅' }, { label: 'Operações atendidas', value: operacoesMotoristas.length, icon: '🌾' }].map(item => <div key={item.label} style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 14, padding: 14 }}><div style={{ color: 'var(--muted)', fontSize: 12 }}>{item.icon} {item.label}</div><strong style={{ fontSize: 24 }}>{item.value}</strong></div>)}</div>
-        <div className="table-wrap" style={{ marginTop: 14 }}><div className="table-scroll"><table><thead><tr><th>Motorista</th><th>Telefone</th><th>WhatsApp</th><th>Operações</th><th>Filiais</th><th>Captadores</th><th>Carregamentos</th><th>Último carregamento</th><th>Observação</th></tr></thead><tbody>{motoristasFiltrados.length === 0 ? <tr><td colSpan={9} className="empty">Nenhum motorista com status carregou ainda.</td></tr> : motoristasFiltrados.map(m => <tr key={m.chave}><td><strong>{m.nome}</strong></td><td>{m.telefone || '-'}</td><td>{m.telefone ? <a className="btn-green btn-small" href={`https://wa.me/55${limparTelefone(m.telefone)}`} target="_blank" rel="noopener noreferrer">Chamar</a> : '-'}</td><td>{m.operacoesLista.map(op => <span key={op} className="badge badge-logistica" style={{ marginRight: 4 }}>{op}</span>)}</td><td>{m.filiaisLista.map(f => nomeFilial(f)).join(', ')}</td><td>{m.captadoresLista.join(', ')}</td><td><strong style={{ color: '#22c55e' }}>{m.carregamentos}</strong></td><td>{m.ultimaData || '-'}</td><td>{m.obs || '-'}</td></tr>)}</tbody></table></div></div>
+        <div className="box-title"><div><h2>👥 Gerenciar funcionários</h2><span>{editandoUsuario ? `Editando ${editandoUsuario}` : 'Criar, editar filial, cargo e senha dos funcionários'}</span></div>{editandoUsuario && <button className="btn-light btn-small" onClick={limparFuncionario}>Cancelar edição</button>}</div>
+        <div className="form-grid" style={{ marginBottom: 12 }}>
+          <div className="field"><label>Nome</label><input value={funcionario.nome} onChange={e => setFuncionario(p => ({ ...p, nome: e.target.value }))} placeholder="Nome completo" /></div>
+          <div className="field"><label>Login</label><input disabled={!!editandoUsuario} value={funcionario.usuario} onChange={e => setFuncionario(p => ({ ...p, usuario: e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, '') }))} placeholder="username" /></div>
+          <div className="field"><label>{editandoUsuario ? 'Nova senha opcional' : 'Senha'}</label><input type="password" value={funcionario.senha} onChange={e => setFuncionario(p => ({ ...p, senha: e.target.value }))} placeholder={editandoUsuario ? 'Deixe vazio para manter' : 'Senha do funcionário'} /></div>
+          <div className="field"><label>Cargo</label><select value={funcionario.cargo} onChange={e => setFuncionario(p => ({ ...p, cargo: e.target.value }))}><option>Operador</option><option>Admin</option><option>Visualizador</option></select></div>
+          <div className="field"><label>Filial</label><select value={funcionario.filial} onChange={e => setFuncionario(p => ({ ...p, filial: e.target.value }))}><option value="">Selecione...</option>{filiaisCadastradas.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select></div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+          <button className="btn-light btn-small" onClick={aplicarEtiquetaOleo}>🛢️ Aplicar etiqueta Operação do Óleo</button>
+          {funcionario.filial === FILIAL_OLEO && <span className="badge badge-logistica">Este colaborador será do óleo</span>}
+        </div>
+        <button className={editandoUsuario ? 'btn-green' : 'btn-blue'} onClick={handleSalvarFuncionario}>{editandoUsuario ? 'Salvar funcionário' : 'Criar funcionário'}</button>
+        <div style={{ marginTop: 16 }}>{usuarios.map(u => <div key={u.usuario} className="online-user-pill" style={{ marginBottom: 8 }}><div className="online-user-left"><span className="avatar mini">{u.avatar}</span><div><strong>{u.nome}</strong><small>{u.usuario} • {u.cargo} • {nomeFilial(u.filial)} {u.filial === FILIAL_OLEO ? '• 🛢️ Óleo' : ''}</small></div></div><div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}><button className="btn-light btn-small" onClick={() => iniciarEdicao(u)}>Editar</button>{u.usuario !== ADMIN_USERNAME && <button className="btn-red btn-small" onClick={() => confirm(`Excluir ${u.usuario}?`) && excluirUsuario(u.usuario)}>Excluir</button>}</div></div>)}</div>
       </div>
 
-      <div className="box"><div className="box-title"><h2>Todas as estadias</h2><span>{listaFiltrada.length} registro(s)</span></div><div className="filters"><input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Pesquisar placa, motorista, chamado..." /><select value={filialFiltro} onChange={e => setFilialFiltro(e.target.value)}><option value="">Todas as filiais</option>{filiaisAtivas.map(f => <option key={f} value={f}>{nomeFilial(f)}</option>)}</select><button className="btn-light btn-small" onClick={() => { setBusca(''); setFilialFiltro('') }}>Limpar</button></div><div className="table-wrap" style={{ marginTop: 12 }}><div className="table-scroll"><table><thead><tr><th>Filial</th><th>Chamado</th><th>Motorista</th><th>Placa</th><th>Valor</th><th>Status</th><th>Lançado por</th></tr></thead><tbody>{listaFiltrada.length === 0 ? <tr><td colSpan={7} className="empty">Nenhuma estadia encontrada.</td></tr> : listaFiltrada.map(e => <tr key={e.id}><td><span className="badge badge-logistica">{nomeFilial(e.filial)}</span></td><td><strong>{e.chamado || '-'}</strong></td><td>{e.motorista || '-'}</td><td><span className="plate">{e.placa || '-'}</span></td><td><strong>{e.valor || 'R$ 0,00'}</strong></td><td><span className={`status ${e.status === 'Finalizado' ? 'status-finalizado' : e.status === 'Feito' ? 'status-feito' : 'status-aberto'}`}>{e.status}</span></td><td>{e.lancadoPor || '-'}</td></tr>)}</tbody></table></div></div></div>
-
-      <div className="box"><div className="box-title"><div><h2>👥 Gerenciar funcionários</h2><span>{editandoUsuario ? `Editando ${editandoUsuario}` : 'Criar, editar filial, cargo e senha dos funcionários'}</span></div>{editandoUsuario && <button className="btn-light btn-small" onClick={limparFuncionario}>Cancelar edição</button>}</div><div className="form-grid" style={{ marginBottom: 12 }}><div className="field"><label>Nome</label><input value={funcionario.nome} onChange={e => setFuncionario(p => ({ ...p, nome: e.target.value }))} placeholder="Nome completo" /></div><div className="field"><label>Login</label><input disabled={!!editandoUsuario} value={funcionario.usuario} onChange={e => setFuncionario(p => ({ ...p, usuario: e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, '') }))} placeholder="username" /></div><div className="field"><label>{editandoUsuario ? 'Nova senha opcional' : 'Senha'}</label><input type="password" value={funcionario.senha} onChange={e => setFuncionario(p => ({ ...p, senha: e.target.value }))} placeholder={editandoUsuario ? 'Deixe vazio para manter' : 'Senha do funcionário'} /></div><div className="field"><label>Cargo</label><select value={funcionario.cargo} onChange={e => setFuncionario(p => ({ ...p, cargo: e.target.value }))}><option>Operador</option><option>Admin</option><option>Visualizador</option></select></div><div className="field"><label>Filial</label><select value={funcionario.filial} onChange={e => setFuncionario(p => ({ ...p, filial: e.target.value }))}><option value="">Selecione...</option>{filiais.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select></div></div><button className={editandoUsuario ? 'btn-green' : 'btn-blue'} onClick={handleSalvarFuncionario}>{editandoUsuario ? 'Salvar funcionário' : 'Criar funcionário'}</button><div style={{ marginTop: 16 }}>{usuarios.map(u => <div key={u.usuario} className="online-user-pill" style={{ marginBottom: 8 }}><div className="online-user-left"><span className="avatar mini">{u.avatar}</span><div><strong>{u.nome}</strong><small>{u.usuario} • {u.cargo} • {nomeFilial(u.filial)}</small></div></div><div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}><button className="btn-light btn-small" onClick={() => iniciarEdicao(u)}>Editar</button>{u.usuario !== ADMIN_USERNAME && <button className="btn-red btn-small" onClick={() => confirm(`Excluir ${u.usuario}?`) && excluirUsuario(u.usuario)}>Excluir</button>}</div></div>)}</div></div>
-
-      <div className="box"><div className="box-title"><h2>🏭 Gerenciar filiais</h2><span>{filiais.length} filial(is) cadastrada(s)</span></div><div style={{ marginBottom: 16 }}>{filiais.map(f => <div key={f.id} className="online-user-pill" style={{ marginBottom: 8 }}><div className="online-user-left"><div><strong>{f.nome}</strong><small>{f.cidade}{f.estado ? ` — ${f.estado}` : ''} • <code style={{ fontSize: 11 }}>{f.id}</code></small></div></div>{f.id !== 'jatai-go' && f.id !== 'mineiros-go' && <button className="btn-red btn-small" onClick={() => confirm(`Excluir filial ${f.nome}?`) && excluirFilial(f.id)}>Excluir</button>}</div>)}</div><div className="form-grid"><div className="field"><label>ID da filial</label><input value={novaFilial.id} onChange={e => setNovaFilial(p => ({ ...p, id: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))} placeholder="ex: jatai-go" /></div><div className="field"><label>Nome</label><input value={novaFilial.nome} onChange={e => setNovaFilial(p => ({ ...p, nome: e.target.value }))} placeholder="Via Log Jataí" /></div><div className="field"><label>Cidade</label><input value={novaFilial.cidade} onChange={e => setNovaFilial(p => ({ ...p, cidade: e.target.value }))} placeholder="Jataí" /></div><div className="field"><label>Estado</label><input value={novaFilial.estado} onChange={e => setNovaFilial(p => ({ ...p, estado: e.target.value.toUpperCase() }))} placeholder="GO" maxLength={2} /></div></div><button className="btn-green btn-full" onClick={handleAdicionarFilial}>Adicionar filial</button></div>
+      <div className="box"><div className="box-title"><h2>🏭 Gerenciar filiais</h2><span>{filiaisCadastradas.length} filial(is) cadastrada(s)</span></div><div style={{ marginBottom: 16 }}>{filiaisCadastradas.map(f => <div key={f.id} className="online-user-pill" style={{ marginBottom: 8 }}><div className="online-user-left"><div><strong>{f.nome}</strong><small>{f.cidade}{f.estado ? ` — ${f.estado}` : ''} • <code style={{ fontSize: 11 }}>{f.id}</code></small></div></div>{f.id !== 'jatai-go' && f.id !== 'mineiros-go' && f.id !== FILIAL_OLEO && <button className="btn-red btn-small" onClick={() => confirm(`Excluir filial ${f.nome}?`) && excluirFilial(f.id)}>Excluir</button>}</div>)}</div><div className="form-grid"><div className="field"><label>ID da filial</label><input value={novaFilial.id} onChange={e => setNovaFilial(p => ({ ...p, id: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))} placeholder="ex: jatai-go" /></div><div className="field"><label>Nome</label><input value={novaFilial.nome} onChange={e => setNovaFilial(p => ({ ...p, nome: e.target.value }))} placeholder="Via Log Jataí" /></div><div className="field"><label>Cidade</label><input value={novaFilial.cidade} onChange={e => setNovaFilial(p => ({ ...p, cidade: e.target.value }))} placeholder="Jataí" /></div><div className="field"><label>Estado</label><input value={novaFilial.estado} onChange={e => setNovaFilial(p => ({ ...p, estado: e.target.value.toUpperCase() }))} placeholder="GO" maxLength={2} /></div></div><button className="btn-green btn-full" onClick={handleAdicionarFilial}>Adicionar filial</button></div>
     </section>
   )
 }
