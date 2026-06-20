@@ -1,0 +1,35 @@
+/* Toggle funcional do menu lateral */
+.sidebar-backdrop {
+  display: none;
+}
+
+.app .app-layout {
+  transition: grid-template-columns .24s ease;
+}
+
+.app .sidebar-pro {
+  transition: transform .24s ease, opacity .18s ease;
+}
+
+@media (min-width: 1101px) {
+  body.sidebar-open .app .app-layout {
+    grid-template-columns: 0 1fr;
+  }
+
+  body.sidebar-open .app .sidebar-pro {
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    background: rgba(0,0,0,.42);
+    backdrop-filter: blur(2px);
+  }
+}
