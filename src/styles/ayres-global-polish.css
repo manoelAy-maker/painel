@@ -1,25 +1,27 @@
 ﻿/* ===========================================================
-   AYRES - Global Polish
+   AYRES - Global Polish v2 (heavier visual pass)
    Camada final de design, importada depois de todo o resto.
-   Nao redefine cores/paleta - so refina consistencia visual:
-   profundidade, espacamento, transicoes, foco, scrollbar,
-   tabelas, badges, modais e estados de loading/empty.
+   Nao redefine a estrutura dos componentes - reforca identidade
+   visual com gradientes, profundidade e contraste mais fortes.
    =========================================================== */
 
 :root {
   --ayres-radius-sm: 10px;
-  --ayres-radius-md: 16px;
-  --ayres-radius-lg: 22px;
+  --ayres-radius-md: 18px;
+  --ayres-radius-lg: 24px;
   --ayres-ease: cubic-bezier(.22,.9,.3,1);
-  --ayres-shadow-soft: 0 2px 10px rgba(15,23,42,.06);
-  --ayres-shadow-lift: 0 18px 40px rgba(15,23,42,.16);
+  --ayres-shadow-soft: 0 2px 10px rgba(15,23,42,.07);
+  --ayres-shadow-lift: 0 22px 48px rgba(15,23,42,.18);
   --ayres-focus-ring: 0 0 0 3px rgba(37,99,235,.22);
+  --ayres-grad: linear-gradient(135deg, #2563eb, #7c3aed);
+  --ayres-grad-soft: linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.12));
 }
 
 .dark, body.dark {
-  --ayres-shadow-soft: 0 2px 10px rgba(0,0,0,.28);
-  --ayres-shadow-lift: 0 18px 44px rgba(0,0,0,.45);
-  --ayres-focus-ring: 0 0 0 3px rgba(59,130,246,.30);
+  --ayres-shadow-soft: 0 2px 10px rgba(0,0,0,.30);
+  --ayres-shadow-lift: 0 22px 54px rgba(0,0,0,.50);
+  --ayres-focus-ring: 0 0 0 3px rgba(59,130,246,.32);
+  --ayres-grad-soft: linear-gradient(135deg, rgba(37,99,235,.18), rgba(124,58,237,.18));
 }
 
 * { scrollbar-width: thin; }
@@ -34,6 +36,21 @@
 
 html { scroll-behavior: smooth; }
 
+/* ---- Fundo com profundidade no shell principal ---- */
+.app {
+  position: relative;
+}
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(680px circle at 8% -6%, rgba(37,99,235,.10), transparent 60%),
+    radial-gradient(620px circle at 100% 0%, rgba(124,58,237,.08), transparent 55%);
+}
+
 /* ---- Foco acessivel e consistente em toda a aplicacao ---- */
 a, button, input, textarea, select, [tabindex] {
   transition: box-shadow .15s var(--ayres-ease), border-color .15s var(--ayres-ease),
@@ -45,7 +62,7 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
   box-shadow: var(--ayres-focus-ring);
 }
 
-/* ---- Cards / paineis (cobre .sidebar-card, .dash-chart-card, .live-card, .stat etc) ---- */
+/* ---- Cards / paineis ---- */
 .sidebar-card,
 .dash-chart-card,
 .live-card,
@@ -55,6 +72,7 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
 .notif-panel,
 .notif-item,
 .login-card,
+.command-panel,
 [class*="-card"],
 [class*="-pro"] .card {
   border-radius: var(--ayres-radius-md);
@@ -62,46 +80,157 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
 
 .dash-chart-card,
 .live-card,
-.stat {
+.stat,
+.command-panel {
   will-change: transform;
+  transition: box-shadow .2s var(--ayres-ease), transform .2s var(--ayres-ease), border-color .2s var(--ayres-ease);
 }
 .dash-chart-card:hover,
 .live-card:hover,
-.stat:hover {
+.stat:hover,
+.command-panel:hover {
   box-shadow: var(--ayres-shadow-lift);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
-/* ---- Sidebar: hierarquia mais clara entre secoes e item ativo ---- */
+/* ---- KPIs do dashboard: visual bem mais forte ---- */
+.command-kpi {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--ayres-radius-md);
+  transition: transform .2s var(--ayres-ease), box-shadow .2s var(--ayres-ease);
+}
+.command-kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--ayres-grad);
+}
+.command-kpi:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ayres-shadow-lift);
+}
+.command-kpi.primary {
+  background: var(--ayres-grad);
+  color: #fff;
+}
+.command-kpi.primary .kpi-label span:first-child,
+.command-kpi.primary .kpi-sub {
+  color: rgba(255,255,255,.85);
+}
+.command-kpi.primary .command-kpi-icon {
+  background: rgba(255,255,255,.18) !important;
+  color: #fff !important;
+}
+.command-kpi .kpi-value {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.command-kpi-icon {
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+/* ---- Acoes em destaque (dashboard / operador) ---- */
+.dash-action-tile-pro,
+.operator-action-card {
+  border-radius: var(--ayres-radius-md);
+  transition: transform .2s var(--ayres-ease), box-shadow .2s var(--ayres-ease), border-color .2s var(--ayres-ease);
+}
+.dash-action-tile-pro:hover,
+.operator-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ayres-shadow-lift);
+}
+.operator-action-card.blue { border-top: 3px solid #2563eb; }
+.operator-action-card.orange { border-top: 3px solid #f97316; }
+
+.operator-mini-stat {
+  border-radius: var(--ayres-radius-sm);
+  transition: transform .15s var(--ayres-ease);
+}
+.operator-mini-stat:hover { transform: translateY(-2px); }
+
+/* ---- Listas do dashboard ---- */
+.dash-row-pro {
+  border-radius: var(--ayres-radius-sm);
+  transition: background-color .15s var(--ayres-ease), transform .15s var(--ayres-ease);
+}
+.dash-row-pro:hover {
+  background: var(--ayres-grad-soft);
+  transform: translateX(2px);
+}
+.dash-row-badge-pro {
+  font-weight: 800;
+  border-radius: 999px;
+}
+.dash-row-badge-pro.done { background: rgba(34,197,94,.16) !important; color: #16a34a !important; }
+.dash-row-badge-pro.urgent { background: rgba(239,68,68,.16) !important; color: #dc2626 !important; animation: ayresPulseBadge 1.6s infinite; }
+
+@keyframes ayresPulseBadge {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,.35); }
+  50% { box-shadow: 0 0 0 5px rgba(239,68,68,0); }
+}
+
+/* ---- Sidebar: identidade visual mais forte ---- */
 .sidebar-pro, [class*="ayres-sidebar"] {
-  backdrop-filter: saturate(1.1);
+  backdrop-filter: saturate(1.15);
+}
+.brand-mark-pro {
+  background: var(--ayres-grad) !important;
+  box-shadow: 0 8px 20px rgba(37,99,235,.35);
 }
 .sidebar-nav .tab, [class*="ayres-side-nav"] .tab {
   border-radius: var(--ayres-radius-sm);
   position: relative;
+  font-weight: 600;
 }
-.sidebar-nav .tab.active::before, [class*="ayres-side-nav"] .tab.active::before {
+.sidebar-nav .tab.active, [class*="ayres-side-nav"] .tab.active {
+  background: var(--ayres-grad) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 24px rgba(37,99,235,.30);
+}
+.sidebar-nav .tab.active .tab-icon,
+.sidebar-nav .tab.active .tab-label,
+[class*="ayres-side-nav"] .tab.active .tab-icon,
+[class*="ayres-side-nav"] .tab.active .tab-label {
+  color: #fff !important;
+}
+.sidebar-nav .tab:not(.active):hover, [class*="ayres-side-nav"] .tab:not(.active):hover {
+  background: var(--ayres-grad-soft);
+}
+.sidebar-section-label {
+  font-weight: 800;
+  letter-spacing: .6px;
+}
+.sidebar-user-card, .sidebar-card { transition: border-color .2s var(--ayres-ease), transform .2s var(--ayres-ease); }
+.sidebar-user-card:hover, .sidebar-card:hover { border-color: rgba(37,99,235,.4); transform: translateY(-2px); }
+.avatar { box-shadow: 0 0 0 3px rgba(37,99,235,.18); }
+
+/* ---- Topbar: profundidade sutil + linha de destaque ---- */
+.topbar, [class*="ayres-topbar"] {
+  backdrop-filter: blur(10px) saturate(1.1);
+  position: relative;
+}
+.topbar::after, [class*="ayres-topbar"]::after {
   content: '';
   position: absolute;
-  left: -10px;
-  top: 18%;
-  bottom: 18%;
-  width: 3px;
-  border-radius: 999px;
-  background: var(--blue, #2563eb);
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: var(--ayres-grad);
+  opacity: .55;
 }
-.sidebar-user-card, .sidebar-card { transition: border-color .2s var(--ayres-ease); }
-.sidebar-user-card:hover, .sidebar-card:hover { border-color: rgba(37,99,235,.35); }
-
-/* ---- Topbar: profundidade sutil e busca mais integrada ---- */
-.topbar, [class*="ayres-topbar"] {
-  backdrop-filter: blur(8px) saturate(1.05);
+.ayres-topbar-logo-pro {
+  background: var(--ayres-grad) !important;
+  box-shadow: 0 6px 16px rgba(37,99,235,.30);
 }
 [class*="ayres-header-search"] input, .topbar input[type="search"] {
   border-radius: 999px !important;
 }
 
-/* ---- Badges / status pills (reaproveita o token --blue/--green/--orange/--red) ---- */
+/* ---- Badges / status pills ---- */
 .pending-badge, .badge, [class*="status-"] {
   display: inline-flex;
   align-items: center;
@@ -115,16 +244,29 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
   line-height: 1.6;
 }
 .pending-badge {
-  background: rgba(245,158,11,.14);
+  background: rgba(245,158,11,.16);
   color: var(--orange, #f59e0b);
-  border: 1px solid rgba(245,158,11,.25);
+  border: 1px solid rgba(245,158,11,.3);
+  animation: ayresPulseBadge 2.2s infinite;
 }
 
-/* ---- Botoes: leve elevacao e feedback de clique ---- */
+/* ---- Botoes: gradiente nas acoes principais + elevacao ---- */
 .btn, button:not([class]) {
   border-radius: var(--ayres-radius-sm);
 }
 .btn:active, .btn-light:active { transform: scale(.97); }
+
+.operator-action-btn,
+.command-mini-btn,
+.capture-action-btn-pro,
+.dash-action-tile-pro {
+  transition: transform .15s var(--ayres-ease), box-shadow .15s var(--ayres-ease);
+}
+.capture-action-btn-pro:hover,
+.command-mini-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ayres-shadow-soft);
+}
 
 /* ---- Inputs: foco consistente em qualquer modulo ---- */
 input, textarea, select {
@@ -144,7 +286,7 @@ table thead th {
   font-weight: 800;
   text-align: left;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--line, #e2e8f0);
+  border-bottom: 2px solid var(--line, #e2e8f0);
   position: sticky;
   top: 0;
   background: var(--card, #fff);
@@ -156,7 +298,7 @@ table tbody td {
   font-size: 13px;
 }
 table tbody tr { transition: background-color .15s var(--ayres-ease); }
-table tbody tr:hover { background: var(--bg, #f4f7fb); }
+table tbody tr:hover { background: var(--ayres-grad-soft); }
 
 /* ---- Modais: entrada mais suave ---- */
 @keyframes ayresModalIn {
@@ -167,7 +309,7 @@ table tbody tr:hover { background: var(--bg, #f4f7fb); }
   animation: ayresModalIn .22s var(--ayres-ease);
 }
 
-/* ---- Loading skeleton (para listas/cards que ainda usam so "Carregando...") ---- */
+/* ---- Loading skeleton ---- */
 .ayres-skeleton {
   position: relative;
   overflow: hidden;
@@ -186,8 +328,8 @@ table tbody tr:hover { background: var(--bg, #f4f7fb); }
   to   { transform: translateX(100%); }
 }
 
-/* ---- Empty states padronizados ---- */
-.notif-empty, .empty-state {
+/* ---- Empty states ---- */
+.notif-empty, .empty-state, .dash-empty-pro {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -197,13 +339,13 @@ table tbody tr:hover { background: var(--bg, #f4f7fb); }
   color: var(--muted, #64748b);
 }
 
-/* ---- Responsivo: respiro extra em telas pequenas ---- */
+/* ---- Responsivo ---- */
 @media (max-width: 640px) {
-  .dash-chart-card, .live-card, .stat, .sidebar-card { border-radius: var(--ayres-radius-sm); }
+  .dash-chart-card, .live-card, .stat, .sidebar-card, .command-panel, .command-kpi { border-radius: var(--ayres-radius-sm); }
   table thead th, table tbody td { padding: 8px 9px; font-size: 12px; }
 }
 
-/* ---- Reducao de movimento para quem preferir ---- */
+/* ---- Reducao de movimento ---- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   html { scroll-behavior: auto; }
