@@ -34,24 +34,25 @@
 .login-ayres-word{
   display:inline-flex!important;
   align-items:center!important;
-  gap:.03em!important;
+  gap:.02em!important;
   color:#3b82f6!important;
   line-height:.9!important;
   white-space:nowrap!important;
 }
 
 .login-ayres-a{
-  width:.92em!important;
-  height:.92em!important;
+  width:1.08em!important;
+  height:1.08em!important;
   display:inline-grid!important;
   place-items:center!important;
-  transform:translateY(.04em)!important;
+  transform:translateY(.08em)!important;
+  margin-right:-.04em!important;
 }
 
 .login-ayres-a .ayres-logo-svg{
   width:100%!important;
   height:100%!important;
-  filter:drop-shadow(0 8px 18px rgba(37,99,235,.28));
+  filter:drop-shadow(0 8px 18px rgba(37,99,235,.32));
 }
 
 .login-ayres-yres{
@@ -62,5 +63,5 @@
 
 @media(max-width:720px){
   .login-hero-title{gap:.18em!important;}
-  .login-ayres-a{width:.82em!important;height:.82em!important;}
+  .login-ayres-a{width:.98em!important;height:.98em!important;}
 }
