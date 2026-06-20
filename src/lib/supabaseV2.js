@@ -1,4 +1,4 @@
-import { getClient } from './supabase'
+﻿import { getClient } from './supabase'
 
 export const T = {
   filiais: 'vl_filiais',
@@ -15,7 +15,7 @@ export const limparTelefone = (v) => String(v || '').replace(/[^0-9]/g, '')
 
 export const statusV2 = (status) => {
   const s = String(status || '').toLowerCase().trim()
-  if (s === 'nao_carregou' || s === 'não carregou' || s === 'nao carregou' || s.includes('não carreg') || s.includes('nao carreg')) return 'nao_carregou'
+  if (s === 'nao_carregou' || s === 'nao carregou' || s.includes('nao carreg')) return 'nao_carregou'
   if (s === 'carregou' || s === 'carregado') return 'carregou'
   if (s === 'ordem' || s.includes('ordem') || s.includes('programado') || s.includes('chegou')) return 'ordem'
   return 'contatado'
@@ -26,15 +26,15 @@ const quantidade = (v) => Math.max(1, Number(v || 1) || 1)
 export const impactoPontuacaoV2 = (valor) => {
   const s = String(valor || '').toLowerCase().trim()
   if (s.includes('falha') || s === 'impacta' || s === 'captacao') return 'falha_captacao'
-  if (s.includes('analise') || s.includes('análise')) return 'analise'
+  if (s.includes('analise')) return 'analise'
   return 'externo'
 }
 
 function montarObservacao(item) {
   const partes = []
   if (statusV2(item.status) === 'nao_carregou') {
-    partes.push(`[NAO_CARREGOU] Motivo: ${item.motivoNaoCarregou || 'Não informado'}`)
-    partes.push(`Justificativa: ${item.justificativaNaoCarregou || 'Não informada'}`)
+    partes.push(`[NAO_CARREGOU] Motivo: ${item.motivoNaoCarregou || 'Nao informado'}`)
+    partes.push(`Justificativa: ${item.justificativaNaoCarregou || 'Nao informada'}`)
     partes.push(`[IMPACTO_PONTUACAO] ${impactoPontuacaoV2(item.impactoPontuacao || item.impacto_pontuacao)}`)
   }
   if (item.obs || item.observacao || item.ultimaObs) partes.push(`Obs: ${item.obs || item.observacao || item.ultimaObs}`)
@@ -61,15 +61,17 @@ export async function upsertFilialBasica(filialId, nome = '') {
 export async function deletarFilialV2(filialId) {
   if (!filialId) return
   const sb = getClient()
-  const { error } = await sb.from(T.filiais).delete().eq('id', String(filialId))
+  const { data, error } = await sb.from(T.filiais).delete().eq('id', String(filialId)).select('id')
   if (error) throw error
+  if (!data?.length) throw new Error('Nenhuma filial removida na nuvem (verifique permissoes/RLS).')
 }
 
 export async function deletarProfileV2(usuario) {
   if (!usuario) return
   const sb = getClient()
-  const { error } = await sb.from(T.profiles).delete().eq('usuario', String(usuario))
+  const { data, error } = await sb.from(T.profiles).delete().eq('usuario', String(usuario)).select('usuario')
   if (error) throw error
+  if (!data?.length) throw new Error('Nenhum perfil removido na nuvem (verifique permissoes/RLS).')
 }
 
 export async function upsertProfileBasico(usuario) {
@@ -241,15 +243,16 @@ export async function deletarCaptacaoV2(localId) {
   if (!anterior?.id) return true
 
   try {
-    const { error } = await sb.rpc('delete_captacao_completa', { p_local_id: String(localId) })
-    if (!error) return true
+    const { data: rpcOk, error: rpcError } = await sb.rpc('delete_captacao_completa', { p_local_id: String(localId) })
+    if (!rpcError && rpcOk) return true
   } catch {}
 
   await sb.from(T.eventos).delete().eq('captacao_id', anterior.id)
   await sb.from(T.carregamentos).delete().eq('captacao_id', anterior.id)
 
-  const { error } = await sb.from(T.captacoes).delete().eq('id', anterior.id)
+  const { data, error } = await sb.from(T.captacoes).delete().eq('id', anterior.id).select('id')
   if (error) throw error
+  if (!data?.length) throw new Error('Nenhuma captacao removida na nuvem (verifique permissoes/RLS).')
   return true
 }
 
