@@ -26,6 +26,7 @@ const TRADUCOES = {
     sessao: 'Sua sessão continua ativa até clicar em',
     sair: 'Sair',
     logout: 'SAIR',
+    painel: 'Painel de',
     modulos: [
       {
         id: 'estadia',
@@ -57,6 +58,7 @@ const TRADUCOES = {
     sessao: 'Your session remains active until you click',
     sair: 'Sign out',
     logout: 'SIGN OUT',
+    painel: 'Panel',
     modulos: [
       {
         id: 'estadia',
@@ -90,7 +92,7 @@ const cores = {
 export default function SelecaoPainel() {
   const { usuarioAtual, mudarAba, logout } = useApp()
   const [heroVisivel, setHeroVisivel] = useState(false)
-  const [idioma, setIdioma] = useState(() => localStorage.getItem('idiomaAyres') || 'pt')
+  const idioma = localStorage.getItem('idiomaAyres') || 'pt'
   const t = TRADUCOES[idioma] || TRADUCOES.pt
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'usuário'
   const filialLabel = usuarioAtual?.filial === 'oleo' ? 'Operação do Óleo' : (usuarioAtual?.filial || 'jatai-go')
@@ -99,10 +101,6 @@ export default function SelecaoPainel() {
     const t = setTimeout(() => setHeroVisivel(true), 60)
     return () => clearTimeout(t)
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem('idiomaAyres', idioma)
-  }, [idioma])
 
   const moverGlow = (e) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -134,10 +132,6 @@ export default function SelecaoPainel() {
           <div><h1 className="text-2xl font-black tracking-tight">AYRES</h1><p className="text-[10px] uppercase tracking-[0.3em] text-blue-300 font-black">{t.marca}</p></div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center rounded-full border border-white/10 bg-white/[.045] p-1 text-[11px] font-black backdrop-blur-xl">
-            <button type="button" onClick={() => setIdioma('pt')} className={`px-3 py-1.5 rounded-full transition-all ${idioma === 'pt' ? 'bg-blue-500/25 text-blue-100' : 'text-slate-500 hover:text-slate-200'}`}>PT</button>
-            <button type="button" onClick={() => setIdioma('en')} className={`px-3 py-1.5 rounded-full transition-all ${idioma === 'en' ? 'bg-blue-500/25 text-blue-100' : 'text-slate-500 hover:text-slate-200'}`}>EN</button>
-          </div>
           <div className="hidden sm:flex items-center gap-2 rounded-full border border-white/10 bg-white/[.045] px-4 py-2 text-xs text-slate-300 backdrop-blur-xl">
             {ICONES.user}<span>{usuarioAtual?.nome || usuarioAtual?.usuario}</span>
           </div>
@@ -170,7 +164,7 @@ export default function SelecaoPainel() {
                         <div className={`w-16 h-16 rounded-3xl flex items-center justify-center border ${c.iconeWrap}`}>{ICONES[m.icon]}</div>
                         <span className="rounded-full border border-white/10 bg-white/[.045] px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400">{m.etiqueta}</span>
                       </div>
-                      <h3 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight">{idioma === 'pt' ? 'Painel de' : 'Panel'} <span className={c.texto}>{m.nome}</span></h3>
+                      <h3 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight">{t.painel} <span className={c.texto}>{m.nome}</span></h3>
                       <p className="text-slate-400 text-base leading-relaxed max-w-md">{m.subtitulo}</p>
                     </div>
                     <div>
