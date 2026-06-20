@@ -1,0 +1,206 @@
+.app .topbar.ayres-header-v4{
+  padding:0 18px 0 !important;
+  position:sticky;
+  top:0;
+  z-index:22;
+  background:rgba(5,7,10,.84)!important;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(148,163,184,.10)!important;
+}
+
+.app .topbar-inner.ayres-header-inner-v4{
+  height:64px!important;
+  max-width:none!important;
+  width:100%!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(260px,1fr) minmax(240px,420px) auto!important;
+  gap:16px!important;
+  align-items:center!important;
+}
+
+.app .ayres-header-left-v4{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-width:0!important;
+}
+
+.app .topbar-menu-btn{
+  width:38px!important;
+  height:38px!important;
+  border-radius:12px!important;
+  border:1px solid rgba(148,163,184,.12)!important;
+  background:rgba(15,23,42,.60)!important;
+  color:#cbd5e1!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 auto!important;
+}
+
+.app .topbar-menu-btn:hover{
+  background:rgba(37,99,235,.14)!important;
+  border-color:rgba(96,165,250,.28)!important;
+  color:#fff!important;
+}
+
+.app .ayres-topbar-logo-pro{
+  width:38px!important;
+  height:38px!important;
+  border-radius:13px!important;
+  background:linear-gradient(135deg,#2563eb,#7c3aed)!important;
+  color:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:15px!important;
+  font-weight:950!important;
+  box-shadow:none!important;
+  flex:0 0 auto!important;
+}
+
+.app .ayres-header-title-v4 strong{
+  color:#f8fafc!important;
+  font-size:17px!important;
+  line-height:1.05!important;
+  letter-spacing:-.04em!important;
+}
+
+.app .ayres-header-title-v4 span{
+  color:#7b879a!important;
+  font-size:11px!important;
+  line-height:1.25!important;
+  margin-top:2px!important;
+}
+
+.app .ayres-header-search-v4{
+  height:40px!important;
+  border:1px solid rgba(148,163,184,.10)!important;
+  background:rgba(2,6,23,.32)!important;
+  border-radius:999px!important;
+  color:#64748b!important;
+  padding:0 13px!important;
+  box-shadow:none!important;
+  min-width:0!important;
+}
+
+.app .ayres-header-search-v4 span{
+  font-size:12px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+.app .ayres-header-search-v4 kbd{
+  height:24px!important;
+  min-width:32px!important;
+  border-radius:8px!important;
+  border:1px solid rgba(148,163,184,.10)!important;
+  background:rgba(15,23,42,.55)!important;
+  color:#64748b!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0 6px!important;
+  font-size:10px!important;
+  margin-left:auto!important;
+}
+
+.app .ayres-header-actions-v4{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  justify-content:flex-end!important;
+}
+
+.app .ayres-header-actions-v4 .notification-bell,
+.app .ayres-header-actions-v4 .notification-btn,
+.app .ayres-header-actions-v4 [class*="bell"]{
+  box-shadow:none!important;
+}
+
+.app .ayres-user-menu-btn-v4{
+  height:40px!important;
+  min-width:132px!important;
+  border-radius:14px!important;
+  border:1px solid rgba(148,163,184,.12)!important;
+  background:rgba(15,23,42,.55)!important;
+  padding:4px 9px 4px 4px!important;
+  gap:8px!important;
+  color:#e2e8f0!important;
+  box-shadow:none!important;
+}
+
+.app .topbar-user-photo{
+  width:32px!important;
+  height:32px!important;
+  border-radius:11px!important;
+  background:linear-gradient(135deg,#2563eb,#7c3aed)!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  flex:0 0 auto!important;
+}
+
+.app .topbar-user-text strong{
+  font-size:12px!important;
+  color:#f8fafc!important;
+  line-height:1.05!important;
+}
+
+.app .topbar-user-text small{
+  font-size:10px!important;
+  color:#94a3b8!important;
+  line-height:1.05!important;
+}
+
+.app .ayres-user-dropdown-v4{
+  top:calc(100% + 8px)!important;
+  border-radius:16px!important;
+  background:#0b111c!important;
+}
+
+.app .main-pro{
+  background:linear-gradient(180deg,#05070a 0%,#070b12 100%)!important;
+}
+
+.app .container{
+  padding-top:18px!important;
+}
+
+@media(max-width:1180px){
+  .app .topbar-inner.ayres-header-inner-v4{
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+
+  .app .ayres-header-search-v4{
+    display:none!important;
+  }
+}
+
+@media(max-width:720px){
+  .app .topbar.ayres-header-v4{
+    padding:0 10px!important;
+  }
+
+  .app .topbar-inner.ayres-header-inner-v4{
+    height:58px!important;
+  }
+
+  .app .ayres-topbar-logo-pro{
+    width:34px!important;
+    height:34px!important;
+  }
+
+  .app .ayres-header-title-v4 span{
+    display:none!important;
+  }
+
+  .app .ayres-user-menu-btn-v4{
+    width:38px!important;
+    min-width:38px!important;
+    padding:3px!important;
+  }
+}
