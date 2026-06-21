@@ -1,0 +1,16 @@
+.location-help-card{
+  margin-top:12px;
+  border:1px solid rgba(96,165,250,.22);
+  background:linear-gradient(135deg,rgba(37,99,235,.13),rgba(2,6,23,.76));
+  border-radius:18px;
+  padding:14px;
+  text-align:left;
+}
+.location-help-card strong{display:block;color:#dbeafe;font-size:13px;margin-bottom:6px;}
+.location-help-card p{color:#cbd5e1;font-size:12px;line-height:1.45;margin:0 0 10px;}
+.location-help-steps{display:grid;gap:8px;margin:10px 0 12px;}
+.location-help-steps div{border:1px solid rgba(148,163,184,.12);background:rgba(2,6,23,.38);border-radius:13px;padding:10px;}
+.location-help-steps b{display:block;color:#f8fafc;font-size:12px;margin-bottom:4px;}
+.location-help-steps span{display:block;color:#94a3b8;font-size:11px;line-height:1.35;}
+.location-help-card button{width:100%;height:38px;border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;font-weight:900;font-size:12px;cursor:pointer;}
+.location-help-card button:disabled{opacity:.6;cursor:wait;}
