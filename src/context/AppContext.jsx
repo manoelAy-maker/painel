@@ -5,6 +5,7 @@ import { gerarId, baixarArquivo, dataISOTexto, calcularEstadia } from '../utils/
 import { podeAdministrar } from '../utils/roles'
 import * as sb from '../lib/supabase'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
+import { registrarLocalizacaoUsuario } from '../lib/locationAudit'
 
 const hashSenha = async (senha) => {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha + 'ldc2025'))
@@ -202,13 +203,9 @@ export function AppProvider({ children }) {
     conectando.current = true
     try {
       setCloud('syncing', 'Conectando ao Supabase...')
-
-      // Testa a tabela principal antes de marcar online.
       const carregou = await baixarNuvem(false)
       if (!carregou) throw new Error('Falha ao baixar dados')
-
       supabaseOnline.current = true
-
       if (!canalRealtime.current) {
         canalRealtime.current = sb.iniciarRealtime(async () => {
           if (recebendoNuvem.current) return
@@ -217,7 +214,6 @@ export function AppProvider({ children }) {
           setCloud('online', 'Atualizado em tempo real.')
         })
       }
-
       await sincronizarFila()
       await baixarNuvem(false)
       setCloud('online', 'Conectado. Salvamento automático ativo.')
@@ -320,6 +316,12 @@ export function AppProvider({ children }) {
     localStorage.setItem('usuarioLogadoViaLog', JSON.stringify(user))
     iniciarPresenca(user)
     setTimeout(() => conectarRef.current?.(), 80)
+    setTimeout(() => {
+      registrarLocalizacaoUsuario(user, sb.salvar).then((loc) => {
+        if (loc?.localizacaoAutorizada) feed('Localização registrada', `${user.nome} autorizou localização com precisão de ${Math.round(loc.precisaoMetros || 0)}m.`, '📍')
+        else feed('Localização não autorizada', `${user.nome} entrou sem liberar localização.`, '📍')
+      }).catch(() => {})
+    }, 600)
     feed('Login', `${user.nome} entrou no painel.`, '👤')
     return true
   }, [toast, iniciarPresenca, feed])
@@ -457,9 +459,7 @@ export function AppProvider({ children }) {
     toast('Preencha os dados e salve a estadia.', 'ok')
   }, [deletarNuvem, toast])
 
-  const limparItemParaLancar = useCallback(() => {
-    dispatch({ type: 'SET_ITEM_LANCAR', payload: null })
-  }, [])
+  const limparItemParaLancar = useCallback(() => dispatch({ type: 'SET_ITEM_LANCAR', payload: null }), [])
 
   const editarLancada = useCallback(async (id, dados) => {
     const calc = calcularEstadia(dados.peso, dados.chegadaData, dados.chegadaHora, dados.saidaData, dados.saidaHora)
@@ -479,49 +479,16 @@ export function AppProvider({ children }) {
     await deletarNuvem(id)
   }, [deletarNuvem])
 
-  const limparHistorico = useCallback(() => {
-    dispatch({ type: 'SET_HISTORICO', payload: [] })
-  }, [])
-
-  const exportarBackup = useCallback(() => {
-    const s = stateRef.current
-    const dados = { estadias: s.estadias, estadiasALancar: s.estadiasALancar, historico: s.historico, usuarios: s.usuarios, exportadoEm: new Date().toLocaleString('pt-BR') }
-    baixarArquivo('backup-painel-ldc.json', JSON.stringify(dados, null, 2), 'application/json')
-  }, [])
-
-  const importarBackup = useCallback((dados) => {
-    dispatch({ type: 'SET_ESTADIAS', payload: dados.estadias || [] })
-    dispatch({ type: 'SET_A_LANCAR', payload: dados.estadiasALancar || [] })
-    dispatch({ type: 'SET_HISTORICO', payload: dados.historico || [] })
-    if (dados.usuarios) dispatch({ type: 'SET_USUARIOS', payload: dados.usuarios })
-    toast('Backup importado.', 'ok')
-  }, [toast])
-
-  const exportarCSV = useCallback(() => {
-    const header = ['Chamado', 'Motorista', 'Transportadora', 'Placa', 'Peso', 'Horas', 'Valor', 'Pago por', 'Prioridade', 'Status', 'Lançado por', 'Data'].join(';')
-    const rows = stateRef.current.estadias.map(e =>
-      [e.chamado, e.motorista, e.transportadora, e.placa, e.peso, e.horas, e.valor, e.pagoPor, e.prioridade, e.status, e.lancadoPor, e.dataLancamento]
-        .map(x => `"${String(x || '').replaceAll('"', '""')}"`).join(';')
-    )
-    baixarArquivo('estadias-ldc.csv', [header, ...rows].join('\n'), 'text/csv;charset=utf-8')
-  }, [])
-
-  const mudarAba = useCallback((aba) => dispatch({ type: 'SET_ABA', payload: aba }), [])
-  const alternarTema = useCallback(() => dispatch({ type: 'SET_TEMA', payload: stateRef.current.tema === 'light' ? 'dark' : 'light' }), [])
-  const alternarSom = useCallback(() => dispatch({ type: 'SET_SOM', payload: !stateRef.current.somAtivo }), [])
-
   const value = {
-    ...state,
-    supabaseOnline: supabaseOnline.current,
+    ...state, dispatch, entrar, logout, verificarSenhaAdmin,
+    adicionarLancada, atualizarLancada, editarLancada, excluirLancada, marcarFeito, finalizar, reabrir,
+    adicionarALancar, abrirParaLancar, excluirALancar, limparItemParaLancar,
+    uploadAnexoItem, baixarArquivo, baixarNuvem, conectarSupabase,
+    criarUsuario, editarUsuario, excluirUsuario, criarFilial, excluirFilial,
     toast, feed,
-    entrar, logout, criarUsuario, editarUsuario, excluirUsuario, verificarSenhaAdmin, criarFilial, excluirFilial,
-    adicionarLancada, marcarFeito, finalizar, reabrir, excluirLancada,
-    adicionarALancar, abrirParaLancar, excluirALancar,
-    limparHistorico, exportarBackup, importarBackup, exportarCSV,
-    mudarAba, alternarTema, alternarSom,
-    conectarSupabase, sincronizarFila,
-    editarLancada, limparItemParaLancar,
-    uploadAnexoItem, dataISOTexto,
+    mudarAba: (aba) => dispatch({ type: 'SET_ABA', payload: aba }),
+    setTema: (tema) => dispatch({ type: 'SET_TEMA', payload: tema }),
+    setSomAtivo: (v) => dispatch({ type: 'SET_SOM', payload: v }),
   }
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
