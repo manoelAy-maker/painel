@@ -1,15 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useApp } from '../context/AppContext'
-import { calcularEstadia } from '../utils/index'
 import DropZone from '../components/DropZone'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 import { listarMotoristasBancoV2, listarTransportadorasV2, upsertMotoristaBasicoV2, upsertTransportadoraV2 } from '../lib/supabaseV2'
 import '../estadia-desktop-pro.css'
 
 const EMPTY = {
-  nf: '', chamado: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '',
-  prioridade: 'Normal', pagoPor: 'Logística', status: 'Aberto',
-  chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: ''
+  nf: '', cte: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '',
+  plataforma: 'G&O - GRÃOS E OLEAGINOSAS', regiaoAprovadora: '', localEstadia: 'Destino',
+  motivo: '', sindicato: 'Não', prioridade: 'Normal', status: 'Aberto',
+  chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '',
+  tipoCalculo: 'Hora', franquia: '48', valorHora: '', valorDiaria: '', qtdDias: '', valorNegociado: '',
+  obs: '',
 }
 const TRANSPORTADORAS_BASE = ['Via Log', 'RDR', 'Transportes', 'Autônomo']
 
@@ -29,6 +31,66 @@ function eventoHistorico(acao, usuario, detalhes = '') {
   return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes }
 }
 
+function numeroBR(valor) {
+  if (!valor) return 0
+  return Number(String(valor).replace(/\./g, '').replace(',', '.')) || 0
+}
+
+function dinheiroBR(valor) {
+  return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function horasEntre(dataIni, horaIni, dataFim, horaFim) {
+  if (!dataIni || !horaIni || !dataFim || !horaFim) return 0
+  const ini = new Date(`${dataIni}T${horaIni}`)
+  const fim = new Date(`${dataFim}T${horaFim}`)
+  if (Number.isNaN(ini.getTime()) || Number.isNaN(fim.getTime()) || fim <= ini) return 0
+  return (fim - ini) / 36e5
+}
+
+function formatarDataHora(data, hora) {
+  if (!data || !hora) return '-'
+  const [ano, mes, dia] = data.split('-')
+  return `${dia}/${mes}/${ano} ${hora}`
+}
+
+function calcularEstadiaOperacional(form) {
+  const totalHoras = horasEntre(form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
+  const franquia = numeroBR(form.franquia)
+  const horasPagar = Math.max(0, totalHoras - franquia)
+  let valorNumero = 0
+
+  if (form.tipoCalculo === 'Diária') {
+    const dias = Number(form.qtdDias) || 0
+    valorNumero = numeroBR(form.valorDiaria) * dias
+    return {
+      horas: String(dias * 24 || 0),
+      totalHoras: totalHoras.toFixed(2),
+      horasPagar: String(dias * 24 || 0),
+      valorNumero,
+      valor: dinheiroBR(valorNumero),
+      chegada: formatarDataHora(form.chegadaData, form.chegadaHora),
+      saida: formatarDataHora(form.saidaData, form.saidaHora),
+    }
+  }
+
+  if (form.tipoCalculo === 'Negociado') {
+    valorNumero = numeroBR(form.valorNegociado)
+  } else {
+    valorNumero = horasPagar * numeroBR(form.valorHora)
+  }
+
+  return {
+    horas: horasPagar.toFixed(2),
+    totalHoras: totalHoras.toFixed(2),
+    horasPagar: horasPagar.toFixed(2),
+    valorNumero,
+    valor: dinheiroBR(valorNumero),
+    chegada: formatarDataHora(form.chegadaData, form.chegadaHora),
+    saida: formatarDataHora(form.saidaData, form.saidaHora),
+  }
+}
+
 export default function EstadiaLancada({ formRef }) {
   const {
     estadias, adicionarLancada, editarLancada, excluirLancada, itemParaLancar, limparItemParaLancar,
@@ -42,7 +104,7 @@ export default function EstadiaLancada({ formRef }) {
   const [bancoTransportadoras, setBancoTransportadoras] = useState([])
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
-  const calc = calcularEstadia(form.peso, form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
+  const calc = calcularEstadiaOperacional(form)
 
   const carregarCadastros = async () => {
     try {
@@ -107,19 +169,29 @@ export default function EstadiaLancada({ formRef }) {
     setEditandoId(e.id)
     setForm({
       nf: e.nf || e.numeroNf || '',
-      chamado: e.chamado || '',
+      cte: e.cte || '',
       motorista: e.motorista || '',
       telefoneMotorista: e.telefoneMotorista || '',
       transportadora: e.transportadora || '',
       placa: e.placa || '',
-      peso: e.peso || '',
+      plataforma: e.plataforma || 'G&O - GRÃOS E OLEAGINOSAS',
+      regiaoAprovadora: e.regiaoAprovadora || '',
+      localEstadia: e.localEstadia || 'Destino',
+      motivo: e.motivo || '',
+      sindicato: e.sindicato || 'Não',
       prioridade: e.prioridade || 'Normal',
-      pagoPor: e.pagoPor || 'Logística',
       status: e.status || 'Aberto',
       chegadaData: e.chegadaData || '',
       chegadaHora: e.chegadaHora || '',
       saidaData: e.saidaData || '',
       saidaHora: e.saidaHora || '',
+      tipoCalculo: e.tipoCalculo || 'Hora',
+      franquia: e.franquia || '48',
+      valorHora: e.valorHora || '',
+      valorDiaria: e.valorDiaria || '',
+      qtdDias: e.qtdDias || '',
+      valorNegociado: e.valorNegociado || '',
+      obs: e.obs || '',
     })
     setExistingAnexos(e.anexos || [])
     setArquivos([])
@@ -131,9 +203,26 @@ export default function EstadiaLancada({ formRef }) {
     setForm(prev => ({
       ...prev,
       nf: itemParaLancar.nf || itemParaLancar.numeroNf || '',
+      cte: itemParaLancar.cte || '',
       placa: itemParaLancar.placa || '',
       transportadora: itemParaLancar.transportadora || '',
       prioridade: itemParaLancar.prioridade || 'Normal',
+      plataforma: itemParaLancar.plataforma || prev.plataforma,
+      regiaoAprovadora: itemParaLancar.regiaoAprovadora || '',
+      localEstadia: itemParaLancar.localEstadia || prev.localEstadia,
+      motivo: itemParaLancar.motivo || '',
+      sindicato: itemParaLancar.sindicato || 'Não',
+      chegadaData: itemParaLancar.chegadaData || '',
+      chegadaHora: itemParaLancar.chegadaHora || '',
+      saidaData: itemParaLancar.saidaData || '',
+      saidaHora: itemParaLancar.saidaHora || '',
+      tipoCalculo: itemParaLancar.tipoCalculo || prev.tipoCalculo,
+      franquia: itemParaLancar.franquia || prev.franquia,
+      valorHora: itemParaLancar.valorHora || '',
+      valorDiaria: itemParaLancar.valorDiaria || '',
+      qtdDias: itemParaLancar.qtdDias || '',
+      valorNegociado: itemParaLancar.valorNegociado || '',
+      obs: itemParaLancar.obs || '',
     }))
     setExistingAnexos(itemParaLancar.anexos || [])
     setArquivos([])
@@ -159,31 +248,36 @@ export default function EstadiaLancada({ formRef }) {
 
   const encontrarDuplicada = () => {
     const nf = String(form.nf || '').trim()
-    const chamado = String(form.chamado || '').trim()
     const placa = String(form.placa || '').trim().toUpperCase()
     return estadias.find(e => {
       if (String(e.id) === String(editandoId)) return false
       const mesmaNf = nf && String(e.nf || e.numeroNf || '').trim() === nf
-      const mesmoChamado = chamado && String(e.chamado || '').trim() === chamado
-      const mesmaPlacaAberta = placa && String(e.placa || '').trim().toUpperCase() === placa && e.status !== 'Finalizado'
-      return mesmaNf || mesmoChamado || mesmaPlacaAberta
+      const mesmaPlaca = placa && String(e.placa || '').trim().toUpperCase() === placa && e.status !== 'Finalizado'
+      return mesmaNf || mesmaPlaca
     })
   }
 
   const handleSalvar = async () => {
-    if (!calc) { alert('Preencha peso, chegada e saída corretamente.'); return }
-    if (!form.motorista.trim() || !form.placa.trim()) { alert('Preencha motorista e placa.'); return }
+    if (!form.nf.trim()) { alert('Preencha o número da NF.'); return }
+    if (!form.placa.trim()) { alert('Preencha a placa.'); return }
+    if (!form.motivo.trim()) { alert('Escolha o motivo da estadia.'); return }
+    if (!form.chegadaData || !form.chegadaHora || !form.saidaData || !form.saidaHora) { alert('Preencha chegada e saída.'); return }
+    if (form.tipoCalculo === 'Hora' && !numeroBR(form.valorHora)) { alert('Preencha o valor por hora.'); return }
+    if (form.tipoCalculo === 'Diária' && (!numeroBR(form.valorDiaria) || !form.qtdDias)) { alert('Preencha valor diária e quantidade de dias.'); return }
+    if (form.tipoCalculo === 'Negociado' && !numeroBR(form.valorNegociado)) { alert('Preencha o valor negociado.'); return }
 
     const duplicada = encontrarDuplicada()
     if (!editandoId && duplicada && !confirm(`Já existe uma estadia parecida para ${duplicada.placa || 'esta placa'} / NF ${duplicada.nf || duplicada.numeroNf || '-'}. Deseja salvar mesmo assim?`)) return
 
     try {
-      await upsertMotoristaBasicoV2({
-        nome: form.motorista.trim(),
-        telefone: form.telefoneMotorista,
-        observacao: 'Criado/atualizado pelo lançamento de estadia',
-      }, usuarioAtual)
-      await upsertTransportadoraV2(form.transportadora, usuarioAtual)
+      if (form.motorista.trim()) {
+        await upsertMotoristaBasicoV2({
+          nome: form.motorista.trim(),
+          telefone: form.telefoneMotorista,
+          observacao: 'Criado/atualizado pelo lançamento de estadia',
+        }, usuarioAtual)
+      }
+      if (form.transportadora.trim()) await upsertTransportadoraV2(form.transportadora, usuarioAtual)
     } catch {}
 
     const novosAnexos = []
@@ -193,20 +287,28 @@ export default function EstadiaLancada({ formRef }) {
     }
     const anexos = [...existingAnexos, ...novosAnexos]
 
+    const payload = {
+      ...form,
+      placa: form.placa.trim().toUpperCase(),
+      numeroNf: form.nf,
+      valorCalculado: calc.valor,
+      totalHoras: calc.totalHoras,
+      horasPagar: calc.horasPagar,
+      ...calc,
+      anexos,
+    }
+
     if (editandoId) {
       const atual = estadias.find(e => String(e.id) === String(editandoId))
       const historicoItem = [
         eventoHistorico('Editou dados da estadia', usuarioAtual?.usuario, `Placa ${form.placa}`),
         ...(atual?.historicoItem || []),
       ].slice(0, 20)
-      await editarLancada(editandoId, { ...form, numeroNf: form.nf, anexos, historicoItem })
+      await editarLancada(editandoId, { ...payload, historicoItem })
       setEditandoId(null)
     } else {
       await adicionarLancada({
-        ...form,
-        numeroNf: form.nf,
-        ...calc,
-        anexos,
+        ...payload,
         historicoItem: [eventoHistorico('Criou estadia lançada', usuarioAtual?.usuario, `Placa ${form.placa}`)],
       })
     }
@@ -237,7 +339,7 @@ export default function EstadiaLancada({ formRef }) {
         <div className="box-title estadia-form-title">
           <div>
             <h2>{editandoId ? 'Editar estadia lançada' : 'Lançar nova estadia'}</h2>
-            <span>Formulário separado por blocos para evitar erro e deixar o lançamento mais rápido.</span>
+            <span>Versão enxuta: NF, placa, motivo, período, cálculo e anexos. Dados do usuário ficam automáticos.</span>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="btn-light btn-small" onClick={() => mudarAba('consultaLancadas')}>Ver lançadas</button>
@@ -251,43 +353,55 @@ export default function EstadiaLancada({ formRef }) {
         </div>}
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>Dados da carga</h2><span>NF, chamado, placa e peso.</span></div>
+          <div className="box-title"><h2>Dados operacionais</h2><span>Sem tomador, centro de custo, protocolo, favorecido ou responsável manual.</span></div>
           <div className="form-grid estadia-form-grid">
-            <div className="field field-sm"><label>Número da NF</label><input value={form.nf} onChange={e => set('nf', e.target.value)} placeholder="Ex: 388860" /></div>
-            <div className="field field-sm"><label>Número do chamado</label><input value={form.chamado} onChange={e => set('chamado', e.target.value)} placeholder="Ex: 16820752" /></div>
-            <div className="field field-sm"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase())} placeholder="JBU0H16" /></div>
-            <div className="field field-sm"><label>Peso</label><input value={form.peso} onChange={e => set('peso', e.target.value)} placeholder="38380" /></div>
-            <div className="field field-sm"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Média</option><option>Urgente</option></select></div>
-            <div className="field field-sm"><label>Pago por</label><select value={form.pagoPor} onChange={e => set('pagoPor', e.target.value)}><option>Logística</option><option>Transportes</option></select></div>
+            <div className="field field-sm"><label>Número da NF</label><input value={form.nf} onChange={e => set('nf', e.target.value.replace(/\D/g, '').slice(0, 9))} placeholder="Ex: 388860" /></div>
+            <div className="field field-sm"><label>CT-e opcional</label><input value={form.cte} onChange={e => set('cte', e.target.value.replace(/\D/g, '').slice(0, 9))} placeholder="Se tiver" /></div>
+            <div className="field field-sm"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7))} placeholder="ABC1D23" /></div>
+            <div className="field field-sm"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Alta</option><option>Urgente</option></select></div>
             {editandoId && <div className="field field-sm"><label>Status</label><select value={form.status} onChange={e => set('status', e.target.value)}><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select></div>}
+            <div className="field field-md"><label>Plataforma</label><select value={form.plataforma} onChange={e => set('plataforma', e.target.value)}><option>G&O - GRÃOS E OLEAGINOSAS</option><option>COFFEE</option><option>COTTON</option><option>FERTILIZANTES</option><option>GRAINS KOWALSKI</option><option>JUICES</option></select></div>
+            <div className="field field-md"><label>Região aprovadora</label><select value={form.regiaoAprovadora} onChange={e => set('regiaoAprovadora', e.target.value)}><option value="">Selecione</option><option>Jataí - GO</option><option>Alto Araguaia - MT</option><option>Araguari - MG</option><option>Paranaguá - PR</option><option>Outra</option></select></div>
+            <div className="field field-sm"><label>Onde ocorreu</label><select value={form.localEstadia} onChange={e => set('localEstadia', e.target.value)}><option>Origem</option><option>Destino</option></select></div>
           </div>
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>Motorista e transportadora</h2><span>Busca inteligente pelo banco e pela captação.</span></div>
+          <div className="box-title"><h2>Motivo e transporte</h2><span>Motivo obrigatório. Motorista e transportadora ficam opcionais.</span></div>
           <div className="form-grid estadia-form-grid">
-            <div className="field field-lg"><label>Motorista</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite o motorista" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} label={`${m.telefone ? m.telefone + ' · ' : ''}${m.origem}${m.carregou ? ` · carregou ${m.carregou}x` : ''}`} />)}</datalist></div>
-            <div className="field field-sm"><label>WhatsApp</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
-            <div className="field field-md"><label>Transportadora</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
+            <div className="field field-md"><label>Motivo da estadia</label><select value={form.motivo} onChange={e => set('motivo', e.target.value)}><option value="">Selecione</option><option>Fila no carregamento</option><option>Fila na descarga</option><option>Atraso da unidade</option><option>Documento pendente</option><option>Troca de nota</option><option>Refugo</option><option>Reentrega</option><option>Aguardando liberação</option><option>Problema no sistema</option><option>Divergência de rota/frete</option><option>Outros</option></select></div>
+            <div className="field field-sm"><label>Sindicato acionado?</label><select value={form.sindicato} onChange={e => set('sindicato', e.target.value)}><option>Não</option><option>Sim</option></select></div>
+            <div className="field field-lg"><label>Motorista opcional</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite o motorista" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} label={`${m.telefone ? m.telefone + ' · ' : ''}${m.origem}${m.carregou ? ` · carregou ${m.carregou}x` : ''}`} />)}</datalist></div>
+            <div className="field field-sm"><label>WhatsApp opcional</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
+            <div className="field field-md"><label>Transportadora opcional</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
           </div>
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>Tempo de estadia</h2><span>O valor é calculado automaticamente pela chegada e saída.</span></div>
+          <div className="box-title"><h2>Tempo e cálculo</h2><span>Regra rápida 12h, 24h ou 48h, com hora, diária ou valor negociado.</span></div>
           <div className="form-grid estadia-form-grid">
             <div className="field field-sm"><label>Data chegada</label><input type="date" value={form.chegadaData} onChange={e => set('chegadaData', e.target.value)} /></div>
             <div className="field field-sm"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
-            <div className="field field-sm"><label>Data saída</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
-            <div className="field field-sm"><label>Hora saída</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
+            <div className="field field-sm"><label>Data saída/descarga</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
+            <div className="field field-sm"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
+            <div className="field field-sm"><label>Tipo de cálculo</label><select value={form.tipoCalculo} onChange={e => set('tipoCalculo', e.target.value)}><option>Hora</option><option>Diária</option><option>Negociado</option></select></div>
+            <div className="field field-sm"><label>Franquia</label><select value={form.franquia} onChange={e => set('franquia', e.target.value)}><option value="12">12h</option><option value="24">24h</option><option value="48">48h</option><option value="0">Sem franquia</option></select></div>
+            {form.tipoCalculo === 'Hora' && <div className="field field-sm"><label>Valor por hora</label><input value={form.valorHora} onChange={e => set('valorHora', e.target.value)} placeholder="Ex: 31,49" /></div>}
+            {form.tipoCalculo === 'Diária' && <><div className="field field-sm"><label>Valor diária</label><input value={form.valorDiaria} onChange={e => set('valorDiaria', e.target.value)} placeholder="Ex: 350,00" /></div><div className="field field-sm"><label>Qtd. dias</label><input value={form.qtdDias} onChange={e => set('qtdDias', e.target.value.replace(/\D/g, ''))} placeholder="Ex: 2" /></div></>}
+            {form.tipoCalculo === 'Negociado' && <div className="field field-sm"><label>Valor negociado</label><input value={form.valorNegociado} onChange={e => set('valorNegociado', e.target.value)} placeholder="Ex: 2172,90" /></div>}
           </div>
           <div className="calc-preview estadia-calc-preview">
-            <div className="preview-card"><span>Horas válidas</span><strong>{calc ? `${parseFloat(calc.horas).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} h` : '0,00 h'}</strong></div>
-            <div className="preview-card"><span>Valor automático</span><strong>{calc?.valor || 'R$ 0,00'}</strong></div>
+            <div className="preview-card"><span>Total de horas</span><strong>{calc.totalHoras.replace('.', ',')} h</strong></div>
+            <div className="preview-card"><span>Horas a pagar</span><strong>{calc.horasPagar.replace('.', ',')} h</strong></div>
+            <div className="preview-card"><span>Valor previsto</span><strong>{calc.valor}</strong></div>
           </div>
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>Anexos</h2><span>Adicione comprovantes ou arquivos da estadia.</span></div>
+          <div className="box-title"><h2>Anexos e observação</h2><span>Comprovante de carga/descarga, e-mail, NF, CT-e ou print.</span></div>
+          <div className="form-grid estadia-form-grid" style={{ marginBottom: 12 }}>
+            <div className="field wide"><label>Observação</label><input value={form.obs} onChange={e => set('obs', e.target.value)} placeholder="Ex: negociado com célula, aguardar descarga, anexar comprovante..." /></div>
+          </div>
           <DropZone arquivos={arquivos} onChange={setArquivos} />
           {existingAnexos.length > 0 && <div className="field wide" style={{ marginTop: 12 }}><label>Anexos existentes</label><div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{existingAnexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div></div>}
         </div>
