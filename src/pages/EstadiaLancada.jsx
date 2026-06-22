@@ -10,7 +10,7 @@ const EMPTY = {
   plataforma: 'G&O - GRÃOS E OLEAGINOSAS', regiaoAprovadora: '', localEstadia: 'Destino',
   motivo: '', sindicato: 'Não', prioridade: 'Normal', status: 'Aberto',
   chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '',
-  tipoCalculo: 'Hora', franquia: '48', valorHora: '', valorDiaria: '', qtdDias: '', valorNegociado: '',
+  tipoCalculo: 'Hora', franquia: '12', valorHora: '0,80', valorDiaria: '', qtdDias: '', valorNegociado: '',
   obs: '',
 }
 const TRANSPORTADORAS_BASE = ['Via Log', 'RDR', 'Transportes', 'Autônomo']
@@ -57,7 +57,8 @@ function formatarDataHora(data, hora) {
 function calcularEstadiaOperacional(form) {
   const totalHoras = horasEntre(form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
   const franquia = numeroBR(form.franquia)
-  const horasPagar = Math.max(0, totalHoras - franquia)
+  const passouDaRegraMinima = totalHoras >= 24
+  const horasPagar = passouDaRegraMinima ? Math.max(0, totalHoras - franquia) : 0
   let valorNumero = 0
 
   if (form.tipoCalculo === 'Diária') {
@@ -69,6 +70,7 @@ function calcularEstadiaOperacional(form) {
       horasPagar: String(dias * 24 || 0),
       valorNumero,
       valor: dinheiroBR(valorNumero),
+      regraResumo: 'Diária manual',
       chegada: formatarDataHora(form.chegadaData, form.chegadaHora),
       saida: formatarDataHora(form.saidaData, form.saidaHora),
     }
@@ -86,6 +88,7 @@ function calcularEstadiaOperacional(form) {
     horasPagar: horasPagar.toFixed(2),
     valorNumero,
     valor: dinheiroBR(valorNumero),
+    regraResumo: passouDaRegraMinima ? `Após 24h · tira ${franquia}h · fator ${form.valorHora || '0,80'}` : 'Aguardando completar 24h',
     chegada: formatarDataHora(form.chegadaData, form.chegadaHora),
     saida: formatarDataHora(form.saidaData, form.saidaHora),
   }
@@ -186,8 +189,8 @@ export default function EstadiaLancada({ formRef }) {
       saidaData: e.saidaData || '',
       saidaHora: e.saidaHora || '',
       tipoCalculo: e.tipoCalculo || 'Hora',
-      franquia: e.franquia || '48',
-      valorHora: e.valorHora || '',
+      franquia: e.franquia || '12',
+      valorHora: e.valorHora || '0,80',
       valorDiaria: e.valorDiaria || '',
       qtdDias: e.qtdDias || '',
       valorNegociado: e.valorNegociado || '',
@@ -218,7 +221,7 @@ export default function EstadiaLancada({ formRef }) {
       saidaHora: itemParaLancar.saidaHora || '',
       tipoCalculo: itemParaLancar.tipoCalculo || prev.tipoCalculo,
       franquia: itemParaLancar.franquia || prev.franquia,
-      valorHora: itemParaLancar.valorHora || '',
+      valorHora: itemParaLancar.valorHora || prev.valorHora,
       valorDiaria: itemParaLancar.valorDiaria || '',
       qtdDias: itemParaLancar.qtdDias || '',
       valorNegociado: itemParaLancar.valorNegociado || '',
@@ -262,7 +265,7 @@ export default function EstadiaLancada({ formRef }) {
     if (!form.placa.trim()) { alert('Preencha a placa.'); return }
     if (!form.motivo.trim()) { alert('Escolha o motivo da estadia.'); return }
     if (!form.chegadaData || !form.chegadaHora || !form.saidaData || !form.saidaHora) { alert('Preencha chegada e saída.'); return }
-    if (form.tipoCalculo === 'Hora' && !numeroBR(form.valorHora)) { alert('Preencha o valor por hora.'); return }
+    if (form.tipoCalculo === 'Hora' && !numeroBR(form.valorHora)) { alert('Preencha o fator/valor 0,80 ou outro valor negociado.'); return }
     if (form.tipoCalculo === 'Diária' && (!numeroBR(form.valorDiaria) || !form.qtdDias)) { alert('Preencha valor diária e quantidade de dias.'); return }
     if (form.tipoCalculo === 'Negociado' && !numeroBR(form.valorNegociado)) { alert('Preencha o valor negociado.'); return }
 
@@ -294,6 +297,7 @@ export default function EstadiaLancada({ formRef }) {
       valorCalculado: calc.valor,
       totalHoras: calc.totalHoras,
       horasPagar: calc.horasPagar,
+      regraCalculo: calc.regraResumo,
       ...calc,
       anexos,
     }
@@ -361,7 +365,7 @@ export default function EstadiaLancada({ formRef }) {
             <div className="field field-sm"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Alta</option><option>Urgente</option></select></div>
             {editandoId && <div className="field field-sm"><label>Status</label><select value={form.status} onChange={e => set('status', e.target.value)}><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select></div>}
             <div className="field field-md"><label>Plataforma</label><select value={form.plataforma} onChange={e => set('plataforma', e.target.value)}><option>G&O - GRÃOS E OLEAGINOSAS</option><option>COFFEE</option><option>COTTON</option><option>FERTILIZANTES</option><option>GRAINS KOWALSKI</option><option>JUICES</option></select></div>
-            <div className="field field-md"><label>Região aprovadora</label><select value={form.regiaoAprovadora} onChange={e => set('regiaoAprovadora', e.target.value)}><option value="">Selecione</option><option>Jataí - GO</option><option>Alto Araguaia - MT</option><option>Araguari - MG</option><option>Paranaguá - PR</option><option>Outra</option></select></div>
+            <div className="field field-md"><label>Região aprovadora</label><select value={form.regiaoAprovadora} onChange={e => set('regiaoAprovadora', e.target.value)}><option value="">Selecione</option><option value="GO">Goiás - GO</option><option value="MT">Mato Grosso - MT</option><option value="MG">Minas Gerais - MG</option><option value="PR">Paraná - PR</option><option value="SP">São Paulo - SP</option><option value="OUTRO">Outro estado</option></select></div>
             <div className="field field-sm"><label>Onde ocorreu</label><select value={form.localEstadia} onChange={e => set('localEstadia', e.target.value)}><option>Origem</option><option>Destino</option></select></div>
           </div>
         </div>
@@ -378,19 +382,20 @@ export default function EstadiaLancada({ formRef }) {
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>Tempo e cálculo</h2><span>Regra rápida 12h, 24h ou 48h, com hora, diária ou valor negociado.</span></div>
+          <div className="box-title"><h2>Tempo e cálculo</h2><span>Padrão: só paga após 24h, desconta 12h de franquia e usa fator 0,80. Pode alterar quando for negociado.</span></div>
           <div className="form-grid estadia-form-grid">
             <div className="field field-sm"><label>Data chegada</label><input type="date" value={form.chegadaData} onChange={e => set('chegadaData', e.target.value)} /></div>
             <div className="field field-sm"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
             <div className="field field-sm"><label>Data saída/descarga</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
             <div className="field field-sm"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
             <div className="field field-sm"><label>Tipo de cálculo</label><select value={form.tipoCalculo} onChange={e => set('tipoCalculo', e.target.value)}><option>Hora</option><option>Diária</option><option>Negociado</option></select></div>
-            <div className="field field-sm"><label>Franquia</label><select value={form.franquia} onChange={e => set('franquia', e.target.value)}><option value="12">12h</option><option value="24">24h</option><option value="48">48h</option><option value="0">Sem franquia</option></select></div>
-            {form.tipoCalculo === 'Hora' && <div className="field field-sm"><label>Valor por hora</label><input value={form.valorHora} onChange={e => set('valorHora', e.target.value)} placeholder="Ex: 31,49" /></div>}
+            <div className="field field-sm"><label>Franquia a descontar</label><select value={form.franquia} onChange={e => set('franquia', e.target.value)}><option value="12">12h padrão</option><option value="24">24h negociado</option><option value="48">48h negociado</option><option value="0">Sem franquia</option></select></div>
+            {form.tipoCalculo === 'Hora' && <div className="field field-sm"><label>Fator/valor hora</label><input value={form.valorHora} onChange={e => set('valorHora', e.target.value)} placeholder="0,80" /></div>}
             {form.tipoCalculo === 'Diária' && <><div className="field field-sm"><label>Valor diária</label><input value={form.valorDiaria} onChange={e => set('valorDiaria', e.target.value)} placeholder="Ex: 350,00" /></div><div className="field field-sm"><label>Qtd. dias</label><input value={form.qtdDias} onChange={e => set('qtdDias', e.target.value.replace(/\D/g, ''))} placeholder="Ex: 2" /></div></>}
             {form.tipoCalculo === 'Negociado' && <div className="field field-sm"><label>Valor negociado</label><input value={form.valorNegociado} onChange={e => set('valorNegociado', e.target.value)} placeholder="Ex: 2172,90" /></div>}
           </div>
           <div className="calc-preview estadia-calc-preview">
+            <div className="preview-card"><span>Regra aplicada</span><strong>{calc.regraResumo}</strong></div>
             <div className="preview-card"><span>Total de horas</span><strong>{calc.totalHoras.replace('.', ',')} h</strong></div>
             <div className="preview-card"><span>Horas a pagar</span><strong>{calc.horasPagar.replace('.', ',')} h</strong></div>
             <div className="preview-card"><span>Valor previsto</span><strong>{calc.valor}</strong></div>
