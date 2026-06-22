@@ -352,7 +352,7 @@ export default function EstadiaLancada({ formRef }) {
         <div className="box-title estadia-form-title">
           <div>
             <h2>{editandoId ? 'Editar estadia lançada' : 'Lançar nova estadia'}</h2>
-            <span>Fluxo rápido: NF, placa, motivo, chegada, saída e anexo. A calculadora trabalha sozinha.</span>
+            <span>Fluxo rápido: NF, motivo, motorista/placa, período, anexos e cálculo no final.</span>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="btn-light btn-small" onClick={() => mudarAba('consultaLancadas')}>Ver lançadas</button>
@@ -366,10 +366,10 @@ export default function EstadiaLancada({ formRef }) {
         </div>}
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>1. Dados básicos</h2><span>O mínimo para identificar a estadia.</span></div>
+          <div className="box-title"><h2>1. Dados básicos</h2><span>O mínimo para identificar o lançamento.</span></div>
           <div className="form-grid estadia-form-grid">
             <div className="field field-sm"><label>Número da NF</label><input value={form.nf} onChange={e => set('nf', e.target.value.replace(/\D/g, '').slice(0, 9))} placeholder="Ex: 388860" /></div>
-            <div className="field field-sm"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7))} placeholder="ABC1D23" /></div>
+            <div className="field field-sm"><label>CT-e opcional</label><input value={form.cte} onChange={e => set('cte', e.target.value.replace(/\D/g, '').slice(0, 9))} placeholder="Se tiver" /></div>
             <div className="field field-md"><label>Motivo da estadia</label><select value={form.motivo} onChange={e => set('motivo', e.target.value)}><option value="">Selecione</option><option>Fila no carregamento</option><option>Fila na descarga</option><option>Atraso da unidade</option><option>Documento pendente</option><option>Troca de nota</option><option>Refugo</option><option>Reentrega</option><option>Aguardando liberação</option><option>Problema no sistema</option><option>Divergência de rota/frete</option><option>Outros</option></select></div>
             <div className="field field-sm"><label>Onde ocorreu</label><select value={form.localEstadia} onChange={e => set('localEstadia', e.target.value)}><option>Origem</option><option>Destino</option></select></div>
             <div className="field field-sm"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Alta</option><option>Urgente</option></select></div>
@@ -378,50 +378,32 @@ export default function EstadiaLancada({ formRef }) {
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>2. Período</h2><span>Informe quando chegou e quando saiu/descarregou. O valor aparece automático.</span></div>
+          <div className="box-title"><h2>2. Motorista e veículo</h2><span>Placa fica junto do motorista para agilizar conferência.</span></div>
           <div className="form-grid estadia-form-grid">
-            <div className="field field-sm"><label>Data chegada</label><input type="date" value={form.chegadaData} onChange={e => set('chegadaData', e.target.value)} /></div>
-            <div className="field field-sm"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
-            <div className="field field-sm"><label>Data saída/descarga</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
-            <div className="field field-sm"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
-          </div>
-
-          <div className="calc-preview estadia-calc-preview">
-            <div className="preview-card"><span>Regra</span><strong>{calc.regraCurta}</strong></div>
-            <div className="preview-card"><span>Total parado</span><strong>{calc.totalHoras.replace('.', ',')} h</strong></div>
-            <div className="preview-card"><span>Horas a pagar</span><strong>{calc.horasPagar.replace('.', ',')} h</strong></div>
-            <div className="preview-card"><span>Valor previsto</span><strong>{calc.valor}</strong></div>
-          </div>
-          <div style={{ marginTop: 10, color: 'var(--muted)', fontSize: 13 }}>{calc.regraResumo}</div>
-        </div>
-
-        <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>3. Dados complementares</h2><span>Opcional, preencha só quando precisar.</span></div>
-          <div className="form-grid estadia-form-grid">
-            <div className="field field-sm"><label>CT-e opcional</label><input value={form.cte} onChange={e => set('cte', e.target.value.replace(/\D/g, '').slice(0, 9))} placeholder="Se tiver" /></div>
-            <div className="field field-md"><label>Plataforma</label><select value={form.plataforma} onChange={e => set('plataforma', e.target.value)}><option>G&O - GRÃOS E OLEAGINOSAS</option><option>COFFEE</option><option>COTTON</option><option>FERTILIZANTES</option><option>GRAINS KOWALSKI</option><option>JUICES</option></select></div>
-            <div className="field field-md"><label>Região aprovadora</label><select value={form.regiaoAprovadora} onChange={e => set('regiaoAprovadora', e.target.value)}><option value="">Selecione</option><option value="GO">Goiás - GO</option><option value="MT">Mato Grosso - MT</option><option value="MG">Minas Gerais - MG</option><option value="PR">Paraná - PR</option><option value="SP">São Paulo - SP</option><option value="OUTRO">Outro estado</option></select></div>
-            <div className="field field-sm"><label>Sindicato acionado?</label><select value={form.sindicato} onChange={e => set('sindicato', e.target.value)}><option>Não</option><option>Sim</option></select></div>
             <div className="field field-lg"><label>Motorista opcional</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite o motorista" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} label={`${m.telefone ? m.telefone + ' · ' : ''}${m.origem}${m.carregou ? ` · carregou ${m.carregou}x` : ''}`} />)}</datalist></div>
+            <div className="field field-sm"><label>Placa</label><input value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7))} placeholder="ABC1D23" /></div>
             <div className="field field-sm"><label>WhatsApp opcional</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
             <div className="field field-md"><label>Transportadora opcional</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
           </div>
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
-          <div className="box-title"><h2>4. Alterar cálculo</h2><span>Use somente quando fugir do padrão.</span></div>
-          <label style={{ display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer', marginBottom: form.alterarCalculo ? 14 : 0 }}>
-            <input type="checkbox" checked={form.alterarCalculo} onChange={e => set('alterarCalculo', e.target.checked)} style={{ width: 18, height: 18 }} />
-            <strong>Quero alterar a regra, diária ou valor negociado</strong>
-          </label>
+          <div className="box-title"><h2>3. Período</h2><span>Chegada e saída/descarga. O cálculo fica no final.</span></div>
+          <div className="form-grid estadia-form-grid">
+            <div className="field field-sm"><label>Data chegada</label><input type="date" value={form.chegadaData} onChange={e => set('chegadaData', e.target.value)} /></div>
+            <div className="field field-sm"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
+            <div className="field field-sm"><label>Data saída/descarga</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
+            <div className="field field-sm"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
+          </div>
+        </div>
 
-          {form.alterarCalculo && <div className="form-grid estadia-form-grid">
-            <div className="field field-sm"><label>Tipo de cálculo</label><select value={form.tipoCalculo} onChange={e => set('tipoCalculo', e.target.value)}><option>Hora</option><option>Diária</option><option>Negociado</option></select></div>
-            <div className="field field-sm"><label>Franquia a descontar</label><select value={form.franquia} onChange={e => set('franquia', e.target.value)}><option value="12">12h padrão</option><option value="24">24h negociado</option><option value="48">48h negociado</option><option value="0">Sem franquia</option></select></div>
-            {form.tipoCalculo === 'Hora' && <div className="field field-sm"><label>Fator/valor hora</label><input value={form.valorHora} onChange={e => set('valorHora', e.target.value)} placeholder="0,80" /></div>}
-            {form.tipoCalculo === 'Diária' && <><div className="field field-sm"><label>Valor diária</label><input value={form.valorDiaria} onChange={e => set('valorDiaria', e.target.value)} placeholder="Ex: 350,00" /></div><div className="field field-sm"><label>Qtd. dias</label><input value={form.qtdDias} onChange={e => set('qtdDias', e.target.value.replace(/\D/g, ''))} placeholder="Ex: 2" /></div></>}
-            {form.tipoCalculo === 'Negociado' && <div className="field field-sm"><label>Valor negociado</label><input value={form.valorNegociado} onChange={e => set('valorNegociado', e.target.value)} placeholder="Ex: 2172,90" /></div>}
-          </div>}
+        <div className="box" style={{ marginBottom: 16 }}>
+          <div className="box-title"><h2>4. Dados complementares</h2><span>Opcional, preencha só quando precisar.</span></div>
+          <div className="form-grid estadia-form-grid">
+            <div className="field field-md"><label>Plataforma</label><select value={form.plataforma} onChange={e => set('plataforma', e.target.value)}><option>G&O - GRÃOS E OLEAGINOSAS</option><option>COFFEE</option><option>COTTON</option><option>FERTILIZANTES</option><option>GRAINS KOWALSKI</option><option>JUICES</option></select></div>
+            <div className="field field-md"><label>Região aprovadora</label><select value={form.regiaoAprovadora} onChange={e => set('regiaoAprovadora', e.target.value)}><option value="">Selecione</option><option value="GO">Goiás - GO</option><option value="MT">Mato Grosso - MT</option><option value="MG">Minas Gerais - MG</option><option value="PR">Paraná - PR</option><option value="SP">São Paulo - SP</option><option value="OUTRO">Outro estado</option></select></div>
+            <div className="field field-sm"><label>Sindicato acionado?</label><select value={form.sindicato} onChange={e => set('sindicato', e.target.value)}><option>Não</option><option>Sim</option></select></div>
+          </div>
         </div>
 
         <div className="box" style={{ marginBottom: 16 }}>
@@ -431,6 +413,30 @@ export default function EstadiaLancada({ formRef }) {
           </div>
           <DropZone arquivos={arquivos} onChange={setArquivos} />
           {existingAnexos.length > 0 && <div className="field wide" style={{ marginTop: 12 }}><label>Anexos existentes</label><div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{existingAnexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div></div>}
+        </div>
+
+        <div className="box" style={{ marginBottom: 16 }}>
+          <div className="box-title"><h2>6. Conferência do cálculo</h2><span>Automático no padrão. Altere só quando tiver negociação.</span></div>
+          <div className="calc-preview estadia-calc-preview" style={{ marginBottom: 12 }}>
+            <div className="preview-card"><span>Regra</span><strong>{calc.regraCurta}</strong></div>
+            <div className="preview-card"><span>Total parado</span><strong>{calc.totalHoras.replace('.', ',')} h</strong></div>
+            <div className="preview-card"><span>Horas a pagar</span><strong>{calc.horasPagar.replace('.', ',')} h</strong></div>
+            <div className="preview-card"><span>Valor previsto</span><strong>{calc.valor}</strong></div>
+          </div>
+          <div style={{ marginBottom: 14, color: 'var(--muted)', fontSize: 13 }}>{calc.regraResumo}</div>
+
+          <label style={{ display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer', marginBottom: form.alterarCalculo ? 14 : 0 }}>
+            <input type="checkbox" checked={form.alterarCalculo} onChange={e => set('alterarCalculo', e.target.checked)} style={{ width: 18, height: 18 }} />
+            <strong>Alterar cálculo manualmente</strong>
+          </label>
+
+          {form.alterarCalculo && <div className="form-grid estadia-form-grid">
+            <div className="field field-sm"><label>Tipo de cálculo</label><select value={form.tipoCalculo} onChange={e => set('tipoCalculo', e.target.value)}><option>Hora</option><option>Diária</option><option>Negociado</option></select></div>
+            <div className="field field-sm"><label>Franquia a descontar</label><select value={form.franquia} onChange={e => set('franquia', e.target.value)}><option value="12">12h padrão</option><option value="24">24h negociado</option><option value="48">48h negociado</option><option value="0">Sem franquia</option></select></div>
+            {form.tipoCalculo === 'Hora' && <div className="field field-sm"><label>Fator/valor hora</label><input value={form.valorHora} onChange={e => set('valorHora', e.target.value)} placeholder="0,80" /></div>}
+            {form.tipoCalculo === 'Diária' && <><div className="field field-sm"><label>Valor diária</label><input value={form.valorDiaria} onChange={e => set('valorDiaria', e.target.value)} placeholder="Ex: 350,00" /></div><div className="field field-sm"><label>Qtd. dias</label><input value={form.qtdDias} onChange={e => set('qtdDias', e.target.value.replace(/\D/g, ''))} placeholder="Ex: 2" /></div></>}
+            {form.tipoCalculo === 'Negociado' && <div className="field field-sm"><label>Valor negociado</label><input value={form.valorNegociado} onChange={e => set('valorNegociado', e.target.value)} placeholder="Ex: 2172,90" /></div>}
+          </div>}
         </div>
 
         <div className="estadia-form-actions">
