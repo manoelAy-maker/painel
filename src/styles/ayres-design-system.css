@@ -1,0 +1,497 @@
+/* =========================================================
+   AYRES DESIGN SYSTEM
+   Identidade visual oficial da plataforma operacional.
+   Pilares: precisao, logistica, tecnologia e controle.
+   ========================================================= */
+
+:root {
+  --ay-bg: #050b14;
+  --ay-bg-soft: #08111f;
+  --ay-panel: rgba(11, 20, 36, .92);
+  --ay-card: rgba(17, 28, 47, .88);
+  --ay-card-soft: rgba(15, 23, 42, .72);
+  --ay-line: rgba(148, 163, 184, .18);
+  --ay-line-strong: rgba(148, 163, 184, .28);
+
+  --ay-text: #f8fafc;
+  --ay-text-soft: #dbeafe;
+  --ay-muted: #94a3b8;
+  --ay-muted-2: #64748b;
+
+  --ay-blue: #2f80ff;
+  --ay-blue-2: #2563eb;
+  --ay-cyan: #38bdf8;
+  --ay-purple: #7c3aed;
+  --ay-green: #22c55e;
+  --ay-warning: #f59e0b;
+  --ay-danger: #ef4444;
+  --ay-slate: #64748b;
+
+  --ay-radius-sm: 12px;
+  --ay-radius-md: 18px;
+  --ay-radius-lg: 24px;
+  --ay-radius-xl: 30px;
+
+  --ay-shadow-sm: 0 10px 28px rgba(0,0,0,.22);
+  --ay-shadow-md: 0 18px 52px rgba(0,0,0,.34);
+  --ay-shadow-lg: 0 28px 80px rgba(0,0,0,.46);
+  --ay-ring: 0 0 0 4px rgba(56, 189, 248, .14);
+  --ay-ease: cubic-bezier(.22,.9,.3,1);
+
+  --ay-grad-primary: linear-gradient(135deg, #2f80ff, #2563eb 54%, #7c3aed);
+  --ay-grad-panel: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028));
+  --ay-grad-hover: linear-gradient(135deg, rgba(47,128,255,.20), rgba(56,189,248,.08));
+}
+
+html,
+body,
+#root {
+  background:
+    radial-gradient(780px circle at 10% -8%, rgba(47,128,255,.22), transparent 58%),
+    radial-gradient(720px circle at 95% 0%, rgba(124,58,237,.16), transparent 52%),
+    linear-gradient(135deg, var(--ay-bg), #08111f 48%, #020617) !important;
+  color: var(--ay-text) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+body {
+  letter-spacing: -.01em;
+}
+
+/* Base visual */
+.app-layout,
+.main-pro,
+.container,
+.aba {
+  background: transparent !important;
+}
+
+.box,
+.panel,
+.card,
+.form-card,
+.table-card,
+.dashboard-card,
+.command-panel,
+.dash-chart-card,
+.live-card,
+.stat,
+.admin-box,
+.usuario-item,
+.notif-panel,
+.notif-item,
+.capture-panel-wrap-pro,
+.operator-action-card,
+.command-kpi {
+  background: var(--ay-grad-panel) !important;
+  border: 1px solid var(--ay-line) !important;
+  border-radius: var(--ay-radius-lg) !important;
+  box-shadow: var(--ay-shadow-sm), inset 0 1px rgba(255,255,255,.07) !important;
+  backdrop-filter: blur(18px) saturate(1.1);
+}
+
+.box-title,
+.panel-title,
+.section-title {
+  border-bottom-color: var(--ay-line) !important;
+}
+
+.box-title h2,
+.panel-title h2,
+.section-title h2,
+.command-title,
+.dash-title,
+.page-title,
+h1,
+h2,
+h3 {
+  color: var(--ay-text) !important;
+  letter-spacing: -.045em;
+}
+
+.box-title span,
+.panel-title span,
+.section-title span,
+p,
+small {
+  color: var(--ay-muted) !important;
+}
+
+/* Sidebar */
+.sidebar-pro.ayres-sidebar-v4,
+.sidebar-pro {
+  background:
+    radial-gradient(340px circle at 40% -10%, rgba(47,128,255,.18), transparent 58%),
+    linear-gradient(180deg, rgba(9,16,30,.98), rgba(5,10,19,.98)) !important;
+  border-right: 1px solid var(--ay-line) !important;
+  box-shadow: 18px 0 60px rgba(0,0,0,.35) !important;
+}
+
+.brand-pro h1,
+.ayres-side-brand-compact h1 {
+  color: #fff !important;
+  font-weight: 900 !important;
+  letter-spacing: -.06em !important;
+}
+
+.brand-pro p,
+.ayres-side-brand-compact p {
+  color: #9fb0c8 !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+}
+
+.sidebar-section-label {
+  color: #6f819b !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase;
+}
+
+.sidebar-nav .tab {
+  color: #b8c4d6 !important;
+  border: 1px solid transparent !important;
+  border-radius: 15px !important;
+  font-weight: 850 !important;
+}
+
+.sidebar-nav .tab:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,.055) !important;
+  border-color: var(--ay-line) !important;
+  transform: translateX(3px);
+}
+
+.sidebar-nav .tab.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(37,99,235,.40), rgba(56,189,248,.16)) !important;
+  border-color: rgba(56,189,248,.36) !important;
+  box-shadow: 0 14px 34px rgba(37,99,235,.24) !important;
+}
+
+.sidebar-nav .tab.active::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--ay-cyan);
+  box-shadow: 0 0 18px rgba(56,189,248,.88);
+}
+
+.sidebar-nav .tab-icon {
+  color: #aebbd0 !important;
+}
+
+.sidebar-nav .tab.active .tab-icon {
+  color: #93c5fd !important;
+}
+
+.sidebar-card,
+.sidebar-user-card,
+.ayres-today-grid div {
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025)) !important;
+  border: 1px solid var(--ay-line) !important;
+  border-radius: 18px !important;
+}
+
+/* Topbar */
+.topbar,
+.ayres-header-v4,
+[class*="ayres-topbar"] {
+  background: rgba(7, 17, 31, .78) !important;
+  border-bottom: 1px solid var(--ay-line) !important;
+  backdrop-filter: blur(18px) saturate(1.15) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.22) !important;
+}
+
+/* Botoes */
+button,
+.btn,
+.btn-primary,
+.btn-purple,
+.btn-green,
+.btn-light,
+.btn-red,
+.command-mini-btn,
+.capture-action-btn-pro {
+  border-radius: var(--ay-radius-sm) !important;
+  font-weight: 850 !important;
+  transition: transform .16s var(--ay-ease), box-shadow .16s var(--ay-ease), border-color .16s var(--ay-ease), background .16s var(--ay-ease) !important;
+}
+
+button:hover,
+.btn:hover,
+.btn-primary:hover,
+.btn-purple:hover,
+.btn-green:hover,
+.btn-light:hover,
+.command-mini-btn:hover,
+.capture-action-btn-pro:hover {
+  transform: translateY(-2px);
+}
+
+.btn-purple,
+.btn-primary,
+.operator-action-btn,
+button[type="submit"] {
+  background: var(--ay-grad-primary) !important;
+  color: #fff !important;
+  border: 1px solid rgba(56,189,248,.36) !important;
+  box-shadow: 0 14px 34px rgba(37,99,235,.24) !important;
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #22c55e, #15803d) !important;
+  color: #fff !important;
+  border: 1px solid rgba(34,197,94,.36) !important;
+}
+
+.btn-red {
+  background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+  color: #fff !important;
+  border: 1px solid rgba(239,68,68,.36) !important;
+}
+
+.btn-light {
+  background: rgba(255,255,255,.06) !important;
+  color: var(--ay-text-soft) !important;
+  border: 1px solid var(--ay-line) !important;
+}
+
+button:active,
+.btn:active {
+  transform: scale(.98) !important;
+}
+
+/* Formularios */
+label {
+  color: #cbd5e1 !important;
+  font-weight: 900 !important;
+  font-size: 11px !important;
+  letter-spacing: .065em !important;
+  text-transform: uppercase;
+}
+
+input,
+select,
+textarea {
+  background: rgba(2, 6, 23, .56) !important;
+  border: 1px solid rgba(148,163,184,.20) !important;
+  color: var(--ay-text) !important;
+  border-radius: var(--ay-radius-sm) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8b98ac !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: rgba(56,189,248,.62) !important;
+  box-shadow: var(--ay-ring), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+.form-grid {
+  gap: 14px !important;
+}
+
+/* Tabelas */
+.table-wrap,
+.table-scroll {
+  border-radius: var(--ay-radius-lg) !important;
+  border-color: var(--ay-line) !important;
+  overflow: hidden;
+}
+
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: rgba(2,6,23,.20) !important;
+}
+
+table thead th {
+  background: rgba(15,23,42,.92) !important;
+  color: #dbeafe !important;
+  border-bottom: 1px solid var(--ay-line-strong) !important;
+  font-size: 10.5px !important;
+  font-weight: 950 !important;
+  letter-spacing: .09em !important;
+  text-transform: uppercase !important;
+}
+
+table tbody td {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(148,163,184,.12) !important;
+}
+
+table tbody tr:hover {
+  background: rgba(56,189,248,.07) !important;
+}
+
+/* Chips e status */
+.badge,
+.status,
+[class*="status-"],
+.prio,
+.sla-badge,
+.pending-badge,
+.dash-row-badge-pro {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border-radius: 999px !important;
+  padding: 4px 10px !important;
+  font-size: 10.5px !important;
+  font-weight: 950 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+  border: 1px solid transparent;
+}
+
+.status-lancar,
+.badge-logistica {
+  color: #93c5fd !important;
+  background: rgba(47,128,255,.13) !important;
+  border-color: rgba(47,128,255,.28) !important;
+}
+
+.status-feito,
+.status-finalizado,
+.sla-ok,
+.prio-normal {
+  color: #86efac !important;
+  background: rgba(34,197,94,.12) !important;
+  border-color: rgba(34,197,94,.28) !important;
+}
+
+.prio-media,
+.sla-urgente,
+.pending-badge {
+  color: #fcd34d !important;
+  background: rgba(245,158,11,.13) !important;
+  border-color: rgba(245,158,11,.30) !important;
+}
+
+.prio-urgente,
+.sla-critico {
+  color: #fca5a5 !important;
+  background: rgba(239,68,68,.13) !important;
+  border-color: rgba(239,68,68,.32) !important;
+}
+
+.plate {
+  color: #fff !important;
+  font-weight: 950 !important;
+  letter-spacing: .08em !important;
+}
+
+/* Dashboard / cockpit */
+.command-hero,
+.operator-hero,
+.dash-hero-pro,
+.capture-topbar-pro {
+  background:
+    radial-gradient(460px circle at 14% 0%, rgba(56,189,248,.25), transparent 55%),
+    linear-gradient(135deg, rgba(15,23,42,.92), rgba(15,23,42,.58)) !important;
+  border: 1px solid var(--ay-line) !important;
+  border-radius: var(--ay-radius-xl) !important;
+  box-shadow: var(--ay-shadow-md) !important;
+}
+
+.command-kpi,
+.operator-mini-stat {
+  position: relative;
+  overflow: hidden;
+}
+
+.command-kpi::before,
+.operator-mini-stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--ay-grad-primary);
+  opacity: .9;
+}
+
+/* Login */
+.portal-screen {
+  background:
+    radial-gradient(900px circle at 50% -12%, rgba(47,128,255,.18), transparent 58%),
+    linear-gradient(180deg, #05070a, #020617) !important;
+}
+
+.login-hero-title {
+  color: #fff !important;
+  text-shadow: 0 22px 60px rgba(0,0,0,.35);
+}
+
+.login-hero-title + p {
+  color: var(--ay-muted) !important;
+}
+
+/* Microinteracoes */
+@keyframes ayPulseBadge {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.32); }
+  50% { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
+}
+
+.pending-badge,
+.prio-urgente {
+  animation: ayPulseBadge 2.1s infinite;
+}
+
+@keyframes ayShimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.ayres-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(148,163,184,.14);
+  border-radius: var(--ay-radius-sm);
+}
+
+.ayres-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+  animation: ayShimmer 1.45s infinite;
+}
+
+/* Responsivo */
+@media (max-width: 720px) {
+  .box,
+  .panel,
+  .card,
+  .table-wrap,
+  .command-panel,
+  .command-kpi {
+    border-radius: var(--ay-radius-md) !important;
+  }
+
+  table thead th,
+  table tbody td {
+    padding: 9px 10px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
