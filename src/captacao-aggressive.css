@@ -1,0 +1,177 @@
+/* AYRES CAPTAÇÃO AGRESSIVA - camada final segura */
+
+.capture-shell-pro .capture-topbar-pro { display: none !important; }
+.capture-shell-pro .capture-main-pro { padding-top: 0 !important; }
+.capture-shell-pro .capture-panel-wrap-pro {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.cap2-shell.cap2-aggressive {
+  max-width: 1220px !important;
+  display: grid !important;
+  gap: 14px !important;
+}
+
+.cap2-workbench {
+  display: grid !important;
+  grid-template-columns: 280px minmax(0, 1fr) !important;
+  gap: 16px !important;
+  align-items: stretch !important;
+  padding: 18px !important;
+  border: 1px solid rgba(56,189,248,.18) !important;
+  border-radius: 26px !important;
+  background: radial-gradient(600px circle at 0% 0%, rgba(56,189,248,.16), transparent 58%), linear-gradient(135deg, rgba(15,23,42,.92), rgba(2,6,23,.58)) !important;
+  box-shadow: 0 28px 85px rgba(0,0,0,.36), inset 0 1px rgba(255,255,255,.05) !important;
+}
+
+.cap2-workbench-left {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 10px 8px !important;
+}
+
+.cap2-workbench h1 {
+  margin: 0 !important;
+  color: #fff !important;
+  font-size: 34px !important;
+  line-height: .95 !important;
+  letter-spacing: -.075em !important;
+}
+
+.cap2-workbench p {
+  margin: 10px 0 0 !important;
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+
+.cap2-fast-form {
+  display: grid !important;
+  grid-template-columns: minmax(200px, 1.2fr) 170px 120px 90px 140px !important;
+  gap: 10px !important;
+  align-items: end !important;
+  padding: 14px !important;
+  border-radius: 20px !important;
+  background: rgba(2,6,23,.32) !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+}
+
+.cap2-fast-form input,
+.cap2-fast-form select {
+  height: 46px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(148,163,184,.16) !important;
+  background: rgba(2,6,23,.55) !important;
+  color: #fff !important;
+  padding: 0 13px !important;
+  font-size: 13px !important;
+  box-shadow: none !important;
+}
+
+.cap2-fast-form input::placeholder { color: #8190a7 !important; }
+
+.cap2-fast-form button {
+  height: 46px !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+  color: #fff !important;
+  font-weight: 950 !important;
+  box-shadow: 0 14px 30px rgba(34,197,94,.22) !important;
+}
+
+.cap2-strip {
+  display: grid !important;
+  grid-template-columns: 240px repeat(4, minmax(120px, 1fr)) 180px !important;
+  gap: 10px !important;
+}
+
+.cap2-owner.compact,
+.cap2-conversion.compact,
+.cap2-strip .cap2-metric {
+  min-height: 78px !important;
+  border: 1px solid rgba(148,163,184,.12) !important;
+  background: rgba(2,6,23,.30) !important;
+  border-radius: 18px !important;
+}
+
+.cap2-owner.compact {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  padding: 12px !important;
+}
+
+.cap2-strip .cap2-metric {
+  padding: 11px 12px !important;
+}
+
+.cap2-strip .cap2-metric strong {
+  font-size: 22px !important;
+}
+
+.cap2-conversion.compact {
+  padding: 12px !important;
+}
+
+.cap2-toolbar.aggressive {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+  padding: 10px !important;
+  margin: 0 !important;
+}
+
+.cap2-list-card.aggressive {
+  padding: 12px !important;
+  min-height: 420px !important;
+}
+
+.cap2-list-card.aggressive .cap2-row {
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding: 10px !important;
+  border-radius: 15px !important;
+}
+
+.cap2-list-card.aggressive .cap2-status-dot {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 13px !important;
+}
+
+.cap2-list-card.aggressive .cap2-actions button,
+.cap2-list-card.aggressive .cap2-actions a {
+  min-height: 32px !important;
+  border-radius: 10px !important;
+  padding: 6px 9px !important;
+  font-size: 11.5px !important;
+}
+
+.cap2-sync {
+  width: fit-content !important;
+}
+
+@media (max-width: 1100px) {
+  .cap2-workbench,
+  .cap2-strip,
+  .cap2-toolbar.aggressive {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cap2-fast-form {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .cap2-fast-form { grid-template-columns: 1fr !important; }
+  .cap2-list-card.aggressive .cap2-row { grid-template-columns: 1fr !important; }
+}
