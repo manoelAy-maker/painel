@@ -38,7 +38,7 @@ const CloudIcon = ({ status }) => {
 
 export default function Sidebar({ onFechar }) {
   const { usuarioAtual } = useAuthContext()
-  const { estadiasALancar } = useEstadiaContext()
+  const { estadias, estadiasALancar } = useEstadiaContext()
   const { cloudStatus, cloudText } = useCloudContext()
   const { abaAtiva, mudarAba } = useUiContext()
   const isAdmin = podeAdministrar(usuarioAtual)
@@ -46,11 +46,15 @@ export default function Sidebar({ onFechar }) {
 
   const handleTab = (id) => { mudarAba(id); onFechar?.() }
   const filialLabel = (usuarioAtual?.filial || 'jatai-go').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())
+  const hoje = new Date().toLocaleDateString('pt-BR')
+  const lancadasHoje = (estadias || []).filter(e => String(e.dataLancamento || '').includes(hoje)).length
+  const pendentes = (estadiasALancar || []).length
+  const urgentes = (estadiasALancar || []).filter(e => e.prioridade === 'Urgente').length
 
   return (
     <aside className="sidebar-pro ayres-sidebar-v4" id="sidebarPro">
-      <div className="brand-pro ayres-side-brand-v4">
-        <div className="sidebar-logo-mark"><AyresLogo size={44} /></div>
+      <div className="brand-pro ayres-side-brand-v4 ayres-side-brand-compact">
+        <div className="sidebar-logo-mark"><AyresLogo size={38} /></div>
         <div>
           <h1>AYRES</h1>
           <p>{filialLabel} · {usuarioAtual?.cargo || 'Operador'}</p>
@@ -65,16 +69,34 @@ export default function Sidebar({ onFechar }) {
               <button key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)}>
                 <span className="tab-icon">{ICONS[a.id]}</span>
                 <span className="tab-label">{a.label}</span>
-                {a.id === 'alancar' && estadiasALancar.length > 0 && <span className="pending-badge">{estadiasALancar.length}</span>}
+                {a.id === 'alancar' && pendentes > 0 && <span className="pending-badge">{pendentes}</span>}
               </button>
             ))}
           </div>
         ))}
       </nav>
 
+      <div className="ayres-sidebar-today">
+        <div className="sidebar-section-label">Hoje</div>
+        <div className="ayres-today-grid">
+          <div><strong>{lancadasHoje}</strong><span>Lançadas</span></div>
+          <div><strong>{pendentes}</strong><span>Pendentes</span></div>
+          <div><strong>{urgentes}</strong><span>Urgentes</span></div>
+        </div>
+      </div>
+
       <div className="sidebar-status ayres-side-status-v4">
-        <div className="sidebar-card"><div className="sidebar-card-title"><CloudIcon status={cloudStatus} /><span>{cloudStatus === 'online' ? 'Nuvem online' : cloudStatus === 'syncing' ? 'Sincronizando' : 'Offline'}</span></div><small>{cloudText}</small></div>
-        <div className="sidebar-user-card"><div className="avatar" style={{ width: 36, height: 36, fontSize: 13, flexShrink: 0 }}>{usuarioAtual?.avatar || '?'}</div><div style={{ overflow: 'hidden', flex: 1 }}><div className="sidebar-user-name">{usuarioAtual?.nome || 'Usuário'}</div><div className="sidebar-user-role">{usuarioAtual?.cargo || ''}</div></div></div>
+        <div className="sidebar-card ayres-cloud-card-compact">
+          <div className="sidebar-card-title"><CloudIcon status={cloudStatus} /><span>{cloudStatus === 'online' ? 'Nuvem online' : cloudStatus === 'syncing' ? 'Sincronizando' : 'Offline'}</span></div>
+          <small>{cloudText}</small>
+        </div>
+        <div className="sidebar-user-card ayres-user-card-compact">
+          <div className="avatar" style={{ width: 38, height: 38, fontSize: 14, flexShrink: 0 }}>{usuarioAtual?.avatar || '?'}</div>
+          <div style={{ overflow: 'hidden', flex: 1 }}>
+            <div className="sidebar-user-name">{usuarioAtual?.nome || 'Usuário'}</div>
+            <div className="sidebar-user-role">{usuarioAtual?.cargo || ''} · {filialLabel}</div>
+          </div>
+        </div>
       </div>
     </aside>
   )
