@@ -101,6 +101,7 @@ export default function Captacao() {
   const [carregando, setCarregando] = useState(false)
   const [form, setForm] = useState(EMPTY)
   const [editandoId, setEditandoId] = useState(null)
+  const [abaTela, setAbaTela] = useState('lancamento')
 
   const isAdmin = usuarioAtual?.cargo === 'Admin'
   const filialAtual = usuarioAtual?.filial || 'jatai-go'
@@ -179,22 +180,22 @@ export default function Captacao() {
     }
     const novaLista = editandoId ? motoristas.map(m => String(m.id) === String(editandoId) ? item : m) : [item, ...motoristas]
     await persistir(item, novaLista, editandoId ? 'Motorista atualizado.' : 'Motorista salvo.')
-    setForm(EMPTY); setEditandoId(null)
+    setForm(EMPTY); setEditandoId(null); setAbaTela('contatos')
   }
-  const editar = m => { setEditandoId(m.id); setForm({ nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo', status: m.status || 'interesse', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1), motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo' }) }
+  const editar = m => { setEditandoId(m.id); setAbaTela('lancamento'); setForm({ nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo', status: m.status || 'interesse', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1), motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo' }) }
   const atualizar = async (m, status) => persistir({ ...m, status, atualizadoPor: captadorId }, motoristas.map(x => String(x.id) === String(m.id) ? { ...m, status, atualizadoPor: captadorId } : x), 'Status atualizado.')
-  const marcarPerda = m => { setEditandoId(m.id); setForm({ nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo', status: 'nao_carregou', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1), motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo' }) }
+  const marcarPerda = m => { setEditandoId(m.id); setAbaTela('lancamento'); setForm({ nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo', status: 'nao_carregou', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1), motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo' }) }
   const excluir = m => confirm('Excluir lead?') && persistir(m, motoristas.filter(x => String(x.id) !== String(m.id)), 'Lead excluído.')
 
   return (
-    <div className="cap-crm-shell">
-      <section className="cap-crm-hero">
+    <div className="cap-crm-shell cap-split-shell">
+      <section className="cap-crm-hero cap-split-hero">
         <div className="cap-crm-brand-wrap">
-          <div className="cap-crm-logo">A</div>
+          <div className="cap-crm-logo cap-ayres-mark">A</div>
           <div>
             <span>Central de captação</span>
             <h1>Captação de Motoristas</h1>
-            <p>AYRES · Interesse, negociação, documentos, ordem e motivos de não carregamento.</p>
+            <p>AYRES · Lançamento separado dos contatos para funcionar melhor no celular.</p>
           </div>
         </div>
         <div className="cap-crm-top-actions">
@@ -203,17 +204,14 @@ export default function Captacao() {
         </div>
       </section>
 
-      <section className="cap-crm-stats">
-        <div><i>🔥</i><span>Leads ativos</span><strong>{stats.total}</strong><small>{nomeCaptador}</small></div>
-        <div><i>📄</i><span>Aguardando docs</span><strong>{stats.docs}</strong><small>{nomeFilial(filialAtual)}</small></div>
-        <div><i>✅</i><span>Com ordem</span><strong>{stats.ordem}</strong><small>Ordem/carregou</small></div>
-        <div><i>⛔</i><span>Não carregou</span><strong>{stats.perdido}</strong><small>Com motivo registrado</small></div>
-        <div><i>📈</i><span>Conversão</span><strong>{stats.conversao}%</strong><small>Performance</small></div>
-      </section>
+      <nav className="cap-split-tabs">
+        <button className={abaTela === 'lancamento' ? 'active' : ''} onClick={() => setAbaTela('lancamento')}>Lançamento</button>
+        <button className={abaTela === 'contatos' ? 'active' : ''} onClick={() => setAbaTela('contatos')}>Contatos e filtros</button>
+      </nav>
 
-      <section className="cap-crm-content">
-        <aside className="cap-crm-form">
-          <header><strong>{editandoId ? 'Editar motorista' : 'Cadastro rápido'}</strong><span>Dados principais para acompanhar depois.</span></header>
+      {abaTela === 'lancamento' && <section className="cap-launch-card">
+        <aside className="cap-crm-form cap-launch-form">
+          <header><strong>{editandoId ? 'Editar motorista' : 'Novo lançamento'}</strong><span>Cadastro rápido para lançar motorista na fila.</span></header>
           <div className="cap-crm-fields">
             <label>Nome do motorista<input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: João Silva" /></label>
             <div className="cap-crm-row"><label>CPF<input value={form.cpf} onChange={e => setForm(p => ({ ...p, cpf: formatarCpf(e.target.value) }))} placeholder="000.000.000-00" /></label><label>Telefone<input value={form.numero} onChange={e => setForm(p => ({ ...p, numero: e.target.value }))} placeholder="(64) 99999-9999" /></label></div>
@@ -225,14 +223,24 @@ export default function Captacao() {
             <button onClick={salvar}>{editandoId ? 'Salvar alteração' : 'Salvar motorista'}</button>
           </div>
         </aside>
+      </section>}
 
-        <main className="cap-crm-table">
-          <header><strong>Fila de captação</strong><span>Motoristas em acompanhamento</span></header>
+      {abaTela === 'contatos' && <>
+        <section className="cap-crm-stats">
+          <div><i>🔥</i><span>Leads ativos</span><strong>{stats.total}</strong><small>{nomeCaptador}</small></div>
+          <div><i>📄</i><span>Aguardando docs</span><strong>{stats.docs}</strong><small>{nomeFilial(filialAtual)}</small></div>
+          <div><i>✅</i><span>Com ordem</span><strong>{stats.ordem}</strong><small>Ordem/carregou</small></div>
+          <div><i>⛔</i><span>Não carregou</span><strong>{stats.perdido}</strong><small>Com motivo registrado</small></div>
+          <div><i>📈</i><span>Conversão</span><strong>{stats.conversao}%</strong><small>Performance</small></div>
+        </section>
+
+        <main className="cap-crm-table cap-contacts-table">
+          <header><strong>Contatos e filtros</strong><span>Motoristas em acompanhamento</span></header>
           <div className="cap-crm-tools"><input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por nome, CPF, placa, motivo ou telefone..." /><select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="Todos">Todos status</option>{Object.entries(STATUS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select></div>
           <div className="cap-crm-tabs">{['Todos', 'Retorno hoje', 'Aguardando docs', 'Atrasados', 'Com ordem', 'Não carregou'].map(t => <button key={t} onClick={() => setAbaRapida(t)} className={abaRapida === t ? 'active' : ''}>{t}</button>)}</div>
           <div className="cap-crm-scroll"><table><thead><tr><th>Status</th><th>Motorista</th><th>CPF</th><th>Placa</th><th>Eixos</th><th>Lembrete</th><th>Motivo</th><th>Impacto</th><th>Obs.</th><th>Ações</th></tr></thead><tbody>{lista.length === 0 && <tr><td colSpan="10" className="cap-crm-empty">Nenhum motorista encontrado.</td></tr>}{lista.map(m => <tr key={m.id}><td><span className={`cap-crm-pill ${m.status}`}>{STATUS[m.status]?.label || 'Tem interesse'}</span></td><td><div className="cap-crm-driver"><b>{(m.nome || '?')[0]}</b><div><strong>{m.nome}</strong><small>{m.numero}</small></div></div></td><td>{m.cpf || '-'}</td><td>{m.placa || '-'}</td><td>{m.eixos || '-'}</td><td>{lembreteTexto(m.lembrete)}</td><td>{m.status === 'nao_carregou' ? (m.motivoNaoCarregou || '-') : '-'}</td><td>{m.status === 'nao_carregou' ? (IMPACTOS[m.impactoPontuacao]?.label || 'Motivo externo') : '-'}</td><td>{m.obs || '-'}</td><td><div className="cap-crm-actions"><button onClick={() => editar(m)}>Editar</button>{STATUS[m.status]?.next && <button onClick={() => atualizar(m, STATUS[m.status].next)}>Avançar</button>}<button onClick={() => marcarPerda(m)}>Não carregou</button><button onClick={() => excluir(m)}>Excluir</button></div></td></tr>)}</tbody></table></div>
         </main>
-      </section>
+      </>}
     </div>
   )
 }
