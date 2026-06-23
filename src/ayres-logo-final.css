@@ -27,20 +27,45 @@
   filter:drop-shadow(0 10px 24px rgba(37,99,235,.34));
 }
 
-.login-ayres-word{
+.login-hero-title{
+  display:flex!important;
   align-items:center!important;
-  gap:.025em!important;
+  justify-content:center!important;
+  flex-wrap:wrap!important;
+  gap:.22em!important;
+  line-height:1!important;
+}
+
+.login-ayres-word{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:.015em!important;
+  line-height:1!important;
+  vertical-align:middle!important;
 }
 
 .login-ayres-a{
-  width:1.12em!important;
-  height:1.12em!important;
-  transform:translateY(.015em)!important;
-  margin-right:-.05em!important;
+  width:1.02em!important;
+  height:1.02em!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  transform:translateY(-.005em)!important;
+  margin-right:-.045em!important;
+  line-height:1!important;
+  flex:0 0 auto!important;
 }
 
 .login-ayres-a .ayres-logo-svg{
-  transform:translateY(-.01em)!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  transform:none!important;
+}
+
+.login-ayres-yres{
+  display:inline-block!important;
+  line-height:1!important;
 }
 
 html,body,#root{background:radial-gradient(circle at 18% 10%,rgba(56,189,248,.18),transparent 30%),linear-gradient(135deg,#07111f,#0b1728 48%,#050914)!important;color:#eef6ff!important;}
@@ -83,5 +108,5 @@ input:focus,select:focus,textarea:focus{outline:none!important;border-color:rgba
   .sidebar-logo-mark{width:48px!important;height:48px!important;}
   .login-logo-mark{width:58px!important;height:58px!important;}
   .portal-logo-mark{width:54px!important;height:54px!important;}
-  .login-ayres-a{width:1.03em!important;height:1.03em!important;transform:translateY(.01em)!important;}
+  .login-ayres-a{width:.98em!important;height:.98em!important;transform:translateY(-.005em)!important;}
 }
