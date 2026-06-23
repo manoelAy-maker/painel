@@ -7,16 +7,16 @@ import { nomeFilial } from '../data/filiais'
 import '../captacao-aggressive.css'
 
 const STORAGE_KEY = 'captacoesVeiculosViaLog'
-const OPERACOES = ['Farelo', 'Grãos']
 const EIXOS = ['6 eixos', '7 eixos', '8 eixos', '9 eixos']
 const STATUS = {
-  interesse: { label: 'Tem interesse', next: 'negociando', ordem: 1 },
-  negociando: { label: 'Negociando valor', next: 'documentos', ordem: 2 },
-  documentos: { label: 'Aguardando documentos', next: 'ordem', ordem: 3 },
-  ordem: { label: 'Ordem enviada', next: 'carregou', ordem: 4 },
-  carregou: { label: 'Carregou', ordem: 5 },
-  nao_carregou: { label: 'Não carregou', ordem: 6 },
+  interesse: { label: 'Sem retorno', curto: 'Sem retorno', next: 'negociando', ordem: 1, icon: 'fa-headset' },
+  negociando: { label: 'Negociação', curto: 'Negociação', next: 'documentos', ordem: 2, icon: 'fa-comments-dollar' },
+  documentos: { label: 'Aguardando docs', curto: 'Docs', next: 'ordem', ordem: 3, icon: 'fa-file-signature' },
+  ordem: { label: 'Captado / ordem', curto: 'Captado', next: 'carregou', ordem: 4, icon: 'fa-circle-check' },
+  carregou: { label: 'Carregou', curto: 'Carregou', ordem: 5, icon: 'fa-truck-fast' },
+  nao_carregou: { label: 'Não carregou', curto: 'Não carregou', ordem: 6, icon: 'fa-ban' },
 }
+const FUNIL = ['interesse', 'negociando', 'documentos', 'ordem', 'carregou', 'nao_carregou']
 const MOTIVOS_NAO_CARREGOU = ['Preço não fechou', 'Sem agenda', 'Sem retorno', 'Seguradora não libera', 'Documentação pendente', 'Motorista desistiu', 'Veículo carregou em outra empresa', 'Cadastro/dados incorretos', 'Motorista sem perfil da operação', 'Falta de acompanhamento', 'Outro']
 const IMPACTOS = {
   externo: { label: 'Motivo externo', desc: 'Não pesa na captação' },
@@ -30,7 +30,21 @@ const MODO_BANCO_INFO = {
   legado: { label: 'Banco antigo', cor: '#f59e0b' },
   local: { label: 'Local', cor: '#ef4444' },
 }
-const EMPTY = { nome: '', cpf: '', numero: '', placa: '', eixos: '9 eixos', operacao: 'Farelo', status: 'interesse', lembrete: '', obs: '', quantidadeCargas: '1', motivoNaoCarregou: '', justificativaNaoCarregou: '', impactoPontuacao: 'externo' }
+const EMPTY = {
+  nome: '',
+  cpf: '',
+  numero: '',
+  placa: '',
+  eixos: '9 eixos',
+  operacao: 'Farelo',
+  status: 'interesse',
+  lembrete: '',
+  obs: '',
+  quantidadeCargas: '1',
+  motivoNaoCarregou: '',
+  justificativaNaoCarregou: '',
+  impactoPontuacao: 'externo',
+}
 
 function limparNumero(v) { return String(v || '').replace(/[^0-9]/g, '') }
 function formatarTelefone(v) {
@@ -49,8 +63,8 @@ function formatarCpf(v) {
 function agoraBR() { return new Date().toLocaleString('pt-BR') }
 function hojeISO() { return new Date().toISOString().slice(0, 10) }
 function statusNormalizado(s) {
-  if (['lead', 'contatado', 'retornar', 'retorno'].includes(s)) return 'interesse'
-  if (s === 'fechado') return 'ordem'
+  if (['lead', 'contatado', 'retornar', 'retorno', 'sem_retorno'].includes(s)) return 'interesse'
+  if (['fechado', 'captado', 'agendado'].includes(s)) return 'ordem'
   if (s === 'perdido' || s === 'nao_carregou') return 'nao_carregou'
   return STATUS[s] ? s : 'interesse'
 }
@@ -86,6 +100,14 @@ function lembreteTexto(valor) {
   if (Number.isNaN(d.getTime())) return valor
   return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
+function diasAte(valor) {
+  if (!valor) return null
+  const hoje = new Date(`${hojeISO()}T00:00`)
+  const alvo = new Date(valor)
+  if (Number.isNaN(alvo.getTime())) return null
+  alvo.setHours(0, 0, 0, 0)
+  return Math.round((alvo - hoje) / 86400000)
+}
 function voltarPortal() {
   localStorage.removeItem('moduloInicialViaLog')
   window.dispatchEvent(new Event('ayres:modulo'))
@@ -96,12 +118,11 @@ export default function Captacao() {
   const [motoristas, setMotoristas] = useState(carregarLocal)
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState('Todos')
-  const [abaRapida, setAbaRapida] = useState('Todos')
   const [modoBanco, setModoBanco] = useState('auto')
   const [carregando, setCarregando] = useState(false)
   const [form, setForm] = useState(EMPTY)
   const [editandoId, setEditandoId] = useState(null)
-  const [abaTela, setAbaTela] = useState('lancamento')
+  const [selecionado, setSelecionado] = useState(null)
 
   const isAdmin = usuarioAtual?.cargo === 'Admin'
   const filialAtual = usuarioAtual?.filial || 'jatai-go'
@@ -135,20 +156,45 @@ export default function Captacao() {
     return true
   }), [motoristas, isAdmin, captadorId, filialAtual])
 
-  const hoje = new Date().toISOString().slice(0, 10)
   const lista = useMemo(() => base
     .filter(m => filtroStatus === 'Todos' || m.status === filtroStatus)
-    .filter(m => abaRapida === 'Todos' || (abaRapida === 'Retorno hoje' && String(m.lembrete || '').slice(0, 10) === hoje) || (abaRapida === 'Aguardando docs' && m.status === 'documentos') || (abaRapida === 'Com ordem' && ['ordem', 'carregou'].includes(m.status)) || (abaRapida === 'Atrasados' && m.lembrete && String(m.lembrete).slice(0, 10) < hoje && !['ordem', 'carregou', 'nao_carregou'].includes(m.status)) || (abaRapida === 'Não carregou' && m.status === 'nao_carregou'))
-    .filter(m => !busca || [m.nome, m.cpf, m.placa, m.numero, m.obs, m.motivoNaoCarregou, STATUS[m.status]?.label].join(' ').toLowerCase().includes(busca.toLowerCase()))
-    .sort((a, b) => (STATUS[a.status]?.ordem || 0) - (STATUS[b.status]?.ordem || 0)), [base, busca, filtroStatus, abaRapida, hoje])
+    .filter(m => !busca || [m.nome, m.cpf, m.placa, m.numero, m.obs, m.eixos, m.motivoNaoCarregou, STATUS[m.status]?.label].join(' ').toLowerCase().includes(busca.toLowerCase()))
+    .sort((a, b) => (STATUS[a.status]?.ordem || 0) - (STATUS[b.status]?.ordem || 0)), [base, busca, filtroStatus])
 
-  const stats = {
-    total: base.length,
-    docs: base.filter(m => m.status === 'documentos').length,
-    ordem: base.filter(m => ['ordem', 'carregou'].includes(m.status)).length,
-    perdido: base.filter(m => m.status === 'nao_carregou').length,
-    conversao: base.length ? Math.round((base.filter(m => ['ordem', 'carregou'].includes(m.status)).length / base.length) * 100) : 0,
-  }
+  const stats = useMemo(() => {
+    const captados = base.filter(m => ['ordem', 'carregou'].includes(m.status)).length
+    const lembretesHoje = base.filter(m => m.lembrete && diasAte(m.lembrete) <= 0 && !['carregou', 'nao_carregou'].includes(m.status)).length
+    const atrasados = base.filter(m => m.lembrete && diasAte(m.lembrete) < 0 && !['carregou', 'nao_carregou'].includes(m.status)).length
+    return {
+      total: base.length,
+      captados,
+      lembretesHoje,
+      atrasados,
+      conversao: base.length ? Math.round((captados / base.length) * 100) : 0,
+    }
+  }, [base])
+
+  const porStatus = useMemo(() => FUNIL.reduce((acc, status) => {
+    acc[status] = lista.filter(m => m.status === status)
+    return acc
+  }, {}), [lista])
+
+  const ranking = useMemo(() => {
+    const mapa = new Map()
+    base.forEach(m => {
+      const chave = m.nomeCaptador || m.captador || 'Usuário'
+      const atual = mapa.get(chave) || { nome: chave, total: 0, captados: 0 }
+      atual.total += 1
+      if (['ordem', 'carregou'].includes(m.status)) atual.captados += 1
+      mapa.set(chave, atual)
+    })
+    return [...mapa.values()].map(r => ({ ...r, eficiencia: r.total ? Math.round((r.captados / r.total) * 100) : 0 })).sort((a, b) => b.captados - a.captados || b.eficiencia - a.eficiencia).slice(0, 5)
+  }, [base])
+
+  const lembretes = useMemo(() => base
+    .filter(m => m.lembrete && !['carregou', 'nao_carregou'].includes(m.status))
+    .sort((a, b) => new Date(a.lembrete) - new Date(b.lembrete))
+    .slice(0, 6), [base])
 
   async function persistir(item, novaLista, msg) {
     setMotoristas(novaLista)
@@ -173,74 +219,152 @@ export default function Captacao() {
     const itemAnterior = editandoId ? motoristas.find(m => String(m.id) === String(editandoId)) : null
     const item = {
       ...(itemAnterior || {}),
-      id: editandoId || gerarId(), nome: form.nome.trim(), motorista: form.nome.trim(), cpf: formatarCpf(form.cpf), numero: formatarTelefone(form.numero), telefone: formatarTelefone(form.numero), placa: form.placa.toUpperCase(), eixos: form.eixos,
-      operacao: form.operacao, produto: form.operacao, quantidadeCargas: String(Math.max(1, Number(form.quantidadeCargas || 1) || 1)), status: form.status, lembrete: form.lembrete, obs: form.obs.trim(),
-      motivoNaoCarregou: form.status === 'nao_carregou' ? form.motivoNaoCarregou : '', justificativaNaoCarregou: form.status === 'nao_carregou' ? form.justificativaNaoCarregou.trim() : '', impactoPontuacao: form.status === 'nao_carregou' ? form.impactoPontuacao : 'externo',
-      captador: captadorId, usuario: captadorId, nomeCaptador, nomeUsuario: nomeCaptador, filial: filialAtual, data: itemAnterior?.data || agoraBR(), dataISO: hojeISO(), atualizadoPor: captadorId,
+      id: editandoId || gerarId(),
+      nome: form.nome.trim(),
+      motorista: form.nome.trim(),
+      cpf: formatarCpf(form.cpf),
+      numero: formatarTelefone(form.numero),
+      telefone: formatarTelefone(form.numero),
+      placa: form.placa.toUpperCase(),
+      eixos: form.eixos,
+      operacao: form.operacao,
+      produto: form.operacao,
+      quantidadeCargas: String(Math.max(1, Number(form.quantidadeCargas || 1) || 1)),
+      status: form.status,
+      lembrete: form.lembrete,
+      obs: form.obs.trim(),
+      motivoNaoCarregou: form.status === 'nao_carregou' ? form.motivoNaoCarregou : '',
+      justificativaNaoCarregou: form.status === 'nao_carregou' ? form.justificativaNaoCarregou.trim() : '',
+      impactoPontuacao: form.status === 'nao_carregou' ? form.impactoPontuacao : 'externo',
+      captador: itemAnterior?.captador || captadorId,
+      usuario: itemAnterior?.usuario || captadorId,
+      nomeCaptador: itemAnterior?.nomeCaptador || nomeCaptador,
+      nomeUsuario: itemAnterior?.nomeUsuario || nomeCaptador,
+      filial: itemAnterior?.filial || filialAtual,
+      data: itemAnterior?.data || agoraBR(),
+      dataISO: itemAnterior?.dataISO || hojeISO(),
+      atualizadoPor: captadorId,
     }
     const novaLista = editandoId ? motoristas.map(m => String(m.id) === String(editandoId) ? item : m) : [item, ...motoristas]
     await persistir(item, novaLista, editandoId ? 'Motorista atualizado.' : 'Motorista salvo.')
-    setForm(EMPTY); setEditandoId(null); setAbaTela('contatos')
+    setForm(EMPTY)
+    setEditandoId(null)
   }
-  const editar = m => { setEditandoId(m.id); setAbaTela('lancamento'); setForm({ nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo', status: m.status || 'interesse', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1), motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo' }) }
+
+  const editar = m => {
+    setSelecionado(null)
+    setEditandoId(m.id)
+    setForm({
+      nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo',
+      status: m.status || 'interesse', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1),
+      motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo',
+    })
+    document.querySelector('.capx-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
   const atualizar = async (m, status) => persistir({ ...m, status, atualizadoPor: captadorId }, motoristas.map(x => String(x.id) === String(m.id) ? { ...m, status, atualizadoPor: captadorId } : x), 'Status atualizado.')
-  const marcarPerda = m => { setEditandoId(m.id); setAbaTela('lancamento'); setForm({ nome: m.nome || '', cpf: m.cpf || '', numero: m.numero || '', placa: m.placa || '', eixos: m.eixos || '9 eixos', operacao: m.operacao || 'Farelo', status: 'nao_carregou', lembrete: m.lembrete || '', obs: m.obs || '', quantidadeCargas: String(m.quantidadeCargas || 1), motivoNaoCarregou: m.motivoNaoCarregou || '', justificativaNaoCarregou: m.justificativaNaoCarregou || '', impactoPontuacao: m.impactoPontuacao || 'externo' }) }
+  const marcarPerda = m => { editar({ ...m, status: 'nao_carregou' }) }
   const excluir = m => confirm('Excluir lead?') && persistir(m, motoristas.filter(x => String(x.id) !== String(m.id)), 'Lead excluído.')
+  const limparFormulario = () => { setForm(EMPTY); setEditandoId(null) }
 
   return (
-    <div className="cap-crm-shell cap-split-shell">
-      <section className="cap-crm-hero cap-split-hero">
-        <div className="cap-crm-brand-wrap">
-          <div className="cap-crm-logo cap-ayres-mark">A</div>
+    <div className="capx-shell">
+      <section className="capx-hero">
+        <div className="capx-brand">
+          <div className="capx-mark">AY</div>
           <div>
             <span>Central de captação</span>
-            <h1>Captação de Motoristas</h1>
-            <p>AYRES · Lançamento separado dos contatos para funcionar melhor no celular.</p>
+            <h1>Captação de Veículos</h1>
+            <p>Funil limpo para cadastrar motorista, acompanhar retorno, controlar placa do cavalo, eixos e lembrete por data.</p>
           </div>
         </div>
-        <div className="cap-crm-top-actions">
-          <button onClick={voltarPortal}>← Voltar ao portal</button>
-          <div className="cap-crm-sync"><i style={{ background: bancoInfo.cor }} />{carregando ? 'Sincronizando...' : bancoInfo.label}</div>
+        <div className="capx-top-actions">
+          <button type="button" onClick={voltarPortal}>Voltar ao portal</button>
+          <div className="capx-sync"><i style={{ background: bancoInfo.cor }} />{carregando ? 'Sincronizando...' : bancoInfo.label}</div>
         </div>
       </section>
 
-      <nav className="cap-split-tabs">
-        <button className={abaTela === 'lancamento' ? 'active' : ''} onClick={() => setAbaTela('lancamento')}>Lançamento</button>
-        <button className={abaTela === 'contatos' ? 'active' : ''} onClick={() => setAbaTela('contatos')}>Contatos e filtros</button>
-      </nav>
+      <section className="capx-stats">
+        <article><i className="fa-solid fa-truck-fast" /><span>Total no funil</span><strong>{stats.total}</strong><small>{nomeFilial(filialAtual)}</small></article>
+        <article><i className="fa-solid fa-circle-check" /><span>Captados</span><strong>{stats.captados}</strong><small>{stats.conversao}% de conversão</small></article>
+        <article><i className="fa-solid fa-bell" /><span>Lembretes hoje</span><strong>{stats.lembretesHoje}</strong><small>{stats.atrasados} atrasado(s)</small></article>
+        <article><i className="fa-solid fa-user-tie" /><span>Captador</span><strong>{nomeCaptador.split(' ')[0]}</strong><small>{isAdmin ? 'Visão admin' : 'Minha carteira'}</small></article>
+      </section>
 
-      {abaTela === 'lancamento' && <section className="cap-launch-card">
-        <aside className="cap-crm-form cap-launch-form">
-          <header><strong>{editandoId ? 'Editar motorista' : 'Novo lançamento'}</strong><span>Cadastro rápido para lançar motorista na fila.</span></header>
-          <div className="cap-crm-fields">
+      <section className="capx-workspace">
+        <aside className="capx-form">
+          <header>
+            <div>
+              <span>{editandoId ? 'Editando cadastro' : 'Cadastro rápido'}</span>
+              <h2>{editandoId ? 'Atualizar motorista' : 'Nova captação'}</h2>
+            </div>
+            {editandoId && <button type="button" onClick={limparFormulario}>Cancelar</button>}
+          </header>
+
+          <div className="capx-fields">
             <label>Nome do motorista<input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: João Silva" /></label>
-            <div className="cap-crm-row"><label>CPF<input value={form.cpf} onChange={e => setForm(p => ({ ...p, cpf: formatarCpf(e.target.value) }))} placeholder="000.000.000-00" /></label><label>Telefone<input value={form.numero} onChange={e => setForm(p => ({ ...p, numero: e.target.value }))} placeholder="(64) 99999-9999" /></label></div>
-            <div className="cap-crm-row"><label>Placa do cavalo<input value={form.placa} onChange={e => setForm(p => ({ ...p, placa: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7) }))} placeholder="ABC1D23" /></label><label>Eixos<select value={form.eixos} onChange={e => setForm(p => ({ ...p, eixos: e.target.value }))}>{EIXOS.map(e => <option key={e}>{e}</option>)}</select></label></div>
-            <div className="cap-crm-row"><label>Status<select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))}>{Object.entries(STATUS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select></label><label>Lembrete<input type="datetime-local" value={form.lembrete} onChange={e => setForm(p => ({ ...p, lembrete: e.target.value }))} /></label></div>
-            {form.status === 'nao_carregou' && <div className="cap-crm-loss-box"><label>Motivo do não carregamento<select value={form.motivoNaoCarregou} onChange={e => setForm(p => ({ ...p, motivoNaoCarregou: e.target.value }))}><option value="">Selecione o motivo</option>{MOTIVOS_NAO_CARREGOU.map(m => <option key={m}>{m}</option>)}</select></label><label>Impacto<select value={form.impactoPontuacao} onChange={e => setForm(p => ({ ...p, impactoPontuacao: e.target.value }))}>{Object.entries(IMPACTOS).map(([k, i]) => <option key={k} value={k}>{i.label} · {i.desc}</option>)}</select></label><label>Justificativa<textarea rows="2" value={form.justificativaNaoCarregou} onChange={e => setForm(p => ({ ...p, justificativaNaoCarregou: e.target.value }))} placeholder="Explique por que o motorista não carregou..." /></label></div>}
-            <div className="cap-crm-row"><label>Operação<select value={form.operacao} onChange={e => setForm(p => ({ ...p, operacao: e.target.value }))}>{OPERACOES.map(op => <option key={op}>{op}</option>)}</select></label><label>Cargas<input value={form.quantidadeCargas} onChange={e => setForm(p => ({ ...p, quantidadeCargas: e.target.value.replace(/[^0-9]/g, '') }))} placeholder="1" /></label></div>
-            <label>Observação<textarea rows="3" value={form.obs} onChange={e => setForm(p => ({ ...p, obs: e.target.value }))} placeholder="Ex: pediu retorno amanhã, tem interesse para carregar em Jataí..." /></label>
-            <button onClick={salvar}>{editandoId ? 'Salvar alteração' : 'Salvar motorista'}</button>
+            <div className="capx-row"><label>CPF<input value={form.cpf} onChange={e => setForm(p => ({ ...p, cpf: formatarCpf(e.target.value) }))} placeholder="000.000.000-00" /></label><label>Telefone<input value={form.numero} onChange={e => setForm(p => ({ ...p, numero: formatarTelefone(e.target.value) }))} placeholder="(64) 99999-9999" /></label></div>
+            <div className="capx-row"><label>Placa do cavalo<input value={form.placa} onChange={e => setForm(p => ({ ...p, placa: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7) }))} placeholder="ABC1D23" /></label><label>Eixos<select value={form.eixos} onChange={e => setForm(p => ({ ...p, eixos: e.target.value }))}>{EIXOS.map(e => <option key={e}>{e}</option>)}</select></label></div>
+            <div className="capx-row"><label>Status<select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))}>{FUNIL.map(k => <option key={k} value={k}>{STATUS[k].label}</option>)}</select></label><label>Data do lembrete<input type="datetime-local" value={form.lembrete} onChange={e => setForm(p => ({ ...p, lembrete: e.target.value }))} /></label></div>
+            {form.status === 'nao_carregou' && <div className="capx-loss"><label>Motivo<select value={form.motivoNaoCarregou} onChange={e => setForm(p => ({ ...p, motivoNaoCarregou: e.target.value }))}><option value="">Selecione</option>{MOTIVOS_NAO_CARREGOU.map(m => <option key={m}>{m}</option>)}</select></label><label>Impacto<select value={form.impactoPontuacao} onChange={e => setForm(p => ({ ...p, impactoPontuacao: e.target.value }))}>{Object.entries(IMPACTOS).map(([k, i]) => <option key={k} value={k}>{i.label} · {i.desc}</option>)}</select></label><label>Justificativa<textarea rows="2" value={form.justificativaNaoCarregou} onChange={e => setForm(p => ({ ...p, justificativaNaoCarregou: e.target.value }))} placeholder="Explique por que não carregou" /></label></div>}
+            <label>Observação<textarea rows="3" value={form.obs} onChange={e => setForm(p => ({ ...p, obs: e.target.value }))} placeholder="Ex: pediu retorno amanhã, confirmou placa, está aguardando valor..." /></label>
+            <button className="capx-save" type="button" onClick={salvar}>{editandoId ? 'Salvar alteração' : 'Captar veículo'}</button>
           </div>
         </aside>
-      </section>}
 
-      {abaTela === 'contatos' && <>
-        <section className="cap-crm-stats">
-          <div><i>🔥</i><span>Leads ativos</span><strong>{stats.total}</strong><small>{nomeCaptador}</small></div>
-          <div><i>📄</i><span>Aguardando docs</span><strong>{stats.docs}</strong><small>{nomeFilial(filialAtual)}</small></div>
-          <div><i>✅</i><span>Com ordem</span><strong>{stats.ordem}</strong><small>Ordem/carregou</small></div>
-          <div><i>⛔</i><span>Não carregou</span><strong>{stats.perdido}</strong><small>Com motivo registrado</small></div>
-          <div><i>📈</i><span>Conversão</span><strong>{stats.conversao}%</strong><small>Performance</small></div>
-        </section>
+        <main className="capx-main">
+          <div className="capx-tools">
+            <div className="capx-search"><i className="fa-solid fa-magnifying-glass" /><input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por nome, CPF, telefone ou placa..." /></div>
+            <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="Todos">Todos os status</option>{FUNIL.map(k => <option key={k} value={k}>{STATUS[k].label}</option>)}</select>
+          </div>
 
-        <main className="cap-crm-table cap-contacts-table">
-          <header><strong>Contatos e filtros</strong><span>Motoristas em acompanhamento</span></header>
-          <div className="cap-crm-tools"><input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por nome, CPF, placa, motivo ou telefone..." /><select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="Todos">Todos status</option>{Object.entries(STATUS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select></div>
-          <div className="cap-crm-tabs">{['Todos', 'Retorno hoje', 'Aguardando docs', 'Atrasados', 'Com ordem', 'Não carregou'].map(t => <button key={t} onClick={() => setAbaRapida(t)} className={abaRapida === t ? 'active' : ''}>{t}</button>)}</div>
-          <div className="cap-crm-scroll"><table><thead><tr><th>Status</th><th>Motorista</th><th>CPF</th><th>Placa</th><th>Eixos</th><th>Lembrete</th><th>Motivo</th><th>Impacto</th><th>Obs.</th><th>Ações</th></tr></thead><tbody>{lista.length === 0 && <tr><td colSpan="10" className="cap-crm-empty">Nenhum motorista encontrado.</td></tr>}{lista.map(m => <tr key={m.id}><td><span className={`cap-crm-pill ${m.status}`}>{STATUS[m.status]?.label || 'Tem interesse'}</span></td><td><div className="cap-crm-driver"><b>{(m.nome || '?')[0]}</b><div><strong>{m.nome}</strong><small>{m.numero}</small></div></div></td><td>{m.cpf || '-'}</td><td>{m.placa || '-'}</td><td>{m.eixos || '-'}</td><td>{lembreteTexto(m.lembrete)}</td><td>{m.status === 'nao_carregou' ? (m.motivoNaoCarregou || '-') : '-'}</td><td>{m.status === 'nao_carregou' ? (IMPACTOS[m.impactoPontuacao]?.label || 'Motivo externo') : '-'}</td><td>{m.obs || '-'}</td><td><div className="cap-crm-actions"><button onClick={() => editar(m)}>Editar</button>{STATUS[m.status]?.next && <button onClick={() => atualizar(m, STATUS[m.status].next)}>Avançar</button>}<button onClick={() => marcarPerda(m)}>Não carregou</button><button onClick={() => excluir(m)}>Excluir</button></div></td></tr>)}</tbody></table></div>
+          <section className="capx-funnel">
+            {FUNIL.map(status => <div className="capx-lane" key={status}>
+              <header><strong><i className={`fa-solid ${STATUS[status].icon}`} />{STATUS[status].curto}</strong><span>{porStatus[status]?.length || 0}</span></header>
+              <div className="capx-cards">
+                {(porStatus[status] || []).length === 0 && <div className="capx-empty">Sem motorista aqui.</div>}
+                {(porStatus[status] || []).map(m => <article className="capx-card" key={m.id} onClick={() => setSelecionado(m)}>
+                  <div className="capx-card-top"><div><strong>{m.nome || 'Sem nome'}</strong><small>{m.cpf || 'CPF não informado'}</small></div><b>{m.placa || 'SEM PLACA'}</b></div>
+                  <div className="capx-card-grid"><span><small>Telefone</small>{m.numero || '-'}</span><span><small>Eixos</small>{m.eixos || '-'}</span></div>
+                  <div className="capx-card-bottom"><em className={diasAte(m.lembrete) < 0 ? 'late' : diasAte(m.lembrete) === 0 ? 'today' : ''}><i className="fa-regular fa-clock" />{lembreteTexto(m.lembrete)}</em></div>
+                </article>)}
+              </div>
+            </div>)}
+          </section>
         </main>
-      </>}
+      </section>
+
+      <section className="capx-bottom">
+        <aside className="capx-panel">
+          <header><strong>Ranking de captação</strong><span>Captados / eficiência</span></header>
+          <div className="capx-list">{ranking.length === 0 && <div className="capx-empty">Sem dados para ranking.</div>}{ranking.map((r, i) => <div className="capx-rank" key={r.nome}><b>{i + 1}</b><div><strong>{r.nome}</strong><small>{r.total} contato(s) no funil</small></div><span>{r.captados} · {r.eficiencia}%</span></div>)}</div>
+        </aside>
+        <aside className="capx-panel">
+          <header><strong>Próximos lembretes</strong><span>Retornos para não perder veículo</span></header>
+          <div className="capx-list">{lembretes.length === 0 && <div className="capx-empty">Nenhum lembrete pendente.</div>}{lembretes.map(m => <button className="capx-reminder" key={m.id} onClick={() => setSelecionado(m)}><i className="fa-solid fa-bell" /><div><strong>{m.nome}</strong><small>{lembreteTexto(m.lembrete)} · {m.placa || 'sem placa'}</small></div></button>)}</div>
+        </aside>
+      </section>
+
+      {selecionado && <div className="capx-modal" onClick={() => setSelecionado(null)}>
+        <div className="capx-modal-box" onClick={e => e.stopPropagation()}>
+          <header><div><span>Detalhes do contato</span><h2>{selecionado.nome}</h2></div><button onClick={() => setSelecionado(null)}>×</button></header>
+          <div className="capx-detail-grid">
+            <div><small>CPF</small><strong>{selecionado.cpf || '-'}</strong></div>
+            <div><small>Telefone</small><strong>{selecionado.numero || '-'}</strong></div>
+            <div><small>Placa cavalo</small><strong>{selecionado.placa || '-'}</strong></div>
+            <div><small>Eixos</small><strong>{selecionado.eixos || '-'}</strong></div>
+            <div><small>Status</small><strong>{STATUS[selecionado.status]?.label || '-'}</strong></div>
+            <div><small>Lembrete</small><strong>{lembreteTexto(selecionado.lembrete)}</strong></div>
+          </div>
+          <div className="capx-note"><small>Observação</small><p>{selecionado.obs || 'Sem observação.'}</p></div>
+          {selecionado.status === 'nao_carregou' && <div className="capx-note danger"><small>Motivo do não carregamento</small><p>{selecionado.motivoNaoCarregou || '-'} · {selecionado.justificativaNaoCarregou || '-'}</p></div>}
+          <footer>
+            <button onClick={() => editar(selecionado)}>Editar</button>
+            {STATUS[selecionado.status]?.next && <button onClick={() => { atualizar(selecionado, STATUS[selecionado.status].next); setSelecionado(null) }}>Avançar status</button>}
+            <button onClick={() => marcarPerda(selecionado)}>Não carregou</button>
+            <button className="danger" onClick={() => { excluir(selecionado); setSelecionado(null) }}>Excluir</button>
+          </footer>
+        </div>
+      </div>}
     </div>
   )
 }
