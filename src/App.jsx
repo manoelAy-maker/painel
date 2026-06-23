@@ -153,6 +153,9 @@ function PainelEstadia() {
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
+            <div style={{ margin: '0 0 14px', padding: '12px 14px', borderRadius: 14, background: 'linear-gradient(135deg,#dc2626,#7c3aed)', color: '#fff', fontWeight: 900, letterSpacing: '.02em' }}>
+              TESTE DE DEPLOY ATIVO · se este aviso apareceu, o site atualizou
+            </div>
             <LivePanel />
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
             <Suspense fallback={<FastFallback />}>
