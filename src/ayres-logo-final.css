@@ -68,6 +68,21 @@
   line-height:1!important;
 }
 
+.login-hero-title + p{
+  font-size:0!important;
+  color:transparent!important;
+}
+
+.login-hero-title + p:after{
+  content:"Entre com suas credenciais para acessar a plataforma de controle operacional.";
+  display:block;
+  font-size:18px!important;
+  line-height:1.7!important;
+  color:#94a3b8!important;
+  max-width:920px;
+  margin:0 auto;
+}
+
 html,body,#root{background:radial-gradient(circle at 18% 10%,rgba(56,189,248,.18),transparent 30%),linear-gradient(135deg,#07111f,#0b1728 48%,#050914)!important;color:#eef6ff!important;}
 .app-layout,.main-pro,.container{background:transparent!important;}
 .sidebar-pro.ayres-sidebar-v4{background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(8,13,24,.96))!important;border-right:1px solid rgba(148,163,184,.18)!important;box-shadow:18px 0 60px rgba(0,0,0,.3)!important;}
@@ -109,4 +124,5 @@ input:focus,select:focus,textarea:focus{outline:none!important;border-color:rgba
   .login-logo-mark{width:58px!important;height:58px!important;}
   .portal-logo-mark{width:54px!important;height:54px!important;}
   .login-ayres-a{width:.98em!important;height:.98em!important;transform:translateY(-.005em)!important;}
+  .login-hero-title + p:after{font-size:16px!important;}
 }
