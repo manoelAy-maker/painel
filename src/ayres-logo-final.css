@@ -11,7 +11,7 @@
   box-shadow:none!important;
 }
 
-.sidebar-logo-mark{width:58px!important;height:58px!important;flex-shrink:0;}
+.sidebar-logo-mark{width:50px!important;height:50px!important;flex-shrink:0;}
 .ayres-topbar-logo-pro{width:42px!important;height:42px!important;padding:0!important;}
 .login-logo-mark{width:68px!important;height:68px!important;}
 .portal-logo-mark{width:62px!important;height:62px!important;}
@@ -47,9 +47,12 @@ html,body,#root{background:radial-gradient(circle at 18% 10%,rgba(56,189,248,.18
 .app-layout,.main-pro,.container{background:transparent!important;}
 .sidebar-pro.ayres-sidebar-v4{background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(8,13,24,.96))!important;border-right:1px solid rgba(148,163,184,.18)!important;box-shadow:18px 0 60px rgba(0,0,0,.3)!important;}
 .topbar.ayres-header-v4{background:rgba(7,17,31,.78)!important;border-bottom:1px solid rgba(148,163,184,.18)!important;backdrop-filter:blur(18px)!important;box-shadow:0 12px 34px rgba(0,0,0,.2)!important;}
-.sidebar-nav .tab{border-radius:14px!important;border:1px solid transparent!important;transition:.18s ease!important;}
-.sidebar-nav .tab:hover{transform:translateX(3px);background:rgba(255,255,255,.06)!important;border-color:rgba(148,163,184,.15)!important;}
-.sidebar-nav .tab.active{background:linear-gradient(135deg,rgba(37,99,235,.34),rgba(56,189,248,.16))!important;border-color:rgba(56,189,248,.34)!important;box-shadow:0 12px 32px rgba(37,99,235,.22)!important;}
+.sidebar-nav .tab{border-radius:14px!important;border:1px solid transparent!important;transition:.18s ease!important;position:relative!important;}
+.sidebar-nav .tab:hover{transform:translateX(3px);background:rgba(255,255,255,.06)!important;border-color:rgba(148,163,184,.15)!important;color:#fff!important;}
+.sidebar-nav .tab.active{background:linear-gradient(135deg,rgba(37,99,235,.34),rgba(56,189,248,.16))!important;border-color:rgba(56,189,248,.34)!important;box-shadow:0 12px 32px rgba(37,99,235,.22)!important;color:#fff!important;}
+.sidebar-nav .tab.active:before{content:"";position:absolute;left:-1px;top:12px;bottom:12px;width:3px;border-radius:999px;background:#60a5fa;box-shadow:0 0 18px rgba(96,165,250,.85);}
+.sidebar-nav .tab-icon{color:#aebbd0!important;}
+.sidebar-nav .tab.active .tab-icon{color:#93c5fd!important;}
 .operator-hero,.command-hero,.dash-hero-pro,.capture-topbar-pro{border-radius:26px!important;background:radial-gradient(circle at 16% 12%,rgba(56,189,248,.24),transparent 36%),linear-gradient(135deg,rgba(15,23,42,.9),rgba(15,23,42,.58))!important;border:1px solid rgba(148,163,184,.18)!important;box-shadow:0 22px 70px rgba(0,0,0,.34)!important;}
 .command-kpi,.operator-action-card,.command-panel,.capture-panel-wrap-pro,.dash-row-pro,.dashboard-card,.card,.panel,.table-card,.form-card{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035))!important;border:1px solid rgba(148,163,184,.18)!important;border-radius:20px!important;box-shadow:0 18px 46px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.08)!important;}
 .command-kpi:hover,.operator-action-card:hover,.command-panel:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.34)!important;box-shadow:0 24px 64px rgba(0,0,0,.32)!important;}
@@ -59,8 +62,25 @@ input,select,textarea{background:rgba(15,23,42,.76)!important;color:#eef6ff!impo
 input:focus,select:focus,textarea:focus{outline:none!important;border-color:rgba(56,189,248,.62)!important;box-shadow:0 0 0 4px rgba(56,189,248,.12)!important;}
 .pending-badge{background:linear-gradient(135deg,#f97316,#facc15)!important;color:#1f1300!important;}
 
+.ayres-side-brand-compact{padding-bottom:18px!important;margin-bottom:20px!important;gap:12px!important;}
+.ayres-side-brand-compact h1{font-size:25px!important;letter-spacing:-.045em!important;}
+.ayres-side-brand-compact p{font-size:12px!important;letter-spacing:.08em!important;color:#9fb0c8!important;}
+.ayres-side-group-v4{margin-bottom:18px!important;}
+.sidebar-section-label{font-size:11px!important;letter-spacing:.13em!important;color:#6f819b!important;margin-bottom:10px!important;}
+.ayres-sidebar-today{margin-top:auto!important;padding:14px 0 12px!important;}
+.ayres-today-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important;}
+.ayres-today-grid div{border:1px solid rgba(148,163,184,.14)!important;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.025))!important;border-radius:14px!important;padding:10px 8px!important;text-align:center!important;}
+.ayres-today-grid strong{display:block!important;color:#fff!important;font-size:18px!important;line-height:1!important;}
+.ayres-today-grid span{display:block!important;margin-top:6px!important;color:#93a4bb!important;font-size:10px!important;font-weight:800!important;text-transform:uppercase!important;letter-spacing:.04em!important;}
+.sidebar-status.ayres-side-status-v4{gap:10px!important;margin-top:0!important;}
+.ayres-cloud-card-compact{padding:14px 16px!important;border-radius:18px!important;}
+.ayres-cloud-card-compact small{font-size:12px!important;line-height:1.35!important;color:#9fb0c8!important;}
+.ayres-user-card-compact{padding:14px 16px!important;border-radius:18px!important;}
+.ayres-user-card-compact .sidebar-user-name{font-size:14px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.ayres-user-card-compact .sidebar-user-role{font-size:11px!important;color:#7d8ea8!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+
 @media(max-width:720px){
-  .sidebar-logo-mark{width:52px!important;height:52px!important;}
+  .sidebar-logo-mark{width:48px!important;height:48px!important;}
   .login-logo-mark{width:58px!important;height:58px!important;}
   .portal-logo-mark{width:54px!important;height:54px!important;}
   .login-ayres-a{width:1.03em!important;height:1.03em!important;transform:translateY(.01em)!important;}
