@@ -5,6 +5,7 @@ import * as v2 from '../lib/supabaseV2'
 import { gerarId } from '../utils/index'
 import { nomeFilial } from '../data/filiais'
 import '../captacao-redesign.css'
+import '../captacao-aggressive.css'
 
 const STORAGE_KEY = 'captacoesVeiculosViaLog'
 
@@ -16,9 +17,9 @@ const STATUS = {
 }
 
 const IMPACTO = {
-  externo: { label: 'Motivo externo', curto: 'Não pesa', desc: 'Preço, agenda, seguradora, concorrência ou desistência.', cor: '#60a5fa', icon: '🛡️' },
-  falha_captacao: { label: 'Falha da captação', curto: 'Pesa', desc: 'Dados errados, perfil ruim ou falta de acompanhamento.', cor: '#ef4444', icon: '⚠️' },
-  analise: { label: 'Em análise', curto: 'Validar', desc: 'Ainda precisa validar o motivo.', cor: '#f59e0b', icon: '🕵️' },
+  externo: { label: 'Motivo externo', curto: 'Não pesa', cor: '#60a5fa', icon: '🛡️' },
+  falha_captacao: { label: 'Falha da captação', curto: 'Pesa', cor: '#ef4444', icon: '⚠️' },
+  analise: { label: 'Em análise', curto: 'Validar', cor: '#f59e0b', icon: '🕵️' },
 }
 
 const OPERACOES = ['Farelo', 'Grãos']
@@ -45,7 +46,6 @@ function formatarTelefone(v) {
 }
 function hojeISO() { return new Date().toISOString().slice(0, 10) }
 function agoraBR() { return new Date().toLocaleString('pt-BR') }
-function pct(a, b) { return b ? Math.round((a / b) * 100) : 0 }
 const statusKey = v2.statusV2 || ((s) => s || 'contatado')
 const impactoKey = (v) => v2.impactoPontuacaoV2 ? v2.impactoPontuacaoV2(v) : (v || 'externo')
 
@@ -178,7 +178,9 @@ export default function Captacao() {
 
   const salvarRapido = async () => {
     if (!rapido.nome.trim() || !rapido.numero.trim()) { alert('Informe motorista e telefone.'); return }
-    await salvarMotorista({ ...EMPTY, nome: rapido.nome.trim(), numero: formatarTelefone(rapido.numero), operacao: rapido.operacao, quantidadeCargas: String(Math.max(1, Number(rapido.quantidadeCargas || 1) || 1)), status: 'contatado' })
+    setEditando(null)
+    const novo = { ...EMPTY, nome: rapido.nome.trim(), numero: formatarTelefone(rapido.numero), operacao: rapido.operacao, quantidadeCargas: String(Math.max(1, Number(rapido.quantidadeCargas || 1) || 1)), status: 'contatado' }
+    await salvarMotorista(novo)
     setRapido({ nome: '', numero: '', operacao: rapido.operacao, quantidadeCargas: '1' })
   }
 
@@ -190,38 +192,13 @@ export default function Captacao() {
   return (
     <div className="cap2-shell cap2-aggressive">
       <section className="cap2-workbench">
-        <div className="cap2-workbench-left">
-          <span className="cap2-eyebrow">Captação operacional</span>
-          <h1>Novo lead</h1>
-          <p>Registre o motorista aqui. O resto é acompanhar status.</p>
-        </div>
-        <div className="cap2-fast-form">
-          <input value={rapido.nome} onChange={(e) => setRapido(p => ({ ...p, nome: e.target.value }))} placeholder="Nome do motorista" />
-          <input value={rapido.numero} onChange={(e) => setRapido(p => ({ ...p, numero: e.target.value }))} placeholder="Telefone" />
-          <select value={rapido.operacao} onChange={(e) => setRapido(p => ({ ...p, operacao: e.target.value }))}>{OPERACOES.map(op => <option key={op}>{op}</option>)}</select>
-          <input value={rapido.quantidadeCargas} onChange={(e) => setRapido(p => ({ ...p, quantidadeCargas: e.target.value.replace(/[^0-9]/g, '') }))} placeholder="Cargas" />
-          <button onClick={salvarRapido}>Cadastrar</button>
-        </div>
+        <div className="cap2-workbench-left"><span className="cap2-eyebrow">Captação operacional</span><h1>Novo lead</h1><p>Registre o motorista aqui. O resto é acompanhar status.</p></div>
+        <div className="cap2-fast-form"><input value={rapido.nome} onChange={(e) => setRapido(p => ({ ...p, nome: e.target.value }))} placeholder="Nome do motorista" /><input value={rapido.numero} onChange={(e) => setRapido(p => ({ ...p, numero: e.target.value }))} placeholder="Telefone" /><select value={rapido.operacao} onChange={(e) => setRapido(p => ({ ...p, operacao: e.target.value }))}>{OPERACOES.map(op => <option key={op}>{op}</option>)}</select><input value={rapido.quantidadeCargas} onChange={(e) => setRapido(p => ({ ...p, quantidadeCargas: e.target.value.replace(/[^0-9]/g, '') }))} placeholder="Cargas" /><button onClick={salvarRapido}>Cadastrar</button></div>
       </section>
-
-      <section className="cap2-strip">
-        <div className="cap2-owner compact"><div className="cap2-avatar">{nomeCaptador[0]?.toUpperCase() || '?'}</div><div><small>{isAdmin ? 'Admin' : 'Captador'}</small><strong>{nomeCaptador}</strong></div><span>{isAdmin ? 'Geral' : nomeFilial(filialAtual)}</span></div>
-        <CaptacaoMetric icon="📞" label="Leads" value={stats.total} color="#60a5fa" />
-        <CaptacaoMetric icon="📋" label="Com ordem" value={stats.ordem} color="#f59e0b" />
-        <CaptacaoMetric icon="✅" label="Carregou" value={stats.carregou} color="#22c55e" />
-        <CaptacaoMetric icon="⛔" label="Não carregou" value={stats.naoCarregou} color="#ef4444" />
-        <div className="cap2-conversion compact"><div><span>Efetivo</span><strong>{conversao}%</strong></div><i><b style={{ width: `${conversao}%` }} /></i></div>
-      </section>
-
+      <section className="cap2-strip"><div className="cap2-owner compact"><div className="cap2-avatar">{nomeCaptador[0]?.toUpperCase() || '?'}</div><div><small>{isAdmin ? 'Admin' : 'Captador'}</small><strong>{nomeCaptador}</strong></div><span>{isAdmin ? 'Geral' : nomeFilial(filialAtual)}</span></div><CaptacaoMetric icon="📞" label="Leads" value={stats.total} color="#60a5fa" /><CaptacaoMetric icon="📋" label="Com ordem" value={stats.ordem} color="#f59e0b" /><CaptacaoMetric icon="✅" label="Carregou" value={stats.carregou} color="#22c55e" /><CaptacaoMetric icon="⛔" label="Não carregou" value={stats.naoCarregou} color="#ef4444" /><div className="cap2-conversion compact"><div><span>Efetivo</span><strong>{conversao}%</strong></div><i><b style={{ width: `${conversao}%` }} /></i></div></section>
       <section className="cap2-toolbar aggressive"><div className="cap2-search"><span>🔎</span><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar motorista, telefone ou observação..." /></div><div className="cap2-filters">{['Todas', ...OPERACOES].map((op) => <button key={op} onClick={() => setFiltroOp(op)} className={filtroOp === op ? 'active' : ''}>{op}</button>)}<select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}><option value="Todos">Todos status</option>{Object.entries(STATUS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select><button onClick={() => { setEditando(null); setModal(true) }}>+ Completo</button></div></section>
-
-      <section className="cap2-list-card aggressive"><div className="cap2-list-head"><strong>Fila de captação</strong><span>{lista.length} registro(s)</span></div><div className="cap2-list">
-        {lista.length === 0 && <div className="cap2-empty"><strong>Nenhum lead ainda</strong><span>Cadastre no topo da tela para começar.</span></div>}
-        {lista.map((m) => { const s = STATUS[m.status] || STATUS.contatado; const isNaoCarregou = m.status === 'nao_carregou'; return <div key={m.id} className={`cap2-row ${isNaoCarregou ? 'danger' : ''}`}><div className="cap2-status-dot" style={{ color: s.cor, background: `${s.cor}18` }}>{s.icon}</div><div className="cap2-row-main"><div className="cap2-row-title"><strong>{m.nome}</strong><span>{s.label}</span><span>{m.operacao}</span>{Number(m.quantidadeCargas || 1) > 1 && <em>{m.quantidadeCargas} cargas</em>}</div><div className="cap2-row-sub">{m.numero || 'Sem telefone'} · {m.data || '-'} {isAdmin ? `· ${m.nomeCaptador || m.captador}` : ''}</div>{m.obs && <p>{m.obs}</p>}{isNaoCarregou && <div className="cap2-reason"><strong>{m.motivoNaoCarregou || 'Não carregou'}</strong><span>{m.justificativaNaoCarregou || 'Sem justificativa.'}</span><small>{IMPACTO[impactoKey(m.impactoPontuacao)]?.label || 'Motivo externo'}</small></div>}</div><div className="cap2-actions">{!['carregou', 'nao_carregou'].includes(m.status) && <button onClick={() => avancar(m)} className="cap2-next">Avançar</button>}{!['carregou', 'nao_carregou'].includes(m.status) && <button onClick={() => marcarNaoCarregou(m)} className="cap2-lost">Não carregou</button>}{m.numero && <a href={abrirWhats(m)} target="_blank" rel="noopener noreferrer">Whats</a>}<button onClick={() => { setEditando(m); setModal(true) }}>Editar</button><button onClick={() => confirm('Excluir lead?') && excluir(m.id)}>Excluir</button></div></div> })}
-      </div></section>
-
-      <div className="cap2-sync" style={{ borderColor: `${bancoInfo.cor}55` }}><i style={{ background: bancoInfo.cor }} />{carregando ? 'Sincronizando...' : bancoInfo.label}</div>
-      <ModalMotorista aberto={modal} fechar={() => { setModal(false); setEditando(null) }} salvarMotorista={salvarMotorista} editando={editando} />
+      <section className="cap2-list-card aggressive"><div className="cap2-list-head"><strong>Fila de captação</strong><span>{lista.length} registro(s)</span></div><div className="cap2-list">{lista.length === 0 && <div className="cap2-empty"><strong>Nenhum lead ainda</strong><span>Cadastre no topo da tela para começar.</span></div>}{lista.map((m) => { const s = STATUS[m.status] || STATUS.contatado; const isNaoCarregou = m.status === 'nao_carregou'; return <div key={m.id} className={`cap2-row ${isNaoCarregou ? 'danger' : ''}`}><div className="cap2-status-dot" style={{ color: s.cor, background: `${s.cor}18` }}>{s.icon}</div><div className="cap2-row-main"><div className="cap2-row-title"><strong>{m.nome}</strong><span>{s.label}</span><span>{m.operacao}</span>{Number(m.quantidadeCargas || 1) > 1 && <em>{m.quantidadeCargas} cargas</em>}</div><div className="cap2-row-sub">{m.numero || 'Sem telefone'} · {m.data || '-'} {isAdmin ? `· ${m.nomeCaptador || m.captador}` : ''}</div>{m.obs && <p>{m.obs}</p>}{isNaoCarregou && <div className="cap2-reason"><strong>{m.motivoNaoCarregou || 'Não carregou'}</strong><span>{m.justificativaNaoCarregou || 'Sem justificativa.'}</span><small>{IMPACTO[impactoKey(m.impactoPontuacao)]?.label || 'Motivo externo'}</small></div>}</div><div className="cap2-actions">{!['carregou', 'nao_carregou'].includes(m.status) && <button onClick={() => avancar(m)} className="cap2-next">Avançar</button>}{!['carregou', 'nao_carregou'].includes(m.status) && <button onClick={() => marcarNaoCarregou(m)} className="cap2-lost">Não carregou</button>}{m.numero && <a href={abrirWhats(m)} target="_blank" rel="noopener noreferrer">Whats</a>}<button onClick={() => { setEditando(m); setModal(true) }}>Editar</button><button onClick={() => confirm('Excluir lead?') && excluir(m.id)}>Excluir</button></div></div> })}</div></section>
+      <div className="cap2-sync" style={{ borderColor: `${bancoInfo.cor}55` }}><i style={{ background: bancoInfo.cor }} />{carregando ? 'Sincronizando...' : bancoInfo.label}</div><ModalMotorista aberto={modal} fechar={() => { setModal(false); setEditando(null) }} salvarMotorista={salvarMotorista} editando={editando} />
     </div>
   )
 }
