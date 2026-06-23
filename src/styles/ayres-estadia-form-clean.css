@@ -1,0 +1,258 @@
+/* =========================================================
+   AYRES - Lançar Estadia Clean Layout
+   Corrige a tela que estava pesada: remove caixas empilhadas,
+   reduz altura e cria uma ficha operacional limpa.
+   ========================================================= */
+
+#abaLancadas .estadia-form-box {
+  position: relative !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(620px circle at 0% 0%, rgba(47, 128, 255, .12), transparent 52%),
+    linear-gradient(180deg, rgba(15, 23, 42, .76), rgba(2, 6, 23, .54)) !important;
+  border: 1px solid rgba(148, 163, 184, .16) !important;
+  border-radius: 26px !important;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, .34) !important;
+  padding: 0 !important;
+}
+
+#abaLancadas .estadia-form-title {
+  padding: 22px 24px 18px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(148, 163, 184, .14) !important;
+  background: linear-gradient(90deg, rgba(56, 189, 248, .06), transparent 52%) !important;
+}
+
+#abaLancadas .estadia-form-title h2 {
+  font-size: 24px !important;
+  letter-spacing: -.055em !important;
+  margin: 0 0 4px !important;
+}
+
+#abaLancadas .estadia-form-title span {
+  font-size: 13px !important;
+  color: #9fb0c8 !important;
+}
+
+#abaLancadas .estadia-form-box > .box:not(.estadia-form-box) {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  margin: 0 !important;
+  padding: 18px 24px !important;
+  border-bottom: 1px solid rgba(148, 163, 184, .10) !important;
+}
+
+#abaLancadas .estadia-form-box > .box:not(.estadia-form-box):hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+#abaLancadas .estadia-form-box > .box:not(.estadia-form-box) .box-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+#abaLancadas .estadia-form-box > .box:not(.estadia-form-box) .box-title h2 {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  letter-spacing: -.04em !important;
+  margin: 0 !important;
+}
+
+#abaLancadas .estadia-form-box > .box:not(.estadia-form-box) .box-title h2::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #38bdf8;
+  box-shadow: 0 0 18px rgba(56, 189, 248, .8);
+  flex: 0 0 auto;
+}
+
+#abaLancadas .estadia-form-box > .box:not(.estadia-form-box) .box-title span {
+  max-width: 420px !important;
+  text-align: right !important;
+  font-size: 12px !important;
+  color: #7f8fa8 !important;
+}
+
+#abaLancadas .estadia-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  align-items: end !important;
+}
+
+#abaLancadas .estadia-form-grid .field {
+  min-width: 0 !important;
+}
+
+#abaLancadas .field-sm { grid-column: span 2 !important; }
+#abaLancadas .field-md { grid-column: span 4 !important; }
+#abaLancadas .field-lg { grid-column: span 4 !important; }
+#abaLancadas .field.wide,
+#abaLancadas .wide { grid-column: 1 / -1 !important; }
+
+#abaLancadas label {
+  margin-bottom: 7px !important;
+  font-size: 10.5px !important;
+  color: #aebbd0 !important;
+  letter-spacing: .08em !important;
+}
+
+#abaLancadas input,
+#abaLancadas select,
+#abaLancadas textarea {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  background: rgba(2, 6, 23, .50) !important;
+  border: 1px solid rgba(148, 163, 184, .16) !important;
+  font-size: 13px !important;
+}
+
+#abaLancadas input:focus,
+#abaLancadas select:focus,
+#abaLancadas textarea:focus {
+  border-color: rgba(56, 189, 248, .55) !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, .10) !important;
+}
+
+#abaLancadas .estadia-form-box > .box:nth-of-type(2) {
+  background: rgba(56, 189, 248, .025) !important;
+}
+
+#abaLancadas .estadia-form-box > .box:nth-of-type(3) {
+  background: rgba(124, 58, 237, .025) !important;
+}
+
+#abaLancadas .estadia-form-box > .box:nth-of-type(4) {
+  background: rgba(34, 197, 94, .018) !important;
+}
+
+#abaLancadas .calc-preview.estadia-calc-preview {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 0 0 12px !important;
+}
+
+#abaLancadas .preview-card {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+  padding: 14px 14px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.026)) !important;
+  border: 1px solid rgba(148, 163, 184, .14) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.06) !important;
+}
+
+#abaLancadas .preview-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #38bdf8, #2563eb);
+}
+
+#abaLancadas .preview-card span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #91a3bd !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .08em !important;
+}
+
+#abaLancadas .preview-card strong {
+  color: #fff !important;
+  font-size: 18px !important;
+  letter-spacing: -.04em !important;
+}
+
+#abaLancadas .estadia-form-box > .box:has(.estadia-calc-preview) {
+  background:
+    radial-gradient(420px circle at 0% 0%, rgba(56, 189, 248, .10), transparent 55%),
+    rgba(2, 6, 23, .20) !important;
+  border-bottom: 0 !important;
+}
+
+#abaLancadas .estadia-form-box > .box:has(.estadia-calc-preview) > div[style*="margin-bottom: 14"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 8px 11px !important;
+  border-radius: 999px !important;
+  background: rgba(56, 189, 248, .08) !important;
+  border: 1px solid rgba(56, 189, 248, .18) !important;
+  color: #9bdcff !important;
+}
+
+#abaLancadas .estadia-form-actions {
+  display: flex !important;
+  gap: 12px !important;
+  padding: 18px 24px 24px !important;
+  background: rgba(2, 6, 23, .18) !important;
+  border-top: 1px solid rgba(148, 163, 184, .10) !important;
+}
+
+#abaLancadas .estadia-form-actions .btn-full {
+  max-width: 360px !important;
+  min-height: 46px !important;
+  font-size: 14px !important;
+}
+
+#abaLancadas .dropzone,
+#abaLancadas [class*="drop"] {
+  border-radius: 16px !important;
+}
+
+@media (max-width: 1180px) {
+  #abaLancadas .field-sm,
+  #abaLancadas .field-md,
+  #abaLancadas .field-lg {
+    grid-column: span 6 !important;
+  }
+}
+
+@media (max-width: 720px) {
+  #abaLancadas .estadia-form-title,
+  #abaLancadas .estadia-form-box > .box:not(.estadia-form-box),
+  #abaLancadas .estadia-form-actions {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  #abaLancadas .field-sm,
+  #abaLancadas .field-md,
+  #abaLancadas .field-lg {
+    grid-column: 1 / -1 !important;
+  }
+
+  #abaLancadas .calc-preview.estadia-calc-preview {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  #abaLancadas .estadia-form-box > .box:not(.estadia-form-box) .box-title {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  #abaLancadas .estadia-form-box > .box:not(.estadia-form-box) .box-title span {
+    text-align: left !important;
+  }
+}
