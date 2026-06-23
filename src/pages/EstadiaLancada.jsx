@@ -15,31 +15,12 @@ const EMPTY = {
 }
 const TRANSPORTADORAS_BASE = ['Via Log', 'RDR', 'Transportes', 'Autônomo']
 
-function uniq(arr) {
-  return [...new Set(arr.map(v => String(v || '').trim()).filter(Boolean))]
-}
-
-function chaveNome(nome) {
-  return String(nome || '').trim().toUpperCase()
-}
-
-function agoraHistorico() {
-  return new Date().toLocaleString('pt-BR')
-}
-
-function eventoHistorico(acao, usuario, detalhes = '') {
-  return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes }
-}
-
-function numeroBR(valor) {
-  if (!valor) return 0
-  return Number(String(valor).replace(/\./g, '').replace(',', '.')) || 0
-}
-
-function dinheiroBR(valor) {
-  return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
+function uniq(arr) { return [...new Set(arr.map(v => String(v || '').trim()).filter(Boolean))] }
+function chaveNome(nome) { return String(nome || '').trim().toUpperCase() }
+function agoraHistorico() { return new Date().toLocaleString('pt-BR') }
+function eventoHistorico(acao, usuario, detalhes = '') { return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes } }
+function numeroBR(valor) { if (!valor) return 0; return Number(String(valor).replace(/\./g, '').replace(',', '.')) || 0 }
+function dinheiroBR(valor) { return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
 function horasEntre(dataIni, horaIni, dataFim, horaFim) {
   if (!dataIni || !horaIni || !dataFim || !horaFim) return 0
   const ini = new Date(`${dataIni}T${horaIni}`)
@@ -47,13 +28,11 @@ function horasEntre(dataIni, horaIni, dataFim, horaFim) {
   if (Number.isNaN(ini.getTime()) || Number.isNaN(fim.getTime()) || fim <= ini) return 0
   return (fim - ini) / 36e5
 }
-
 function formatarDataHora(data, hora) {
   if (!data || !hora) return '-'
   const [ano, mes, dia] = data.split('-')
   return `${dia}/${mes}/${ano} ${hora}`
 }
-
 function calcularEstadiaOperacional(form) {
   const totalHoras = horasEntre(form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
   const tipo = form.alterarCalculo ? form.tipoCalculo : 'Hora'
@@ -62,56 +41,26 @@ function calcularEstadiaOperacional(form) {
   const passouDaRegraMinima = totalHoras >= 24
   const horasPagar = passouDaRegraMinima ? Math.max(0, totalHoras - franquia) : 0
   let valorNumero = 0
-
   if (tipo === 'Diária') {
     const dias = Number(form.qtdDias) || 0
     valorNumero = numeroBR(form.valorDiaria) * dias
-    return {
-      horas: String(dias * 24 || 0),
-      totalHoras: totalHoras.toFixed(2),
-      horasPagar: String(dias * 24 || 0),
-      valorNumero,
-      valor: dinheiroBR(valorNumero),
-      regraResumo: 'Diária manual',
-      regraCurta: 'Manual',
-      chegada: formatarDataHora(form.chegadaData, form.chegadaHora),
-      saida: formatarDataHora(form.saidaData, form.saidaHora),
-    }
+    return { horas: String(dias * 24 || 0), totalHoras: totalHoras.toFixed(2), horasPagar: String(dias * 24 || 0), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: 'Diária manual', regraCurta: 'Manual', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
   }
-
-  if (tipo === 'Negociado') {
-    valorNumero = numeroBR(form.valorNegociado)
-  } else {
-    valorNumero = horasPagar * fator
-  }
-
-  return {
-    horas: horasPagar.toFixed(2),
-    totalHoras: totalHoras.toFixed(2),
-    horasPagar: horasPagar.toFixed(2),
-    valorNumero,
-    valor: dinheiroBR(valorNumero),
-    regraResumo: passouDaRegraMinima ? `Após 24h · tira ${franquia}h · fator ${String(fator).replace('.', ',')}` : 'Aguardando completar 24h',
-    regraCurta: form.alterarCalculo ? 'Manual' : 'Padrão automático',
-    chegada: formatarDataHora(form.chegadaData, form.chegadaHora),
-    saida: formatarDataHora(form.saidaData, form.saidaHora),
-  }
+  if (tipo === 'Negociado') valorNumero = numeroBR(form.valorNegociado)
+  else valorNumero = horasPagar * fator
+  return { horas: horasPagar.toFixed(2), totalHoras: totalHoras.toFixed(2), horasPagar: horasPagar.toFixed(2), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: passouDaRegraMinima ? `Após 24h · tira ${franquia}h · fator ${String(fator).replace('.', ',')}` : 'Aguardando completar 24h', regraCurta: form.alterarCalculo ? 'Manual' : 'Padrão automático', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
 }
 
 const motivos = ['Fila no carregamento', 'Fila na descarga', 'Atraso da unidade', 'Documento pendente', 'Troca de nota', 'Refugo', 'Reentrega', 'Aguardando liberação', 'Problema no sistema', 'Divergência de rota/frete', 'Outros']
 
 export default function EstadiaLancada({ formRef }) {
-  const {
-    estadias, adicionarLancada, editarLancada, excluirLancada, itemParaLancar, limparItemParaLancar,
-    uploadAnexoItem, usuarioAtual, toast, mudarAba
-  } = useApp()
+  const { estadias, adicionarLancada, editarLancada, excluirLancada, itemParaLancar, limparItemParaLancar, uploadAnexoItem, usuarioAtual, toast, mudarAba } = useApp()
   const [form, setForm] = useState(EMPTY)
   const [editandoId, setEditandoId] = useState(null)
   const [arquivos, setArquivos] = useState([])
   const [existingAnexos, setExistingAnexos] = useState([])
   const [bancoMotoristas, setBancoMotoristas] = useState([])
   const [bancoTransportadoras, setBancoTransportadoras] = useState([])
-
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const calc = calcularEstadiaOperacional(form)
 
@@ -119,7 +68,6 @@ export default function EstadiaLancada({ formRef }) {
     try { setBancoMotoristas(await listarMotoristasBancoV2() || []) } catch { setBancoMotoristas([]) }
     try { setBancoTransportadoras(await listarTransportadorasV2() || []) } catch { setBancoTransportadoras([]) }
   }
-
   useEffect(() => { carregarCadastros() }, [])
 
   const motoristasOptions = useMemo(() => {
@@ -138,13 +86,7 @@ export default function EstadiaLancada({ formRef }) {
     })
     return [...map.values()].sort((a, b) => a.nome.localeCompare(b.nome))
   }, [bancoMotoristas, estadias])
-
-  const transportadorasOptions = useMemo(() => uniq([
-    ...TRANSPORTADORAS_BASE,
-    ...bancoTransportadoras.map(t => t.nome),
-    ...estadias.map(e => e.transportadora),
-  ]).sort((a, b) => a.localeCompare(b)), [bancoTransportadoras, estadias])
-
+  const transportadorasOptions = useMemo(() => uniq([...TRANSPORTADORAS_BASE, ...bancoTransportadoras.map(t => t.nome), ...estadias.map(e => e.transportadora)]).sort((a, b) => a.localeCompare(b)), [bancoTransportadoras, estadias])
   const preencherTelefoneMotorista = () => {
     const achou = motoristasOptions.find(m => chaveNome(m.nome) === chaveNome(form.motorista))
     if (achou?.telefone) set('telefoneMotorista', String(achou.telefone).replace(/[^0-9]/g, ''))
@@ -188,13 +130,7 @@ export default function EstadiaLancada({ formRef }) {
     preencherFormularioEdicao(item)
   }, [estadias]) // eslint-disable-line
 
-  const handleCancelarEdicao = () => {
-    setEditandoId(null)
-    setForm(EMPTY)
-    setArquivos([])
-    setExistingAnexos([])
-  }
-
+  const handleCancelarEdicao = () => { setEditandoId(null); setForm(EMPTY); setArquivos([]); setExistingAnexos([]) }
   const encontrarDuplicada = () => {
     const nf = String(form.nf || '').trim()
     const placa = String(form.placa || '').trim().toUpperCase()
@@ -205,7 +141,6 @@ export default function EstadiaLancada({ formRef }) {
       return mesmaNf || mesmaPlaca
     })
   }
-
   const handleSalvar = async () => {
     if (!form.nf.trim()) { alert('Preencha o número da NF.'); return }
     if (!form.placa.trim()) { alert('Preencha a placa.'); return }
@@ -214,54 +149,29 @@ export default function EstadiaLancada({ formRef }) {
     if (form.alterarCalculo && form.tipoCalculo === 'Hora' && !numeroBR(form.valorHora)) { alert('Preencha o fator/valor 0,80 ou outro valor negociado.'); return }
     if (form.alterarCalculo && form.tipoCalculo === 'Diária' && (!numeroBR(form.valorDiaria) || !form.qtdDias)) { alert('Preencha valor diária e quantidade de dias.'); return }
     if (form.alterarCalculo && form.tipoCalculo === 'Negociado' && !numeroBR(form.valorNegociado)) { alert('Preencha o valor negociado.'); return }
-
     const duplicada = encontrarDuplicada()
     if (!editandoId && duplicada && !confirm(`Já existe uma estadia parecida para ${duplicada.placa || 'esta placa'} / NF ${duplicada.nf || duplicada.numeroNf || '-'}. Deseja salvar mesmo assim?`)) return
-
     try {
       if (form.motorista.trim()) await upsertMotoristaBasicoV2({ nome: form.motorista.trim(), telefone: form.telefoneMotorista, observacao: 'Criado/atualizado pelo lançamento de estadia' }, usuarioAtual)
       if (form.transportadora.trim()) await upsertTransportadoraV2(form.transportadora, usuarioAtual)
     } catch {}
-
     const novosAnexos = []
-    for (const file of arquivos.slice(0, 2)) {
-      const up = await uploadAnexoItem(file)
-      if (up) novosAnexos.push(up)
-    }
+    for (const file of arquivos.slice(0, 2)) { const up = await uploadAnexoItem(file); if (up) novosAnexos.push(up) }
     const anexos = [...existingAnexos, ...novosAnexos]
-    const payload = {
-      ...form,
-      placa: form.placa.trim().toUpperCase(), tipoCalculo: form.alterarCalculo ? form.tipoCalculo : 'Hora', franquia: form.alterarCalculo ? form.franquia : '12', valorHora: form.alterarCalculo ? form.valorHora : '0,80', numeroNf: form.nf,
-      valorCalculado: calc.valor, totalHoras: calc.totalHoras, horasPagar: calc.horasPagar, regraCalculo: calc.regraResumo, ...calc, anexos,
-    }
-
+    const payload = { ...form, placa: form.placa.trim().toUpperCase(), tipoCalculo: form.alterarCalculo ? form.tipoCalculo : 'Hora', franquia: form.alterarCalculo ? form.franquia : '12', valorHora: form.alterarCalculo ? form.valorHora : '0,80', numeroNf: form.nf, valorCalculado: calc.valor, totalHoras: calc.totalHoras, horasPagar: calc.horasPagar, regraCalculo: calc.regraResumo, ...calc, anexos }
     if (editandoId) {
       const atual = estadias.find(e => String(e.id) === String(editandoId))
       const historicoItem = [eventoHistorico('Editou dados da estadia', usuarioAtual?.usuario, `Placa ${form.placa}`), ...(atual?.historicoItem || [])].slice(0, 20)
       await editarLancada(editandoId, { ...payload, historicoItem })
       setEditandoId(null)
-    } else {
-      await adicionarLancada({ ...payload, historicoItem: [eventoHistorico('Criou estadia lançada', usuarioAtual?.usuario, `Placa ${form.placa}`)] })
-    }
-
-    setForm(EMPTY)
-    setArquivos([])
-    setExistingAnexos([])
-    carregarCadastros()
+    } else await adicionarLancada({ ...payload, historicoItem: [eventoHistorico('Criou estadia lançada', usuarioAtual?.usuario, `Placa ${form.placa}`)] })
+    setForm(EMPTY); setArquivos([]); setExistingAnexos([]); carregarCadastros()
   }
-
   const handleArquivarEdicao = async () => {
     const atual = estadias.find(e => String(e.id) === String(editandoId))
     if (!atual) return
     if (!confirm('Arquivar esta estadia? Ela vai sair da tela, mas ficará salva na Lixeira com os anexos.')) return
-    try {
-      await arquivarEstadiaLancada(atual, usuarioAtual?.usuario || '-', 'Estadia arquivada pela tela de edição')
-      await excluirLancada(atual.id)
-      toast?.('Estadia arquivada na Lixeira.', 'ok')
-      handleCancelarEdicao()
-    } catch {
-      toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err')
-    }
+    try { await arquivarEstadiaLancada(atual, usuarioAtual?.usuario || '-', 'Estadia arquivada pela tela de edição'); await excluirLancada(atual.id); toast?.('Estadia arquivada na Lixeira.', 'ok'); handleCancelarEdicao() } catch { toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err') }
   }
 
   return (
@@ -271,14 +181,13 @@ export default function EstadiaLancada({ formRef }) {
           <div>
             <span className="estadia-eyebrow">Controle operacional</span>
             <h2>{editandoId ? 'Editar estadia' : 'Lançar nova estadia'}</h2>
-            <p>Preencha os dados principais. O cálculo fica sempre visível à direita.</p>
+            <p>Preencha os dados principais. O cálculo e os anexos ficam no fechamento à direita.</p>
           </div>
           <div className="estadia-head-actions">
             <button className="btn-light btn-small" onClick={() => mudarAba('consultaLancadas')}>Ver lançadas</button>
             {editandoId && <button className="btn-red btn-small" onClick={handleArquivarEdicao}>Arquivar</button>}
           </div>
         </header>
-
         <div className="estadia-body-clean">
           <main className="estadia-main-clean">
             <section className="estadia-card-clean">
@@ -292,7 +201,6 @@ export default function EstadiaLancada({ formRef }) {
                 {editandoId && <div className="field"><label>Status</label><select value={form.status} onChange={e => set('status', e.target.value)}><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select></div>}
               </div>
             </section>
-
             <section className="estadia-card-clean">
               <div className="estadia-card-title"><strong>Motorista e veículo</strong><span>Placa junto do motorista</span></div>
               <div className="estadia-grid-clean cols-4">
@@ -302,7 +210,6 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field span-2"><label>Transportadora opcional</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
               </div>
             </section>
-
             <section className="estadia-card-clean">
               <div className="estadia-card-title"><strong>Período</strong><span>Chegada e saída/descarga</span></div>
               <div className="estadia-grid-clean cols-4">
@@ -312,7 +219,6 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
               </div>
             </section>
-
             <section className="estadia-card-clean muted-card">
               <div className="estadia-card-title"><strong>Complementares</strong><span>Opcional</span></div>
               <div className="estadia-grid-clean cols-4">
@@ -321,17 +227,7 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field"><label>Sindicato?</label><select value={form.sindicato} onChange={e => set('sindicato', e.target.value)}><option>Não</option><option>Sim</option></select></div>
               </div>
             </section>
-
-            <section className="estadia-card-clean">
-              <div className="estadia-card-title"><strong>Anexos e observação</strong><span>Comprovantes e detalhes</span></div>
-              <div className="estadia-grid-clean cols-1">
-                <div className="field"><label>Observação</label><input value={form.obs} onChange={e => set('obs', e.target.value)} placeholder="Ex: negociado com célula, aguardar descarga, anexar comprovante..." /></div>
-              </div>
-              <DropZone arquivos={arquivos} onChange={setArquivos} />
-              {existingAnexos.length > 0 && <div className="anexos-existentes">{existingAnexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div>}
-            </section>
           </main>
-
           <aside className="estadia-summary-clean">
             <div className="summary-topline">Cálculo automático</div>
             <h3>{calc.valor}</h3>
@@ -341,12 +237,7 @@ export default function EstadiaLancada({ formRef }) {
               <div><span>Total parado</span><strong>{calc.totalHoras.replace('.', ',')} h</strong></div>
               <div><span>Horas a pagar</span><strong>{calc.horasPagar.replace('.', ',')} h</strong></div>
             </div>
-
-            <label className="manual-toggle">
-              <input type="checkbox" checked={form.alterarCalculo} onChange={e => set('alterarCalculo', e.target.checked)} />
-              <span>Alterar cálculo manualmente</span>
-            </label>
-
+            <label className="manual-toggle"><input type="checkbox" checked={form.alterarCalculo} onChange={e => set('alterarCalculo', e.target.checked)} /><span>Alterar cálculo manualmente</span></label>
             {form.alterarCalculo && <div className="manual-calc-box">
               <div className="field"><label>Tipo de cálculo</label><select value={form.tipoCalculo} onChange={e => set('tipoCalculo', e.target.value)}><option>Hora</option><option>Diária</option><option>Negociado</option></select></div>
               <div className="field"><label>Franquia</label><select value={form.franquia} onChange={e => set('franquia', e.target.value)}><option value="12">12h padrão</option><option value="24">24h negociado</option><option value="48">48h negociado</option><option value="0">Sem franquia</option></select></div>
@@ -354,7 +245,12 @@ export default function EstadiaLancada({ formRef }) {
               {form.tipoCalculo === 'Diária' && <><div className="field"><label>Valor diária</label><input value={form.valorDiaria} onChange={e => set('valorDiaria', e.target.value)} placeholder="Ex: 350,00" /></div><div className="field"><label>Qtd. dias</label><input value={form.qtdDias} onChange={e => set('qtdDias', e.target.value.replace(/\D/g, ''))} placeholder="Ex: 2" /></div></>}
               {form.tipoCalculo === 'Negociado' && <div className="field"><label>Valor negociado</label><input value={form.valorNegociado} onChange={e => set('valorNegociado', e.target.value)} placeholder="Ex: 2172,90" /></div>}
             </div>}
-
+            <div className="summary-attachments">
+              <div className="summary-attachments-title"><strong>Anexos</strong><span>Comprovantes</span></div>
+              <DropZone arquivos={arquivos} onChange={setArquivos} />
+              {existingAnexos.length > 0 && <div className="anexos-existentes">{existingAnexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div>}
+            </div>
+            <div className="summary-note field"><label>Observação</label><input value={form.obs} onChange={e => set('obs', e.target.value)} placeholder="Detalhe rápido..." /></div>
             <button className="btn-green btn-full summary-save" onClick={handleSalvar}>{editandoId ? 'Salvar alterações' : 'Salvar estadia'}</button>
             {editandoId && <button className="btn-light summary-cancel" onClick={handleCancelarEdicao}>Cancelar edição</button>}
           </aside>
