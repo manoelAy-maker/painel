@@ -1,0 +1,617 @@
+/* =========================================================
+   AYRES CAPTAÇÃO 2.0
+   Tela simples, operacional e sem poluição visual.
+   ========================================================= */
+
+.cap2-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 0 28px;
+  color: #f8fafc;
+}
+
+.cap2-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid rgba(148,163,184,.14);
+  border-radius: 24px;
+  background:
+    radial-gradient(680px circle at 0% 0%, rgba(47,128,255,.16), transparent 56%),
+    linear-gradient(180deg, rgba(15,23,42,.72), rgba(2,6,23,.48));
+  box-shadow: 0 22px 70px rgba(0,0,0,.34);
+  margin-bottom: 14px;
+}
+
+.cap2-eyebrow {
+  display: inline-flex;
+  margin-bottom: 8px;
+  padding: 6px 9px;
+  border: 1px solid rgba(56,189,248,.22);
+  border-radius: 999px;
+  background: rgba(56,189,248,.08);
+  color: #7dd3fc;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.cap2-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -.06em;
+}
+
+.cap2-hero p {
+  margin: 8px 0 0;
+  color: #94a3b8 !important;
+  font-size: 13px;
+  max-width: 620px;
+}
+
+.cap2-primary {
+  border: 0;
+  border-radius: 16px !important;
+  padding: 14px 18px;
+  min-width: 150px;
+  background: linear-gradient(135deg, #2563eb, #38bdf8) !important;
+  color: #fff !important;
+  font-weight: 950 !important;
+  box-shadow: 0 16px 36px rgba(37,99,235,.30);
+  cursor: pointer;
+}
+
+.cap2-board {
+  display: grid;
+  grid-template-columns: 260px 1fr 260px;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 14px;
+}
+
+.cap2-owner,
+.cap2-conversion,
+.cap2-list-card,
+.cap2-toolbar,
+.cap2-metric {
+  border: 1px solid rgba(148,163,184,.13);
+  background: rgba(2,6,23,.34);
+  border-radius: 18px;
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+
+.cap2-owner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+
+.cap2-avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #fff;
+  font-weight: 950;
+}
+
+.cap2-owner small,
+.cap2-owner span {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cap2-owner strong {
+  display: block;
+  color: #fff;
+  font-size: 14px;
+}
+
+.cap2-owner > span {
+  margin-left: auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,.14);
+  background: rgba(255,255,255,.04);
+}
+
+.cap2-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cap2-metric {
+  padding: 14px;
+  min-height: 92px;
+}
+
+.cap2-metric > span {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.06);
+  margin-bottom: 8px;
+}
+
+.cap2-metric strong {
+  display: block;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.cap2-metric small {
+  display: block;
+  margin-top: 5px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cap2-conversion {
+  padding: 14px;
+}
+
+.cap2-conversion div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cap2-conversion span {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.cap2-conversion strong {
+  color: #22c55e;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.cap2-conversion i {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148,163,184,.14);
+}
+
+.cap2-conversion b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e, #38bdf8);
+}
+
+.cap2-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.cap2-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  border: 1px solid rgba(148,163,184,.14);
+  border-radius: 14px;
+  padding: 0 12px;
+  background: rgba(2,6,23,.45);
+}
+
+.cap2-search input {
+  width: 100%;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  color: #fff !important;
+  height: 100% !important;
+  box-shadow: none !important;
+}
+
+.cap2-filters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cap2-filters button,
+.cap2-filters select {
+  height: 40px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(148,163,184,.14) !important;
+  background: rgba(2,6,23,.45) !important;
+  color: #dbeafe !important;
+  padding: 0 12px !important;
+  font-weight: 850 !important;
+}
+
+.cap2-filters button.active {
+  color: #fff !important;
+  border-color: rgba(56,189,248,.35) !important;
+  background: rgba(56,189,248,.12) !important;
+}
+
+.cap2-list-card {
+  padding: 14px;
+}
+
+.cap2-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(148,163,184,.10);
+}
+
+.cap2-list-head strong {
+  color: #fff;
+  font-size: 15px;
+}
+
+.cap2-list-head span {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.cap2-list {
+  display: grid;
+  gap: 10px;
+}
+
+.cap2-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(148,163,184,.12);
+  border-radius: 16px;
+  background: rgba(2,6,23,.30);
+}
+
+.cap2-row:hover {
+  border-color: rgba(56,189,248,.22);
+  background: rgba(15,23,42,.38);
+}
+
+.cap2-row.danger {
+  border-color: rgba(239,68,68,.20);
+}
+
+.cap2-status-dot {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-size: 17px;
+}
+
+.cap2-row-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cap2-row-title strong {
+  color: #fff;
+  font-size: 14px;
+}
+
+.cap2-row-title span,
+.cap2-row-title em {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(56,189,248,.10);
+  color: #93c5fd;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.cap2-row-sub {
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.cap2-row-main p {
+  margin: 7px 0 0;
+  color: #cbd5e1 !important;
+  font-size: 12px;
+}
+
+.cap2-reason {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.16);
+}
+
+.cap2-reason strong { color: #fecaca; font-size: 12px; }
+.cap2-reason span { color: #e5e7eb; font-size: 12px; }
+.cap2-reason small { color: #fca5a5; font-size: 11px; }
+
+.cap2-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cap2-actions button,
+.cap2-actions a {
+  min-height: 34px;
+  border-radius: 11px !important;
+  border: 1px solid rgba(148,163,184,.14) !important;
+  background: rgba(255,255,255,.055) !important;
+  color: #dbeafe !important;
+  padding: 7px 10px !important;
+  font-size: 12px;
+  font-weight: 850 !important;
+  text-decoration: none;
+}
+
+.cap2-actions .cap2-next {
+  background: linear-gradient(135deg, #2563eb, #38bdf8) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.cap2-actions .cap2-lost {
+  color: #fca5a5 !important;
+  border-color: rgba(239,68,68,.24) !important;
+  background: rgba(239,68,68,.10) !important;
+}
+
+.cap2-empty {
+  display: grid;
+  place-items: center;
+  min-height: 170px;
+  border: 1px dashed rgba(148,163,184,.18);
+  border-radius: 18px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.cap2-empty strong {
+  color: #fff;
+  font-size: 16px;
+}
+
+.cap2-empty span {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.cap2-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 7px 10px;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 999px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 850;
+  background: rgba(2,6,23,.35);
+}
+
+.cap2-sync i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.cap2-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(2,6,23,.76);
+  backdrop-filter: blur(12px);
+}
+
+.cap2-modal {
+  width: min(760px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(2,6,23,.98));
+  border: 1px solid rgba(148,163,184,.16);
+  box-shadow: 0 30px 90px rgba(0,0,0,.50);
+  padding: 20px;
+}
+
+.cap2-modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(148,163,184,.12);
+}
+
+.cap2-modal-head span {
+  color: #7dd3fc;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.cap2-modal-head h2 {
+  margin: 5px 0 0;
+  color: #fff;
+  font-size: 22px;
+}
+
+.cap2-modal-head button {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(148,163,184,.16);
+  background: rgba(255,255,255,.055);
+  color: #fff;
+  font-size: 22px;
+}
+
+.cap2-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px;
+  gap: 12px;
+}
+
+.cap2-field label,
+.cap2-choice-block label {
+  display: block;
+  margin: 0 0 6px;
+  color: #aebbd0;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cap2-field input,
+.cap2-field select,
+.cap2-field textarea {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(148,163,184,.16);
+  background: rgba(2,6,23,.50);
+  color: #fff;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.cap2-field textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.cap2-form-grid .span-2 { grid-column: span 1; }
+.cap2-choice-block { margin-top: 12px; }
+.cap2-choice-row,
+.cap2-status-row,
+.cap2-impact-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cap2-choice-row button,
+.cap2-status-row button,
+.cap2-impact-row button {
+  border-radius: 12px !important;
+  border: 1px solid rgba(148,163,184,.16) !important;
+  background: rgba(2,6,23,.42) !important;
+  color: #dbeafe !important;
+  padding: 10px 12px !important;
+  font-weight: 850 !important;
+}
+
+.cap2-choice-row button.active,
+.cap2-status-row button.active,
+.cap2-impact-row button.active {
+  background: rgba(56,189,248,.10) !important;
+}
+
+.cap2-impact-row button {
+  display: grid;
+  gap: 3px;
+  text-align: left;
+}
+
+.cap2-impact-row small {
+  color: #94a3b8;
+}
+
+.cap2-no-load {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(239,68,68,.18);
+  border-radius: 16px;
+  background: rgba(239,68,68,.07);
+}
+
+.cap2-save {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 46px;
+  border: 0;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+  color: #fff !important;
+  font-weight: 950 !important;
+}
+
+.capture-shell-pro .capture-topbar-pro {
+  border-radius: 22px !important;
+  margin-bottom: 14px !important;
+  padding: 18px 20px !important;
+}
+
+.capture-shell-pro .capture-title-pro h1 {
+  font-size: 25px !important;
+}
+
+.capture-shell-pro .capture-title-pro p {
+  font-size: 12px !important;
+}
+
+@media (max-width: 1050px) {
+  .cap2-board { grid-template-columns: 1fr; }
+  .cap2-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 760px) {
+  .cap2-hero,
+  .cap2-toolbar,
+  .cap2-row {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cap2-toolbar { display: grid; }
+  .cap2-filters { flex-wrap: wrap; }
+  .cap2-row { display: grid; }
+  .cap2-actions { justify-content: flex-start; }
+  .cap2-form-grid { grid-template-columns: 1fr; }
+}
