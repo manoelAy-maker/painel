@@ -74,8 +74,9 @@ export default function ConsultaEstadiasLancadas() {
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
   const [detalhe, setDetalhe] = useState(null)
+  const [visao, setVisao] = useState('andamento')
 
-  const lista = useMemo(() => estadias.filter(e => {
+  const listaFiltrada = useMemo(() => estadias.filter(e => {
     const txt = ((e.placa || '') + ' ' + (e.motorista || '') + ' ' + (e.chamado || '') + ' ' + (e.transportadora || '') + ' ' + (e.nf || e.numeroNf || '')).toUpperCase()
     const data = dataISOTexto(e.dataLancamento)
     return (!busca || txt.includes(busca.toUpperCase()))
@@ -85,17 +86,23 @@ export default function ConsultaEstadiasLancadas() {
       && (!dataFim || data <= dataFim)
   }), [estadias, busca, filtroStatus, filtroFilial, dataInicio, dataFim])
 
+  const lista = useMemo(() => listaFiltrada.filter(e => {
+    const finalizada = e.status === 'Finalizado'
+    return visao === 'finalizadas' ? finalizada : !finalizada
+  }), [listaFiltrada, visao])
+
   const stats = useMemo(() => {
-    const totalValor = lista.reduce((acc, e) => acc + parseValor(e.valor), 0)
+    const totalValor = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valor), 0)
     return {
-      total: lista.length,
-      abertas: lista.filter(e => !e.status || e.status === 'Aberto').length,
-      analise: lista.filter(e => e.status === 'Em análise').length,
-      feitas: lista.filter(e => e.status === 'Feito').length,
-      finalizadas: lista.filter(e => e.status === 'Finalizado').length,
+      total: listaFiltrada.length,
+      abertas: listaFiltrada.filter(e => !e.status || e.status === 'Aberto').length,
+      analise: listaFiltrada.filter(e => e.status === 'Em análise').length,
+      feitas: listaFiltrada.filter(e => e.status === 'Feito').length,
+      andamento: listaFiltrada.filter(e => e.status !== 'Finalizado').length,
+      finalizadas: listaFiltrada.filter(e => e.status === 'Finalizado').length,
       valor: totalValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
     }
-  }, [lista])
+  }, [listaFiltrada])
 
   const limpar = () => {
     setBusca('')
@@ -132,6 +139,7 @@ export default function ConsultaEstadiasLancadas() {
 
     try {
       await editarLancada(e.id, dados)
+      if (status === 'Finalizado') setVisao('finalizadas')
       toast?.(`Status alterado para ${status}.`, 'ok')
     } catch {
       toast?.('Não consegui alterar o status dessa estadia.', 'err')
@@ -191,8 +199,8 @@ export default function ConsultaEstadiasLancadas() {
       <div className="consulta-pro-head">
         <div>
           <span>Controle de estadias</span>
-          <h2>Estadias lançadas</h2>
-          <p>Visual limpo para acompanhar status, valor e tempo parado sem tabela espremida.</p>
+          <h2>{visao === 'finalizadas' ? 'Estadias finalizadas' : 'Estadias em andamento'}</h2>
+          <p>{visao === 'finalizadas' ? 'Histórico das estadias que já foram finalizadas.' : 'Fila de estadias abertas, em análise ou feitas.'}</p>
         </div>
         <div className="consulta-pro-head-actions">
           <button className="consulta-pro-primary" onClick={() => mudarAba('lancadas')}>+ Lançar nova</button>
@@ -200,8 +208,13 @@ export default function ConsultaEstadiasLancadas() {
         </div>
       </div>
 
+      <div className="consulta-pro-tabs">
+        <button className={visao === 'andamento' ? 'active' : ''} onClick={() => setVisao('andamento')}>Em andamento <b>{stats.andamento}</b></button>
+        <button className={visao === 'finalizadas' ? 'active' : ''} onClick={() => setVisao('finalizadas')}>Finalizadas <b>{stats.finalizadas}</b></button>
+      </div>
+
       <div className="consulta-pro-kpis">
-        <div><span>Total</span><strong>{stats.total}</strong></div>
+        <div><span>Total filtrado</span><strong>{stats.total}</strong></div>
         <div><span>Abertas</span><strong>{stats.abertas}</strong></div>
         <div><span>Em análise</span><strong>{stats.analise}</strong></div>
         <div><span>Feitas</span><strong>{stats.feitas}</strong></div>
@@ -223,7 +236,7 @@ export default function ConsultaEstadiasLancadas() {
       </div>
 
       <div className="consulta-pro-list">
-        {lista.length === 0 && <div className="consulta-pro-empty">Nenhuma estadia encontrada.</div>}
+        {lista.length === 0 && <div className="consulta-pro-empty">{visao === 'finalizadas' ? 'Nenhuma estadia finalizada encontrada.' : 'Nenhuma estadia em andamento encontrada.'}</div>}
 
         {lista.map(e => {
           const acao = proximaAcao(e)
