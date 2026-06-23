@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard'
 import './styles/app.css'
 import './cargo-options-runtime.js'
 import './login-dark-restore.css'
+import './styles/ayres-design-system.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
