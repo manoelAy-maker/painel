@@ -157,7 +157,8 @@ function PainelEstadia() {
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
             <Suspense fallback={<FastFallback />}>
               {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
-              {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas />}
+              {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
+              {abaRender === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
               {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
               {abaRender === 'captacao' && <Captacao />}
               {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
