@@ -1,0 +1,20 @@
+/* Usa a logo real do site no painel de captação */
+.ay-cap-logo,
+.ayres-mobile-logo{
+  color:transparent!important;
+  font-size:0!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02)),
+    url('/favicon.svg') center/76% 76% no-repeat!important;
+  background-color:#071224!important;
+  border:1px solid rgba(125,211,252,.22)!important;
+  box-shadow:0 16px 34px rgba(37,99,235,.34), inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+
+.ay-cap-logo::before,
+.ay-cap-logo::after,
+.ayres-mobile-logo::before,
+.ayres-mobile-logo::after{
+  content:none!important;
+  display:none!important;
+}
