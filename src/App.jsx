@@ -19,6 +19,7 @@ import './estadia-contrast.css'
 import './captacao-crm-premium.css'
 import './styles/professional-system.css'
 import './styles/captacao-lite-fixes.css'
+import './styles/captacao-stable.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
