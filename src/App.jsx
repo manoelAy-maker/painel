@@ -15,6 +15,7 @@ import './styles/ayres-design-system.css'
 import './styles/ayres-estadia-form-clean.css'
 import './captacao-aggressive.css'
 import './captacao-logo-real.css'
+import './estadia-contrast.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
@@ -154,8 +155,12 @@ function PainelEstadia() {
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
-            <div style={{ margin: '0 0 14px', padding: '12px 14px', borderRadius: 14, background: 'linear-gradient(135deg,#dc2626,#7c3aed)', color: '#fff', fontWeight: 900, letterSpacing: '.02em' }}>
-              TESTE DE DEPLOY ATIVO · se este aviso apareceu, o site atualizou
+            <div className="estadia-alert-banner">
+              <div>
+                <strong>Painel de Estadia em operação</strong>
+                <span>Controle centralizado para lançamentos, pendências e acompanhamento por filial.</span>
+              </div>
+              <div className="estadia-alert-chip">AYRES LOG</div>
             </div>
             <LivePanel />
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
