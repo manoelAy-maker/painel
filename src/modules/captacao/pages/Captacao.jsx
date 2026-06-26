@@ -1,1 +1,1 @@
-export { default } from '../../../pages/Captacao'
+export { default } from '../../../pages/CaptacaoLeve'
