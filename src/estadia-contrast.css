@@ -126,6 +126,79 @@
   box-shadow:0 16px 34px rgba(220,38,38,.18),0 12px 28px rgba(124,58,237,.14)!important;
 }
 
+/* Hover vivo dos botões da estadia, no estilo da captação */
+.app:not(.capture-shell-pro) button,
+.app:not(.capture-shell-pro) .btn,
+.app:not(.capture-shell-pro) .action-btn,
+.app:not(.capture-shell-pro) .icon-btn,
+.app:not(.capture-shell-pro) .tab-btn,
+.app:not(.capture-shell-pro) .filter-btn,
+.app:not(.capture-shell-pro) .toolbar button,
+.app:not(.capture-shell-pro) .card button,
+.app:not(.capture-shell-pro) .panel button{
+  position:relative;
+  overflow:hidden;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease,color .18s ease,filter .18s ease!important;
+}
+.app:not(.capture-shell-pro) button::after,
+.app:not(.capture-shell-pro) .btn::after,
+.app:not(.capture-shell-pro) .action-btn::after,
+.app:not(.capture-shell-pro) .icon-btn::after,
+.app:not(.capture-shell-pro) .tab-btn::after,
+.app:not(.capture-shell-pro) .filter-btn::after,
+.app:not(.capture-shell-pro) .toolbar button::after,
+.app:not(.capture-shell-pro) .card button::after,
+.app:not(.capture-shell-pro) .panel button::after{
+  content:'';
+  position:absolute;
+  inset:-35%;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.18) 42%,transparent 64%);
+  transform:translateX(-120%) rotate(8deg);
+  transition:transform .38s ease;
+  pointer-events:none;
+}
+.app:not(.capture-shell-pro) button:hover,
+.app:not(.capture-shell-pro) .btn:hover,
+.app:not(.capture-shell-pro) .action-btn:hover,
+.app:not(.capture-shell-pro) .icon-btn:hover,
+.app:not(.capture-shell-pro) .tab-btn:hover,
+.app:not(.capture-shell-pro) .filter-btn:hover,
+.app:not(.capture-shell-pro) .toolbar button:hover,
+.app:not(.capture-shell-pro) .card button:hover,
+.app:not(.capture-shell-pro) .panel button:hover{
+  transform:translateY(-2px)!important;
+  color:#fff!important;
+  border-color:rgba(239,68,68,.48)!important;
+  background:linear-gradient(135deg,rgba(220,38,38,.92),rgba(124,58,237,.82),rgba(37,99,235,.72))!important;
+  box-shadow:0 14px 30px rgba(220,38,38,.20),0 10px 24px rgba(124,58,237,.16)!important;
+  filter:saturate(1.08)!important;
+}
+.app:not(.capture-shell-pro) button:hover::after,
+.app:not(.capture-shell-pro) .btn:hover::after,
+.app:not(.capture-shell-pro) .action-btn:hover::after,
+.app:not(.capture-shell-pro) .icon-btn:hover::after,
+.app:not(.capture-shell-pro) .tab-btn:hover::after,
+.app:not(.capture-shell-pro) .filter-btn:hover::after,
+.app:not(.capture-shell-pro) .toolbar button:hover::after,
+.app:not(.capture-shell-pro) .card button:hover::after,
+.app:not(.capture-shell-pro) .panel button:hover::after{
+  transform:translateX(120%) rotate(8deg);
+}
+.app:not(.capture-shell-pro) button:active,
+.app:not(.capture-shell-pro) .btn:active,
+.app:not(.capture-shell-pro) .action-btn:active,
+.app:not(.capture-shell-pro) .icon-btn:active{
+  transform:translateY(0) scale(.98)!important;
+}
+.app:not(.capture-shell-pro) button[disabled],
+.app:not(.capture-shell-pro) .btn[disabled],
+.app:not(.capture-shell-pro) button[aria-disabled="true"]{
+  transform:none!important;
+  filter:none!important;
+  box-shadow:none!important;
+  opacity:.55!important;
+}
+
 /* Inputs em foco com vermelho fino */
 .app input:focus,
 .app select:focus,
