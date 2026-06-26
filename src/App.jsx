@@ -16,6 +16,7 @@ import './styles/ayres-estadia-form-clean.css'
 import './captacao-aggressive.css'
 import './captacao-logo-real.css'
 import './estadia-contrast.css'
+import './captacao-crm-premium.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
