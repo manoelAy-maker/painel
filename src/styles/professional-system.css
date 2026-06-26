@@ -1,0 +1,99 @@
+/* Camada profissional leve: tokens, componentes base e redução de ruído visual */
+:root{
+  --ui-bg:#020617;
+  --ui-card:rgba(15,23,42,.78);
+  --ui-card-strong:rgba(15,23,42,.92);
+  --ui-border:rgba(148,163,184,.16);
+  --ui-border-strong:rgba(148,163,184,.24);
+  --ui-text:#f8fafc;
+  --ui-muted:#94a3b8;
+  --ui-blue:#2563eb;
+  --ui-cyan:#06b6d4;
+  --ui-red:#dc2626;
+  --ui-purple:#7c3aed;
+  --ui-green:#22c55e;
+  --ui-radius:18px;
+  --ui-shadow:0 18px 50px rgba(0,0,0,.26);
+}
+
+.ui-card{
+  position:relative;
+  background:linear-gradient(180deg,var(--ui-card-strong),rgba(2,6,23,.88));
+  border:1px solid var(--ui-border);
+  border-radius:var(--ui-radius);
+  box-shadow:var(--ui-shadow);
+}
+.ui-btn{
+  border:1px solid var(--ui-border);
+  background:rgba(15,23,42,.78);
+  color:var(--ui-text);
+  border-radius:14px;
+  padding:11px 14px;
+  font-weight:850;
+  cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+.ui-btn:hover{
+  transform:translateY(-2px);
+  border-color:rgba(239,68,68,.45);
+  background:linear-gradient(135deg,var(--ui-red),var(--ui-purple),var(--ui-blue));
+  box-shadow:0 14px 30px rgba(220,38,38,.18),0 10px 24px rgba(37,99,235,.14);
+}
+.ui-btn-primary{background:linear-gradient(135deg,var(--ui-blue),var(--ui-cyan));border-color:rgba(125,211,252,.25)}
+.ui-btn-danger{background:linear-gradient(135deg,var(--ui-red),var(--ui-purple));border-color:rgba(248,113,113,.34)}
+.ui-input{
+  width:100%;
+  border:1px solid var(--ui-border);
+  background:rgba(2,6,23,.74);
+  color:var(--ui-text);
+  border-radius:14px;
+  padding:12px 14px;
+  outline:none;
+}
+.ui-input:focus{
+  border-color:rgba(96,165,250,.50);
+  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.ui-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:900;
+  border:1px solid var(--ui-border);
+  color:var(--ui-muted);
+  background:rgba(15,23,42,.72);
+}
+.ui-badge-success{color:#bbf7d0;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.24)}
+.ui-badge-danger{color:#fecaca;background:rgba(220,38,38,.12);border-color:rgba(239,68,68,.28)}
+.ui-badge-info{color:#bfdbfe;background:rgba(37,99,235,.12);border-color:rgba(96,165,250,.25)}
+
+/* Performance visual: evita pintura desnecessária em blocos grandes */
+.ay-cap-panel,
+.ay-cap-card,
+.ay-cap-table-wrap,
+.card,
+.stat-card,
+.panel-card,
+.glass-card{
+  content-visibility:auto;
+  contain-intrinsic-size:1px 220px;
+}
+
+/* Menos carnaval: vermelho como detalhe, azul como base */
+.ay-cap-title h1,
+.capture-title-pro h1,
+.main-pro h1{
+  text-rendering:optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+}
