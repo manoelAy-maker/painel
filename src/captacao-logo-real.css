@@ -1,5 +1,60 @@
-/* Usa a logo real do site no painel de captação */
-.ay-cap-logo,
+/* Logo correta no painel de captação: wordmark AYRES, sem usar favicon cortado */
+.ay-cap-brand{
+  gap:12px!important;
+}
+
+.ay-cap-logo{
+  width:118px!important;
+  height:46px!important;
+  flex:0 0 118px!important;
+  border-radius:16px!important;
+  color:transparent!important;
+  font-size:0!important;
+  display:grid!important;
+  place-items:center!important;
+  background:
+    radial-gradient(90px circle at 18% 12%,rgba(53,196,255,.26),transparent 50%),
+    linear-gradient(135deg,rgba(7,18,36,.96),rgba(5,12,28,.98))!important;
+  border:1px solid rgba(125,211,252,.24)!important;
+  box-shadow:0 16px 34px rgba(37,99,235,.28), inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+
+.ay-cap-logo::before{
+  content:'AYRES'!important;
+  display:block!important;
+  font-size:18px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  letter-spacing:.18em!important;
+  background:linear-gradient(135deg,#F8FAFC 0%,#35C4FF 38%,#2563EB 68%,#A78BFA 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  text-shadow:0 12px 28px rgba(37,99,235,.18)!important;
+}
+
+.ay-cap-logo::after{
+  content:''!important;
+  display:block!important;
+  position:absolute!important;
+  width:34px!important;
+  height:2px!important;
+  margin-top:24px!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,#35C4FF,#7C3AED)!important;
+  opacity:.9!important;
+}
+
+.ay-cap-brand > div:last-child strong{
+  display:none!important;
+}
+
+.ay-cap-brand > div:last-child span{
+  font-size:12px!important;
+  font-weight:850!important;
+  color:#9fb0c8!important;
+}
+
 .ayres-mobile-logo{
   color:transparent!important;
   font-size:0!important;
@@ -11,8 +66,6 @@
   box-shadow:0 16px 34px rgba(37,99,235,.34), inset 0 1px 0 rgba(255,255,255,.08)!important;
 }
 
-.ay-cap-logo::before,
-.ay-cap-logo::after,
 .ayres-mobile-logo::before,
 .ayres-mobile-logo::after{
   content:none!important;
