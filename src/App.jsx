@@ -24,6 +24,7 @@ import './styles/captacao-stable.css'
 import './styles/notification-rail.css'
 import './styles/estadia-ticker.css'
 import './styles/captacao-header-match.css'
+import './styles/db-command-center.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
