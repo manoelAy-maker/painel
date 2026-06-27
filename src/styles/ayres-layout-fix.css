@@ -1,0 +1,81 @@
+/* Correção cirúrgica: evita o buraco preto na lateral quando páginas longas rolam.
+   Não muda layout, cards, portal ou formulário. Só garante continuidade do fundo. */
+
+:root {
+  --ayres-sidebar-bg-fix: #0a0f1e;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: #020617;
+}
+
+.app,
+.app-layout {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-layout {
+  align-items: stretch;
+  background:
+    linear-gradient(90deg, var(--ayres-sidebar-bg-fix) 0 260px, transparent 260px),
+    transparent;
+}
+
+.sidebar-pro,
+.sidebar-pro.ayres-sidebar-v4 {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  align-self: start;
+  background: var(--ayres-sidebar-bg-fix) !important;
+  background-image:
+    radial-gradient(280px circle at 45% -8%, rgba(37, 99, 235, .18), transparent 62%),
+    linear-gradient(180deg, #0a0f1e 0%, #070b16 100%) !important;
+}
+
+/* Se algum wrapper de tela ficar maior que a viewport, a faixa lateral continua pintada até o fim. */
+.app::before {
+  content: "";
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(300px circle at 42% -6%, rgba(37, 99, 235, .16), transparent 62%),
+    linear-gradient(180deg, #0a0f1e 0%, #070b16 100%);
+}
+
+.app-layout,
+.sidebar-pro,
+.main-pro {
+  position: relative;
+}
+
+.sidebar-pro {
+  z-index: 30;
+}
+
+.main-pro {
+  z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .app-layout {
+    background: transparent;
+  }
+
+  .app::before {
+    display: none;
+  }
+}
