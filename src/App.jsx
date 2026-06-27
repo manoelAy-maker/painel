@@ -30,6 +30,7 @@ const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 const Captacao = lazy(() => import('./modules/captacao/pages/Captacao'))
+const ControleEmbarque = lazy(() => import('./modules/embarque/pages/ControleEmbarque'))
 const CaptacaoAdmin = lazy(() => import('./modules/captacao/pages/CaptacaoAdmin'))
 const Historico = lazy(() => import('./modules/admin/pages/Historico'))
 const Relatorios = lazy(() => import('./modules/admin/pages/Relatorios'))
@@ -174,6 +175,7 @@ function PainelEstadia() {
               {abaRender === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
               {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
               {abaRender === 'captacao' && <Captacao />}
+              {abaRender === 'embarque' && <ControleEmbarque />}
               {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
               {isAdmin && abaRender === 'historico' && <Historico />}
               {isAdmin && abaRender === 'relatorios' && <Relatorios />}
