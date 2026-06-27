@@ -8,6 +8,7 @@ import LivePanel from './components/LivePanel'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
 import Dashboard from './pages/Dashboard'
+import EstadiaTicker from './components/EstadiaTicker'
 import './styles/app.css'
 import './cargo-options-runtime.js'
 import './login-dark-restore.css'
@@ -21,6 +22,7 @@ import './styles/professional-system.css'
 import './styles/captacao-lite-fixes.css'
 import './styles/captacao-stable.css'
 import './styles/notification-rail.css'
+import './styles/estadia-ticker.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
@@ -160,13 +162,7 @@ function PainelEstadia() {
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
-            <div className="estadia-alert-banner">
-              <div>
-                <strong>Painel de Estadia em operação</strong>
-                <span>Controle centralizado para lançamentos, pendências e acompanhamento por filial.</span>
-              </div>
-              <div className="estadia-alert-chip">AYRES LOG</div>
-            </div>
+            <EstadiaTicker />
             <LivePanel />
             {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
             <Suspense fallback={<FastFallback />}>
