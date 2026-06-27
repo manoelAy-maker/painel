@@ -54,77 +54,31 @@ function AppMobileOperacional() {
   const { usuarioAtual, logout } = useApp()
   const [aba, setAba] = useState('captacao')
   const formALancarRef = useRef()
-
-  const sair = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    logout()
-  }
-
+  const sair = () => { localStorage.removeItem('moduloInicialViaLog'); logout() }
   return (
     <div className="ayres-mobile-apk">
-      <header className="ayres-mobile-head">
-        <div className="ayres-mobile-head-row">
-          <div className="ayres-mobile-brand">
-            <div className="ayres-mobile-logo">A</div>
-            <div>
-              <strong>AYRES Mobile</strong>
-              <span>{aba === 'captacao' ? 'Captação rápida' : 'Lançar pendência'}</span>
-            </div>
-          </div>
-          <div className="ayres-mobile-user">
-            <span>{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
-            <button className="ayres-mobile-logout" onClick={sair}>Sair</button>
-          </div>
-        </div>
-      </header>
-
-      <main className="ayres-mobile-content">
-        <Suspense fallback={<FastFallback />}>
-          {aba === 'captacao' && <section className="ayres-mobile-panel"><Captacao /></section>}
-          {aba === 'pendencia' && <section className="ayres-mobile-panel"><EstadiaALancar formRef={formALancarRef} /></section>}
-        </Suspense>
-      </main>
-
-      <nav className="ayres-mobile-bottom">
-        <button className={`ayres-mobile-tab ${aba === 'captacao' ? 'active' : ''}`} onClick={() => setAba('captacao')}><i>📞</i><span>Captação</span></button>
-        <button className={`ayres-mobile-tab ${aba === 'pendencia' ? 'active' : ''}`} onClick={() => setAba('pendencia')}><i>📝</i><span>Pendência</span></button>
-      </nav>
+      <header className="ayres-mobile-head"><div className="ayres-mobile-head-row"><div className="ayres-mobile-brand"><div className="ayres-mobile-logo">A</div><div><strong>AYRES Mobile</strong><span>{aba === 'captacao' ? 'Captação rápida' : 'Lançar pendência'}</span></div></div><div className="ayres-mobile-user"><span>{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="ayres-mobile-logout" onClick={sair}>Sair</button></div></div></header>
+      <main className="ayres-mobile-content"><Suspense fallback={<FastFallback />}>{aba === 'captacao' && <section className="ayres-mobile-panel"><Captacao /></section>}{aba === 'pendencia' && <section className="ayres-mobile-panel"><EstadiaALancar formRef={formALancarRef} /></section>}</Suspense></main>
+      <nav className="ayres-mobile-bottom"><button className={`ayres-mobile-tab ${aba === 'captacao' ? 'active' : ''}`} onClick={() => setAba('captacao')}><i>📞</i><span>Captação</span></button><button className={`ayres-mobile-tab ${aba === 'pendencia' ? 'active' : ''}`} onClick={() => setAba('pendencia')}><i>📝</i><span>Pendência</span></button></nav>
     </div>
   )
 }
 
-function CaptacaoIsolada({ onPortal }) {
+function ModuloIsolado({ tipo, onPortal }) {
   const { usuarioAtual, logout } = useApp()
-
-  const sair = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    logout()
-  }
-
-  const voltarAoPortal = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    onPortal?.()
-  }
-
+  const isEmbarque = tipo === 'embarque'
+  const sair = () => { localStorage.removeItem('moduloInicialViaLog'); logout() }
+  const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); onPortal?.() }
   return (
     <div className="app capture-shell-pro" style={{ display: 'block' }}>
       <main className="capture-main-pro">
         <Header />
         <section className="capture-topbar-pro">
-          <div className="capture-title-pro">
-            <div className="capture-eyebrow-pro">Central operacional</div>
-            <h1>Painel de Captação</h1>
-            <p>Ambiente separado para registrar motoristas, acompanhar evolução de contato, ordem e carregamento confirmado.</p>
-          </div>
-          <div className="capture-actions-pro">
-            <span className="capture-user-chip-pro">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
-            <button className="capture-action-btn-pro" onClick={voltarAoPortal}>Voltar ao portal</button>
-            <button className="capture-action-btn-pro" onClick={sair}>Sair</button>
-          </div>
+          <div className="capture-title-pro"><div className="capture-eyebrow-pro">{isEmbarque ? 'Central de logística' : 'Central operacional'}</div><h1>{isEmbarque ? 'Controle de Embarque' : 'Painel de Captação'}</h1><p>{isEmbarque ? 'Cadastro de lotes, dias de carregamento e placas em quadro simples.' : 'Ambiente separado para registrar motoristas e acompanhar a operação.'}</p></div>
+          <div className="capture-actions-pro"><span className="capture-user-chip-pro">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="capture-action-btn-pro" onClick={voltarAoPortal}>Voltar ao portal</button><button className="capture-action-btn-pro" onClick={sair}>Sair</button></div>
         </section>
-
-        <section className="capture-panel-wrap-pro"><Suspense fallback={<FastFallback />}><Captacao /></Suspense></section>
-        <div className="capture-footer-pro">AYRES · Central de captação</div>
+        <section className="capture-panel-wrap-pro"><Suspense fallback={<FastFallback />}>{isEmbarque ? <ControleEmbarque /> : <Captacao />}</Suspense></section>
+        <div className="capture-footer-pro">AYRES · {isEmbarque ? 'Controle de embarque' : 'Central de captação'}</div>
       </main>
     </div>
   )
@@ -138,55 +92,14 @@ function PainelEstadia() {
   const isAdmin = podeAdministrar(usuarioAtual)
   const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin', 'lixeira'].includes(abaAtiva)
   const abaRender = !isAdmin && abaProtegida ? 'inicio' : abaAtiva
-
-  useEffect(() => {
-    document.body.classList.toggle('sidebar-open', sidebarOpen)
-    return () => document.body.classList.remove('sidebar-open')
-  }, [sidebarOpen])
-
-  const focarLancada = () => {
-    mudarAba('lancadas')
-    setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
-  }
-
-  const focarALancar = () => {
-    mudarAba('alancar')
-    setTimeout(() => formALancarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
-  }
-
-  useEffect(() => {
-    if (!isAdmin && abaProtegida) mudarAba('inicio')
-  }, [isAdmin, abaProtegida, mudarAba])
-
+  useEffect(() => { document.body.classList.toggle('sidebar-open', sidebarOpen); return () => document.body.classList.remove('sidebar-open') }, [sidebarOpen])
+  const focarLancada = () => { mudarAba('lancadas'); setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50) }
+  const focarALancar = () => { mudarAba('alancar'); setTimeout(() => formALancarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50) }
+  useEffect(() => { if (!isAdmin && abaProtegida) mudarAba('inicio') }, [isAdmin, abaProtegida, mudarAba])
   return (
     <div className="app" style={{ display: 'block' }}>
       {sidebarOpen && <button className="sidebar-backdrop" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
-      <div className="app-layout">
-        <Sidebar onFechar={() => setSidebarOpen(false)} />
-        <section className="main-pro">
-          <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
-          <main className="container">
-            <EstadiaTicker />
-            <LivePanel />
-            {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
-            <Suspense fallback={<FastFallback />}>
-              {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
-              {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
-              {abaRender === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
-              {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
-              {abaRender === 'captacao' && <Captacao />}
-              {abaRender === 'embarque' && <ControleEmbarque />}
-              {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
-              {isAdmin && abaRender === 'historico' && <Historico />}
-              {isAdmin && abaRender === 'relatorios' && <Relatorios />}
-              {isAdmin && abaRender === 'lixeira' && <Lixeira />}
-              {isAdmin && abaRender === 'backup' && <Backup />}
-              {isAdmin && abaRender === 'admin' && <Admin />}
-            </Suspense>
-            <div className="footer">by Manoel</div>
-          </main>
-        </section>
-      </div>
+      <div className="app-layout"><Sidebar onFechar={() => setSidebarOpen(false)} /><section className="main-pro"><Header onMenuMobile={() => setSidebarOpen(v => !v)} /><main className="container"><EstadiaTicker /><LivePanel />{abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}<Suspense fallback={<FastFallback />}>{abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}{abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}{abaRender === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}{abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}{abaRender === 'captacao' && <Captacao />}{isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}{isAdmin && abaRender === 'historico' && <Historico />}{isAdmin && abaRender === 'relatorios' && <Relatorios />}{isAdmin && abaRender === 'lixeira' && <Lixeira />}{isAdmin && abaRender === 'backup' && <Backup />}{isAdmin && abaRender === 'admin' && <Admin />}</Suspense><div className="footer">by Manoel</div></main></section></div>
     </div>
   )
 }
@@ -195,31 +108,7 @@ export default function App() {
   const { usuarioAtual } = useApp()
   const [moduloInicial, setModuloInicial] = useState(() => localStorage.getItem('moduloInicialViaLog'))
   const mobileApk = isApkMobileMode()
-
-  useEffect(() => {
-    const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog'))
-    window.addEventListener('storage', syncModulo)
-    window.addEventListener('ayres:modulo', syncModulo)
-    return () => {
-      window.removeEventListener('storage', syncModulo)
-      window.removeEventListener('ayres:modulo', syncModulo)
-    }
-  }, [])
-
-  const voltarAoPortal = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    setModuloInicial(null)
-  }
-
-  return (
-    <>
-      <SoundManager />
-      {!usuarioAtual && <Login />}
-      {usuarioAtual && mobileApk && <AppMobileOperacional />}
-      {usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}
-      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <CaptacaoIsolada onPortal={voltarAoPortal} />}
-      {usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}
-      <Toast />
-    </>
-  )
+  useEffect(() => { const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog')); window.addEventListener('storage', syncModulo); window.addEventListener('ayres:modulo', syncModulo); return () => { window.removeEventListener('storage', syncModulo); window.removeEventListener('ayres:modulo', syncModulo) } }, [])
+  const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); setModuloInicial(null) }
+  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado tipo="captacao" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial === 'embarque' && <ModuloIsolado tipo="embarque" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && !['captacao', 'embarque'].includes(moduloInicial) && <PainelEstadia />}<Toast /></>
 }
