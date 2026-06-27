@@ -86,9 +86,28 @@ function carregarTickerItems() {
   return validos.length ? validos : FALLBACK_ITEMS
 }
 
+function TickerCard({ item, mode }) {
+  return (
+    <div className={`estadia-ticker-card estadia-ticker-card-${mode} estadia-ticker-${item.tom}`}>
+      <div className="estadia-ticker-rail" />
+      <div className="estadia-ticker-icon">!</div>
+      <div className="estadia-ticker-copy">
+        <strong>{item.titulo}</strong>
+        <span>{item.detalhe}</span>
+      </div>
+      <div className="estadia-ticker-meta">
+        <b>{item.tipo}</b>
+        <small>{item.tempo}</small>
+      </div>
+    </div>
+  )
+}
+
 export default function EstadiaTicker() {
   const [items, setItems] = useState(() => carregarTickerItems())
   const [index, setIndex] = useState(0)
+  const [previousIndex, setPreviousIndex] = useState(null)
+  const [animating, setAnimating] = useState(false)
 
   useEffect(() => {
     const recarregar = () => setItems(carregarTickerItems())
@@ -103,24 +122,27 @@ export default function EstadiaTicker() {
   }, [])
 
   useEffect(() => {
-    const timer = setInterval(() => setIndex(i => (i + 1) % Math.max(1, items.length)), 10000)
+    const timer = setInterval(() => {
+      setIndex(current => {
+        setPreviousIndex(current)
+        setAnimating(true)
+        return (current + 1) % Math.max(1, items.length)
+      })
+      window.setTimeout(() => {
+        setAnimating(false)
+        setPreviousIndex(null)
+      }, 850)
+    }, 10000)
     return () => clearInterval(timer)
   }, [items.length])
 
   const item = useMemo(() => items[index % Math.max(1, items.length)] || FALLBACK_ITEMS[0], [items, index])
+  const previousItem = previousIndex === null ? null : items[previousIndex % Math.max(1, items.length)]
 
   return (
-    <div className={`estadia-ticker estadia-ticker-${item.tom}`} key={`${item.titulo}-${item.detalhe}-${index}`}>
-      <div className="estadia-ticker-rail" />
-      <div className="estadia-ticker-icon">!</div>
-      <div className="estadia-ticker-copy">
-        <strong>{item.titulo}</strong>
-        <span>{item.detalhe}</span>
-      </div>
-      <div className="estadia-ticker-meta">
-        <b>{item.tipo}</b>
-        <small>{item.tempo}</small>
-      </div>
+    <div className={`estadia-ticker estadia-ticker-shell ${animating ? 'is-sliding' : ''}`}>
+      {previousItem && <TickerCard item={previousItem} mode="out" />}
+      <TickerCard item={item} mode={animating ? 'in' : 'current'} />
     </div>
   )
 }
