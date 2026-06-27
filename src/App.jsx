@@ -23,6 +23,7 @@ import './styles/captacao-lite-fixes.css'
 import './styles/captacao-stable.css'
 import './styles/notification-rail.css'
 import './styles/estadia-ticker.css'
+import './styles/captacao-header-match.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
@@ -106,6 +107,7 @@ function CaptacaoIsolada({ onPortal }) {
   return (
     <div className="app capture-shell-pro" style={{ display: 'block' }}>
       <main className="capture-main-pro">
+        <Header />
         <section className="capture-topbar-pro">
           <div className="capture-title-pro">
             <div className="capture-eyebrow-pro">Central operacional</div>
