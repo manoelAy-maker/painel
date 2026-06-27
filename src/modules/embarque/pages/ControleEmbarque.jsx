@@ -17,7 +17,7 @@ const STATUS = {
 }
 
 const LOTE_VAZIO = {
-  produto: 'SOJA', origem: '', destino: '', lote: '', cadencia: '10', dataInicio: '', dataFim: '',
+  produto: 'SOJA', origem: '', destino: '', lote: '', pesoLote: '', cadencia: '10',
 }
 
 const LINHA_VAZIA = {
@@ -33,18 +33,11 @@ const hojeISO = () => new Date().toISOString().slice(0, 10)
 function ler(key, fallback = []) { try { return JSON.parse(localStorage.getItem(key)) || fallback } catch { return fallback } }
 function gravar(key, valor) { localStorage.setItem(key, JSON.stringify(valor)) }
 
-function diasEntre(inicio, fim) {
-  if (!inicio) return [hojeISO()]
-  const start = new Date(`${inicio}T12:00:00`)
-  const end = new Date(`${fim || inicio}T12:00:00`)
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) return [inicio]
-  const dias = []
-  const d = new Date(start)
-  while (d <= end) {
-    dias.push(d.toISOString().slice(0, 10))
-    d.setDate(d.getDate() + 1)
-  }
-  return dias
+function diasDoLote(linhas, loteId) {
+  const hoje = hojeISO()
+  const dias = new Set([hoje])
+  linhas.filter(l => String(l.loteId) === String(loteId)).forEach(l => { if (l.dia) dias.add(l.dia) })
+  return [...dias].sort()
 }
 
 function numeroPeso(v) {
@@ -73,9 +66,10 @@ function loteRowToItem(row) {
     origem: row.origem || '',
     destino: row.destino || '',
     lote: row.lote || '',
+    pesoLote: row.peso_lote ? formatarPeso(row.peso_lote) : (dados.pesoLote || ''),
     cadencia: String(row.cadencia || dados.cadencia || 0),
     dataInicio: row.data_inicio || dados.dataInicio || hojeISO(),
-    dataFim: row.data_fim || dados.dataFim || row.data_inicio || hojeISO(),
+    dataFim: row.data_fim || dados.dataFim || '',
     filial: row.filial_id || dados.filial || 'jatai-go',
     criadoPor: row.criado_por || dados.criadoPor || '-',
     status: row.status || 'ativo',
@@ -109,8 +103,8 @@ function lotePayload(lote, usuarioAtual) {
   const filial = lote.filial || usuarioAtual?.filial || 'jatai-go'
   return {
     local_id: String(lote.id), filial_id: filial, produto: lote.produto || null, origem: lote.origem || null, destino: lote.destino || null,
-    lote: lote.lote || null, cadencia: Math.max(0, Number(lote.cadencia || 0) || 0), data_inicio: lote.dataInicio || null, data_fim: lote.dataFim || lote.dataInicio || null,
-    status: lote.status || 'ativo', criado_por: null, dados: { filial, criadoPor: usuarioAtual?.usuario || '-', nomeCriador: usuarioAtual?.nome || usuarioAtual?.usuario || '-' },
+    lote: lote.lote || null, peso_lote: numeroPeso(lote.pesoLote) || null, cadencia: Math.max(0, Number(lote.cadencia || 0) || 0), data_inicio: lote.dataInicio || hojeISO(), data_fim: null,
+    status: lote.status || 'ativo', criado_por: null, dados: { filial, pesoLote: lote.pesoLote || '', criadoPor: usuarioAtual?.usuario || '-', nomeCriador: usuarioAtual?.nome || usuarioAtual?.usuario || '-' },
   }
 }
 
@@ -168,14 +162,14 @@ export default function ControleEmbarque() {
 
   const lotesVisiveis = useMemo(() => lotes.filter(l => isAdmin || (l.filial || filialAtual) === filialAtual), [lotes, isAdmin, filialAtual])
   const loteAtivo = lotesVisiveis.find(l => String(l.id) === String(loteAtivoId)) || lotesVisiveis[0] || null
-  const dias = useMemo(() => loteAtivo ? diasEntre(loteAtivo.dataInicio, loteAtivo.dataFim) : [], [loteAtivo])
-  const dia = diaAtivo && dias.includes(diaAtivo) ? diaAtivo : dias[0]
+  const dias = useMemo(() => loteAtivo ? diasDoLote(linhas, loteAtivo.id) : [hojeISO()], [loteAtivo, linhas])
+  const dia = diaAtivo && dias.includes(diaAtivo) ? diaAtivo : hojeISO()
 
   useEffect(() => {
     if (!loteAtivoId && lotesVisiveis[0]) setLoteAtivoId(lotesVisiveis[0].id)
   }, [lotesVisiveis, loteAtivoId])
   useEffect(() => {
-    if (dias[0] && !dias.includes(diaAtivo)) setDiaAtivo(dias[0])
+    if (!dias.includes(diaAtivo)) setDiaAtivo(hojeISO())
   }, [dias, diaAtivo])
 
   const linhasDoDia = useMemo(() => {
@@ -187,25 +181,33 @@ export default function ControleEmbarque() {
   }, [linhas, loteAtivo, dia, busca])
 
   const resumo = useMemo(() => {
-    const lista = linhas.filter(l => String(l.loteId) === String(loteAtivo?.id) && l.dia === dia)
+    const listaDia = linhas.filter(l => String(l.loteId) === String(loteAtivo?.id) && l.dia === dia)
+    const listaLote = linhas.filter(l => String(l.loteId) === String(loteAtivo?.id))
+    const pesoDia = listaDia.reduce((s, l) => s + numeroPeso(l.peso), 0)
+    const pesoCarregadoLote = listaLote.reduce((s, l) => s + numeroPeso(l.peso), 0)
+    const pesoMeta = numeroPeso(loteAtivo?.pesoLote)
+    const restante = Math.max(0, pesoMeta - pesoCarregadoLote)
     return {
-      total: lista.length,
-      carregados: lista.filter(l => l.status === 'carregado').length,
-      aguardando: lista.filter(l => l.status === 'agendado').length,
-      peso: lista.reduce((s, l) => s + numeroPeso(l.peso), 0),
+      total: listaDia.length,
+      carregados: listaDia.filter(l => l.status === 'carregado').length,
+      aguardando: listaDia.filter(l => l.status === 'agendado').length,
+      peso: pesoDia,
+      pesoMeta,
+      pesoCarregadoLote,
+      restante,
     }
   }, [linhas, loteAtivo, dia])
 
   async function salvarLote() {
-    if (!formLote.produto || !formLote.origem || !formLote.destino || !formLote.lote || !formLote.dataInicio) {
-      alert('Preencha produto, origem, destino, lote e data inicial.')
+    if (!formLote.produto || !formLote.origem || !formLote.destino || !formLote.lote || !formLote.pesoLote) {
+      alert('Preencha produto, origem, destino, lote e peso do lote.')
       return
     }
-    const novo = { ...formLote, id: gerarId(), filial: filialAtual, status: 'ativo', criadoPor: usuarioAtual?.usuario || '-' }
+    const novo = { ...formLote, id: gerarId(), dataInicio: hojeISO(), dataFim: '', filial: filialAtual, status: 'ativo', criadoPor: usuarioAtual?.usuario || '-' }
     const lista = [novo, ...lotes]
     setLotes(lista)
     setLoteAtivoId(novo.id)
-    setDiaAtivo(novo.dataInicio)
+    setDiaAtivo(hojeISO())
     setFormLote(LOTE_VAZIO)
     try {
       const sb = getClient()
@@ -278,31 +280,34 @@ export default function ControleEmbarque() {
         <div>
           <span>Controle de Embarque</span>
           <h1>Lotes por dia, igual planilha.</h1>
-          <p>Cadastre o lote, escolha o dia e lance as placas. Depois preencha o peso quando carregar.</p>
+          <p>Cadastre o lote, lance as placas do dia e acompanhe quanto ainda falta carregar.</p>
         </div>
         <div className="embarque-sync"><i className={modoBanco === 'online' ? 'on' : modoBanco === 'local' ? 'off' : ''} />{modoBanco === 'online' ? 'Nuvem online' : modoBanco === 'local' ? 'Modo local' : 'Conectando'}</div>
       </header>
 
       <section className="lote-form">
-        <div className="form-title"><strong>Novo lote</strong><small>Primeiro passo da operação</small></div>
+        <div className="form-title"><strong>Novo lote</strong><small>Peso em toneladas</small></div>
         <input placeholder="Produto" value={formLote.produto} onChange={e => setFormLote(f => ({ ...f, produto: e.target.value.toUpperCase() }))} />
         <input placeholder="Origem" value={formLote.origem} onChange={e => setFormLote(f => ({ ...f, origem: e.target.value.toUpperCase() }))} />
         <input placeholder="Destino" value={formLote.destino} onChange={e => setFormLote(f => ({ ...f, destino: e.target.value.toUpperCase() }))} />
         <input placeholder="Lote" value={formLote.lote} onChange={e => setFormLote(f => ({ ...f, lote: e.target.value }))} />
+        <input type="number" step="0.001" placeholder="Peso lote ton" value={formLote.pesoLote} onChange={e => setFormLote(f => ({ ...f, pesoLote: e.target.value }))} />
         <input type="number" placeholder="Cadência" value={formLote.cadencia} onChange={e => setFormLote(f => ({ ...f, cadencia: e.target.value }))} />
-        <input type="date" value={formLote.dataInicio} onChange={e => setFormLote(f => ({ ...f, dataInicio: e.target.value, dataFim: f.dataFim || e.target.value }))} />
-        <input type="date" value={formLote.dataFim} onChange={e => setFormLote(f => ({ ...f, dataFim: e.target.value }))} />
         <button onClick={salvarLote}>Criar lote</button>
       </section>
 
       <section className="lotes-lista">
         {lotesVisiveis.map(l => {
-          const total = linhas.filter(x => String(x.loteId) === String(l.id)).length
-          const car = linhas.filter(x => String(x.loteId) === String(l.id) && x.status === 'carregado').length
-          return <button key={l.id} className={String(l.id) === String(loteAtivo?.id) ? 'active' : ''} onClick={() => { setLoteAtivoId(l.id); setDiaAtivo(l.dataInicio) }}>
+          const listaLote = linhas.filter(x => String(x.loteId) === String(l.id))
+          const total = listaLote.length
+          const car = listaLote.filter(x => x.status === 'carregado').length
+          const pesoCarregado = listaLote.reduce((s, x) => s + numeroPeso(x.peso), 0)
+          const pesoMeta = numeroPeso(l.pesoLote)
+          const restante = Math.max(0, pesoMeta - pesoCarregado)
+          return <button key={l.id} className={String(l.id) === String(loteAtivo?.id) ? 'active' : ''} onClick={() => { setLoteAtivoId(l.id); setDiaAtivo(hojeISO()) }}>
             <strong>{l.produto} · Lote {l.lote}</strong>
             <span>{l.origem} → {l.destino}</span>
-            <small>{dataBR(l.dataInicio)} até {dataBR(l.dataFim)} · {car}/{total || l.cadencia} carregados</small>
+            <small>{car}/{total || l.cadencia} carregados · Restante {formatarPeso(restante) || '0,000'} ton</small>
           </button>
         })}
         {!lotesVisiveis.length && <div className="sem-lote">Cadastre o primeiro lote para começar.</div>}
@@ -323,8 +328,8 @@ export default function ControleEmbarque() {
           <button onClick={adicionarLinha}>+ Adicionar placa</button>
           <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar placa, transportadora ou motorista" />
           <div><strong>{resumo.carregados}</strong> carregados</div>
-          <div><strong>{resumo.aguardando}</strong> aguardando</div>
-          <div><strong>{formatarPeso(resumo.peso)}</strong> total</div>
+          <div><strong>{formatarPeso(resumo.pesoCarregadoLote) || '0,000'}</strong> carregado lote</div>
+          <div><strong>{formatarPeso(resumo.restante) || '0,000'}</strong> restante</div>
         </div>
 
         <div className="excel-wrap">
@@ -346,9 +351,9 @@ export default function ControleEmbarque() {
                 <td><input value={l.chamadoMdfe} onChange={e => atualizarLinha(l.id, 'chamadoMdfe', e.target.value.toUpperCase())} onBlur={() => persistirLinha(l.id)} /></td>
                 <td><button onClick={() => marcarCarregado(l)}>Carregou</button><button onClick={() => apagarLinha(l.id)}>Excluir</button></td>
               </tr>)}
-              {!linhasDoDia.length && <tr><td colSpan="11" className="vazio">Clique em “Gerar cotas do dia” ou “Adicionar placa”.</td></tr>}
+              {!linhasDoDia.length && <tr><td colSpan="11" className="vazio">Hoje já está aberto. Clique em “Gerar cotas do dia” ou “Adicionar placa”.</td></tr>}
             </tbody>
-            <tfoot><tr><td colSpan="2">TOTAL</td><td>{formatarPeso(resumo.peso)}</td><td colSpan="8">{resumo.total} linha(s) no dia {dataBR(dia)}</td></tr></tfoot>
+            <tfoot><tr><td colSpan="2">TOTAL DO DIA</td><td>{formatarPeso(resumo.peso)}</td><td colSpan="8">Meta lote {formatarPeso(resumo.pesoMeta) || '0,000'} ton · Restante {formatarPeso(resumo.restante) || '0,000'} ton</td></tr></tfoot>
           </table>
         </div>
       </section>}
