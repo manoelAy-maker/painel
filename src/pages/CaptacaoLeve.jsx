@@ -27,10 +27,10 @@ const IMPACTOS = {
 const EMPTY = { nome: '', cpf: '', numero: '', placa: '', eixos: '9 eixos', operacao: 'Farelo', status: 'interesse', lembrete: '', obs: '', quantidadeCargas: '1', motivoNaoCarregou: '', justificativaNaoCarregou: '', impactoPontuacao: 'externo' }
 const MODO_BANCO_INFO = {
   auto: { label: 'Verificando', cor: '#94a3b8' },
-  v2: { label: 'Nuvem online', cor: '#22c55e' },
-  'v2+legado': { label: 'Nuvem online', cor: '#22c55e' },
-  legado: { label: 'Banco antigo', cor: '#f59e0b' },
-  local: { label: 'Local', cor: '#ef4444' },
+  v2: { label: 'Sistema online', cor: '#22c55e' },
+  'v2+legado': { label: 'Sistema online', cor: '#22c55e' },
+  legado: { label: 'Sistema sincronizado', cor: '#22c55e' },
+  local: { label: 'Modo offline', cor: '#ef4444' },
 }
 
 function limparNumero(v) { return String(v || '').replace(/[^0-9]/g, '') }
