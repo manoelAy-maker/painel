@@ -31,6 +31,7 @@ const ADMIN_GRUPOS = [
   { titulo: 'Comercial', itens: [{ id: 'captacaoAdmin', label: 'Captação geral' }, { id: 'captacao', label: 'Captação rápida' }] },
   { titulo: 'Gestão', itens: [{ id: 'relatorios', label: 'Relatórios' }, { id: 'historico', label: 'Histórico' }, { id: 'lixeira', label: 'Lixeira' }, { id: 'backup', label: 'Backup' }, { id: 'admin', label: 'Usuários e cargos' }] },
 ]
+const EMBARQUE_GRUPOS = [{ titulo: 'Logística', itens: [{ id: 'embarque', label: 'Controle de embarque' }] }]
 
 const CloudIcon = ({ status }) => {
   if (status === 'online') return <Ic size={14} d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" style={{ color: '#22c55e' }} />
@@ -44,7 +45,7 @@ export default function Sidebar({ onFechar }) {
   const { cloudStatus, cloudText } = useCloudContext()
   const { abaAtiva, mudarAba } = useUiContext()
   const isAdmin = podeAdministrar(usuarioAtual)
-  const grupos = isAdmin ? ADMIN_GRUPOS : OPERADOR_GRUPOS
+  const grupos = abaAtiva === 'embarque' ? EMBARQUE_GRUPOS : (isAdmin ? ADMIN_GRUPOS : OPERADOR_GRUPOS)
 
   const handleTab = (id) => { mudarAba(id); onFechar?.() }
   const filialLabel = (usuarioAtual?.filial || 'jatai-go').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())
@@ -78,14 +79,16 @@ export default function Sidebar({ onFechar }) {
         ))}
       </nav>
 
-      <div className="ayres-sidebar-today">
-        <div className="sidebar-section-label">Hoje</div>
-        <div className="ayres-today-grid">
-          <div><strong>{lancadasHoje}</strong><span>Lançadas</span></div>
-          <div><strong>{pendentes}</strong><span>Pendentes</span></div>
-          <div><strong>{urgentes}</strong><span>Urgentes</span></div>
+      {abaAtiva !== 'embarque' && (
+        <div className="ayres-sidebar-today">
+          <div className="sidebar-section-label">Hoje</div>
+          <div className="ayres-today-grid">
+            <div><strong>{lancadasHoje}</strong><span>Lançadas</span></div>
+            <div><strong>{pendentes}</strong><span>Pendentes</span></div>
+            <div><strong>{urgentes}</strong><span>Urgentes</span></div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="sidebar-status ayres-side-status-v4">
         <div className="sidebar-card ayres-cloud-card-compact">
