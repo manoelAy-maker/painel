@@ -1,35 +1,51 @@
-/* Captação estável: visual mais próximo do painel de estadia, sem sobreposição */
+/* Captação estável: visual mais próximo do painel de estadia, com enquadramento corrigido */
+.capture-shell-pro{
+  min-height:100vh!important;
+  overflow-x:hidden!important;
+  background:#020617!important;
+}
 .capture-shell-pro .capture-main-pro{
-  padding:18px!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:14px 18px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
 }
 .capture-shell-pro .capture-topbar-pro,
 .capture-shell-pro .capture-footer-pro{
   display:none!important;
 }
 .capture-shell-pro .capture-panel-wrap-pro{
+  width:100%!important;
+  max-width:100%!important;
   padding:0!important;
   margin:0!important;
   border:0!important;
   background:transparent!important;
   box-shadow:none!important;
+  box-sizing:border-box!important;
 }
 
 .ay-cap-shell.ay-cap-lite{
-  max-width:1540px!important;
+  width:100%!important;
+  max-width:1480px!important;
   margin:0 auto!important;
+  padding:0!important;
   display:grid!important;
-  grid-template-columns:260px minmax(0,1fr)!important;
-  gap:18px!important;
+  grid-template-columns:248px minmax(0,1fr)!important;
+  gap:16px!important;
   align-items:start!important;
+  box-sizing:border-box!important;
 }
 
 .ay-cap-lite .ay-cap-side{
   position:sticky!important;
-  top:18px!important;
-  height:calc(100vh - 36px)!important;
-  min-height:640px!important;
-  padding:20px!important;
-  border-radius:24px!important;
+  top:14px!important;
+  height:calc(100vh - 28px)!important;
+  min-height:580px!important;
+  max-height:calc(100vh - 28px)!important;
+  padding:18px!important;
+  border-radius:22px!important;
   background:linear-gradient(180deg,rgba(7,17,31,.98),rgba(3,7,18,.98))!important;
   border:1px solid rgba(148,163,184,.16)!important;
   box-shadow:0 22px 70px rgba(0,0,0,.34)!important;
@@ -38,6 +54,7 @@
   flex-direction:column!important;
   justify-content:space-between!important;
   z-index:2!important;
+  box-sizing:border-box!important;
 }
 .ay-cap-lite .ay-cap-side::before{
   content:''!important;
@@ -64,7 +81,7 @@
 }
 
 .ay-cap-lite .ay-cap-brand{
-  margin-bottom:22px!important;
+  margin-bottom:20px!important;
   display:flex!important;
   align-items:center!important;
   gap:12px!important;
@@ -87,12 +104,12 @@
 
 .ay-cap-lite .ay-cap-menu{
   display:grid!important;
-  gap:10px!important;
+  gap:9px!important;
 }
 .ay-cap-lite .ay-cap-menu button{
-  min-height:46px!important;
-  border-radius:15px!important;
-  padding:0 14px!important;
+  min-height:44px!important;
+  border-radius:14px!important;
+  padding:0 13px!important;
   border:1px solid transparent!important;
   background:rgba(255,255,255,.025)!important;
   color:#cbd5e1!important;
@@ -118,9 +135,9 @@
   visibility:visible!important;
   position:relative!important;
   z-index:5!important;
-  margin-top:18px!important;
-  padding:14px!important;
-  border-radius:18px!important;
+  margin-top:16px!important;
+  padding:13px!important;
+  border-radius:17px!important;
   background:rgba(15,23,42,.78)!important;
   border:1px solid rgba(148,163,184,.16)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;
@@ -145,32 +162,39 @@
 
 .ay-cap-lite .ay-cap-main{
   min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
   position:relative!important;
   z-index:1!important;
+  box-sizing:border-box!important;
 }
 .ay-cap-lite .ay-cap-top{
   position:relative!important;
   overflow:hidden!important;
   isolation:auto!important;
   min-height:auto!important;
-  padding:14px 16px!important;
-  margin:0 0 16px!important;
-  border-radius:18px!important;
+  padding:13px 15px!important;
+  margin:0 0 14px!important;
+  border-radius:17px!important;
   display:flex!important;
   align-items:center!important;
   justify-content:space-between!important;
-  gap:16px!important;
+  gap:14px!important;
   background:
     linear-gradient(90deg,rgba(220,38,38,.96) 0 5px,transparent 5px),
     radial-gradient(420px circle at 0% 0%,rgba(255,255,255,.12),transparent 36%),
     linear-gradient(135deg,#b91c1c 0%,#991b1b 44%,#6d28d9 100%)!important;
   border:1px solid rgba(255,255,255,.14)!important;
   box-shadow:0 12px 28px rgba(220,38,38,.16),0 8px 24px rgba(124,58,237,.12)!important;
+  box-sizing:border-box!important;
 }
 .ay-cap-lite .ay-cap-top::before,
 .ay-cap-lite .ay-cap-top::after{
   display:none!important;
   content:none!important;
+}
+.ay-cap-lite .ay-cap-title{
+  min-width:0!important;
 }
 .ay-cap-lite .ay-cap-title small{
   display:none!important;
@@ -198,12 +222,12 @@
   z-index:2!important;
   display:flex!important;
   align-items:center!important;
-  gap:10px!important;
+  gap:9px!important;
   flex-shrink:0!important;
 }
 .ay-cap-lite .ay-cap-back,
 .ay-cap-lite .ay-cap-sync{
-  height:38px!important;
+  height:36px!important;
   display:inline-flex!important;
   align-items:center!important;
   border-radius:999px!important;
@@ -218,16 +242,18 @@
 .ay-cap-lite .ay-cap-cards{
   display:grid!important;
   grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  gap:12px!important;
-  margin:0 0 16px!important;
+  gap:10px!important;
+  margin:0 0 14px!important;
+  width:100%!important;
 }
 .ay-cap-lite .ay-cap-card{
-  min-height:92px!important;
-  border-radius:18px!important;
-  padding:15px!important;
+  min-height:86px!important;
+  border-radius:17px!important;
+  padding:14px!important;
   background:linear-gradient(180deg,rgba(15,23,42,.88),rgba(2,6,23,.86))!important;
   border:1px solid rgba(148,163,184,.14)!important;
   box-shadow:0 14px 36px rgba(0,0,0,.20)!important;
+  box-sizing:border-box!important;
 }
 .ay-cap-lite .ay-cap-card::before{
   left:14px!important;
@@ -235,16 +261,19 @@
   height:2px!important;
 }
 .ay-cap-lite .ay-cap-card strong{
-  font-size:29px!important;
+  font-size:28px!important;
 }
 
 .ay-cap-lite .ay-cap-panel{
-  border-radius:22px!important;
-  padding:20px!important;
+  width:100%!important;
+  max-width:100%!important;
+  border-radius:21px!important;
+  padding:18px!important;
   background:linear-gradient(180deg,rgba(15,23,42,.90),rgba(2,6,23,.88))!important;
   border:1px solid rgba(148,163,184,.14)!important;
   box-shadow:0 18px 56px rgba(0,0,0,.26)!important;
   overflow:visible!important;
+  box-sizing:border-box!important;
 }
 .ay-cap-lite .ay-cap-panel::before{
   left:18px!important;
@@ -252,12 +281,12 @@
   height:2px!important;
 }
 .ay-cap-lite .ay-cap-panel-head{
-  margin-bottom:16px!important;
-  padding-bottom:12px!important;
+  margin-bottom:15px!important;
+  padding-bottom:11px!important;
   border-bottom:1px solid rgba(148,163,184,.10)!important;
 }
 .ay-cap-lite .ay-cap-panel-head h2{
-  font-size:24px!important;
+  font-size:23px!important;
   line-height:1.15!important;
 }
 .ay-cap-lite .ay-cap-panel-head h2::before{
@@ -275,26 +304,32 @@
 }
 
 .ay-cap-lite .ay-cap-table-wrap{
-  overflow:auto!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:visible!important;
   border:1px solid rgba(148,163,184,.12)!important;
   background:rgba(2,6,23,.34)!important;
   border-radius:18px!important;
+  box-sizing:border-box!important;
 }
 .ay-cap-lite .ay-cap-table{
-  min-width:980px!important;
+  min-width:920px!important;
+  width:100%!important;
 }
 .ay-cap-lite .ay-cap-pagination{
   position:relative!important;
   z-index:2!important;
 }
 
-@media(max-width:1200px){
-  .ay-cap-shell.ay-cap-lite{grid-template-columns:238px minmax(0,1fr)!important}
+@media(max-width:1280px){
+  .capture-shell-pro .capture-main-pro{padding:12px!important}
+  .ay-cap-shell.ay-cap-lite{grid-template-columns:232px minmax(0,1fr)!important;gap:14px!important}
   .ay-cap-lite .ay-cap-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 @media(max-width:900px){
   .capture-shell-pro .capture-main-pro{padding:10px!important}
-  .ay-cap-shell.ay-cap-lite{display:block!important}
+  .ay-cap-shell.ay-cap-lite{display:block!important;max-width:100%!important}
   .ay-cap-lite .ay-cap-side{display:none!important}
   .ay-cap-lite .ay-mob-tabs{display:flex!important}
   .ay-cap-lite .ay-cap-top{display:block!important;padding:13px 14px!important}
@@ -303,6 +338,7 @@
   .ay-cap-lite .ay-cap-grid{grid-template-columns:1fr!important}
 }
 @media(max-width:560px){
+  .capture-shell-pro .capture-main-pro{padding:8px!important}
   .ay-cap-lite .ay-cap-cards{grid-template-columns:1fr!important}
-  .ay-cap-lite .ay-cap-panel{padding:16px!important}
+  .ay-cap-lite .ay-cap-panel{padding:15px!important}
 }
