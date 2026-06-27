@@ -1,11 +1,11 @@
 .estadia-ticker-shell{
   position:fixed;
   left:50%;
-  bottom:18px;
+  bottom:14px;
   transform:translateX(-50%);
   overflow:hidden;
-  width:min(760px,calc(100vw - 32px));
-  min-height:42px;
+  width:min(1040px,calc(100vw - 34px));
+  min-height:34px;
   margin:0;
   border-radius:999px;
   isolation:isolate;
@@ -20,15 +20,15 @@
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  min-height:42px;
-  padding:7px 10px 7px 22px;
+  min-height:34px;
+  padding:5px 8px 5px 21px;
   border-radius:999px;
   color:#fff;
   background:
-    radial-gradient(360px circle at 0% 0%,rgba(255,255,255,.13),transparent 40%),
+    radial-gradient(420px circle at 0% 0%,rgba(255,255,255,.12),transparent 40%),
     linear-gradient(135deg,rgba(185,28,28,.94) 0%,rgba(153,27,27,.92) 44%,rgba(109,40,217,.94) 100%);
   border:1px solid rgba(255,255,255,.15);
-  box-shadow:0 14px 36px rgba(0,0,0,.34),0 12px 26px rgba(220,38,38,.18),0 8px 22px rgba(124,58,237,.13);
+  box-shadow:0 12px 32px rgba(0,0,0,.32),0 10px 24px rgba(220,38,38,.15),0 7px 18px rgba(124,58,237,.12);
   will-change:transform,opacity,filter;
   backdrop-filter:blur(16px);
   pointer-events:auto;
@@ -40,7 +40,7 @@
   content:'';
   position:absolute;
   inset:0;
-  background:linear-gradient(110deg,transparent 0%,rgba(255,255,255,.14) 42%,transparent 62%);
+  background:linear-gradient(110deg,transparent 0%,rgba(255,255,255,.13) 42%,transparent 62%);
   transform:translateX(-120%);
   animation:estadiaTickerShine 10s ease-in-out infinite;
 }
@@ -49,16 +49,16 @@
   position:absolute;
   inset:0;
   background:
-    linear-gradient(90deg,rgba(2,6,23,.18),transparent 14%,transparent 82%,rgba(2,6,23,.22)),
-    radial-gradient(130px circle at 100% 50%,rgba(255,255,255,.08),transparent 70%);
+    linear-gradient(90deg,rgba(2,6,23,.16),transparent 12%,transparent 84%,rgba(2,6,23,.20)),
+    radial-gradient(120px circle at 100% 50%,rgba(255,255,255,.07),transparent 70%);
   pointer-events:none;
 }
 .estadia-ticker-rail{
   position:absolute;
   left:0;
-  top:7px;
-  bottom:7px;
-  width:5px;
+  top:6px;
+  bottom:6px;
+  width:4px;
   border-radius:999px;
   background:linear-gradient(180deg,#f87171,#dc2626,#7c3aed);
   animation:estadiaTickerPulse 2s ease-in-out infinite;
@@ -66,47 +66,59 @@
 }
 .estadia-ticker-icon{
   position:absolute;
-  left:8px;
+  left:7px;
   top:50%;
-  width:16px;
-  height:16px;
+  width:14px;
+  height:14px;
   transform:translate(-50%,-50%);
   display:grid;
   place-items:center;
   border-radius:999px;
   background:linear-gradient(135deg,#dc2626,#7c3aed);
   color:#fff;
-  font-size:10px;
+  font-size:9px;
   font-weight:950;
-  border:2px solid rgba(255,255,255,.16);
-  box-shadow:0 0 0 4px rgba(239,68,68,.12);
+  border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 0 0 4px rgba(239,68,68,.10);
   z-index:3;
 }
 .estadia-ticker-copy{
   position:relative;
   z-index:3;
   min-width:0;
+  flex:1 1 auto;
   transform-origin:left center;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;
+  overflow:hidden;
 }
 .estadia-ticker-copy strong{
-  display:block;
-  font-size:11px;
+  display:inline;
+  font-size:10px;
   font-weight:950;
   letter-spacing:.055em;
   text-transform:uppercase;
-  line-height:1.05;
+  line-height:1;
+  flex:0 0 auto;
+}
+.estadia-ticker-copy strong::after{
+  content:'•';
+  margin-left:8px;
+  color:rgba(255,255,255,.62);
 }
 .estadia-ticker-copy span{
   display:block;
-  margin-top:2px;
-  color:rgba(255,255,255,.82);
+  margin-top:0;
+  color:rgba(255,255,255,.84);
   font-size:10px;
   font-weight:760;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  max-width:480px;
-  line-height:1.05;
+  max-width:none;
+  line-height:1;
 }
 .estadia-ticker-meta{
   position:relative;
@@ -120,14 +132,15 @@
 .estadia-ticker-meta small{
   display:inline-flex;
   align-items:center;
+  height:22px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.17);
   background:rgba(255,255,255,.12);
   color:#fff;
-  padding:5px 8px;
-  font-size:9px;
+  padding:0 8px;
+  font-size:8px;
   font-weight:950;
-  letter-spacing:.06em;
+  letter-spacing:.055em;
   text-transform:uppercase;
   white-space:nowrap;
 }
@@ -159,16 +172,11 @@
 }
 
 @media(max-width:760px){
-  .estadia-ticker-shell{
-    width:calc(100vw - 24px);
-    bottom:12px;
-    min-height:50px;
-  }
-  .estadia-ticker-card{
-    min-height:50px;
-    padding:8px 9px 8px 22px;
-  }
-  .estadia-ticker-copy span{max-width:calc(100vw - 210px)}
+  .estadia-ticker-shell{width:calc(100vw - 22px);bottom:10px;min-height:36px}
+  .estadia-ticker-card{min-height:36px;padding:5px 7px 5px 20px}
+  .estadia-ticker-copy{gap:6px}
+  .estadia-ticker-copy strong{font-size:9px}
+  .estadia-ticker-copy span{font-size:9px}
   .estadia-ticker-meta small{display:none}
 }
 @media (prefers-reduced-motion: reduce){
