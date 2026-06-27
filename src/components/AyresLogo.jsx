@@ -1,62 +1,66 @@
 export default function AyresLogo({ size = 42, showWord = false, className = '' }) {
-  const w = showWord ? size * 3.25 : size
+  const w = showWord ? size * 3.45 : size
+
   return (
     <svg
       className={`ayres-logo-svg ${className}`}
       width={w}
       height={size}
-      viewBox={showWord ? '0 0 208 72' : '0 0 72 72'}
+      viewBox={showWord ? '0 0 248 92' : '0 0 92 92'}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="AYRES"
     >
       <defs>
-        <linearGradient id="ayresIconMain" x1="17" y1="10" x2="55" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#35C4FF" />
-          <stop offset="0.48" stopColor="#2563EB" />
-          <stop offset="1" stopColor="#7C3AED" />
+        <linearGradient id="ayresAOriginal" x1="42" y1="4" x2="66" y2="86" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#159BFF" />
+          <stop offset="0.46" stopColor="#0756FF" />
+          <stop offset="1" stopColor="#8D22F5" />
         </linearGradient>
-        <linearGradient id="ayresIconDeep" x1="16" y1="56" x2="48" y2="14" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#061B5C" />
-          <stop offset="0.55" stopColor="#1647D9" />
-          <stop offset="1" stopColor="#3B82F6" />
+        <linearGradient id="ayresADeep" x1="13" y1="82" x2="39" y2="19" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#07155E" />
+          <stop offset="0.58" stopColor="#0834CF" />
+          <stop offset="1" stopColor="#129DFF" />
         </linearGradient>
-        <linearGradient id="ayresIconPurple" x1="43" y1="32" x2="61" y2="61" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#2563EB" />
-          <stop offset="1" stopColor="#8B5CF6" />
-        </linearGradient>
-        <linearGradient id="ayresArrow" x1="16" y1="47" x2="60" y2="28" gradientUnits="userSpaceOnUse">
+        <linearGradient id="ayresRoad" x1="10" y1="66" x2="76" y2="37" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset="0.58" stopColor="#EAF6FF" />
-          <stop offset="1" stopColor="#A7F3FF" />
+          <stop offset="0.62" stopColor="#F8FBFF" />
+          <stop offset="1" stopColor="#DDEBFF" />
         </linearGradient>
-        <linearGradient id="ayresWord" x1="83" y1="22" x2="204" y2="55" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#F8FAFC" />
-          <stop offset="0.58" stopColor="#3B82F6" />
-          <stop offset="1" stopColor="#A78BFA" />
+        <linearGradient id="ayresWord" x1="2" y1="79" x2="240" y2="82" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FFFFFF" />
+          <stop offset="0.5" stopColor="#DDE7FF" />
+          <stop offset="1" stopColor="#FFFFFF" />
         </linearGradient>
-        <filter id="ayresSoftGlow" x="-20" y="-20" width="112" height="112" filterUnits="userSpaceOnUse">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.16 0 0 0 0 0.42 0 0 0 0 1 0 0 0 .42 0" />
+        <filter id="ayresLogoGlow" x="-20" y="-18" width="132" height="130" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation="2.4" result="blur" />
+          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.05 0 0 0 0 0.34 0 0 0 0 1 0 0 0 .38 0" />
           <feBlend in="SourceGraphic" />
         </filter>
       </defs>
 
-      <g filter="url(#ayresSoftGlow)">
-        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconMain)" />
-        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l7.66 15.65-8.3 5.22-3.08-6.5L15.7 65.38h-4.56c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconDeep)" opacity=".96" />
-        <path d="M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z" fill="url(#ayresIconPurple)" />
-        <path d="M15.4 50.55c10.82-10.8 24.9-18.46 42.22-22.98l-3.76 5.8C40.2 36.95 28.03 43.15 17.34 52.05l-1.94-1.5z" fill="url(#ayresArrow)" />
-        <path d="M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z" fill="#FFFFFF" />
-        <path d="M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25" stroke="#0B3EA8" strokeWidth="2.4" strokeLinecap="round" opacity=".72" />
+      <g filter="url(#ayresLogoGlow)">
+        <path d="M46 5.4L84.6 86H66.8L51.4 54.2L43.2 69.1H31.1L46 40.4L20 86H7.4L46 5.4Z" fill="url(#ayresAOriginal)" />
+        <path d="M46 5.4L22.2 86H7.4L46 5.4Z" fill="url(#ayresADeep)" opacity=".96" />
+        <path d="M52.2 20.8L84.6 86H66.8L51.4 54.2L43.2 69.1H31.1L52.2 20.8Z" fill="url(#ayresAOriginal)" opacity=".88" />
+        <path d="M46.2 36.2L56.9 58.8H35.4L46.2 36.2Z" fill="#FFFFFF" opacity=".98" />
+
+        <path d="M9.8 74.2C25.7 55.9 47 44.2 73.6 39.2L68.2 47.4C47.8 51.2 29.4 61.2 12.4 77.1L9.8 74.2Z" fill="url(#ayresRoad)" />
+        <path d="M62.8 34.9L84.8 45.4L65.9 59.8L69.2 49.5C45.6 55.2 26.5 65.2 12.4 79.3C27.8 59 47.2 45.2 70.5 37.8L62.8 34.9Z" fill="#FFFFFF" />
+        <path d="M30.5 69.4C38.4 60.4 47.6 54.3 58.2 51" stroke="#1E46EA" strokeWidth="4.2" strokeLinecap="round" strokeDasharray="8 7" opacity=".82" />
       </g>
 
       {showWord && (
-        <g fill="url(#ayresWord)">
-          <path d="M86.5 52H77l18.7-40h9.9l18.6 40h-10l-3.5-8.1H90L86.5 52zm6.5-15.3h14.6l-7.3-16.8L93 36.7z" />
-          <path d="M136.6 52V36.4L120.4 12h10.3l10.7 16.6L152.2 12h9.8l-16.4 24.4V52h-9z" />
-          <path d="M166.7 52V12h20.5c5.1 0 9.05 1.15 11.83 3.44 2.78 2.3 4.17 5.52 4.17 9.66 0 3.05-.73 5.58-2.2 7.59-1.46 2-3.54 3.45-6.22 4.34L204.4 52h-10.1l-8.42-13.65h-10.25V52h-8.93zm8.93-21.2h10.55c2.5 0 4.38-.48 5.63-1.45 1.25-.97 1.88-2.4 1.88-4.29 0-1.86-.63-3.27-1.88-4.23-1.25-.96-3.13-1.43-5.63-1.43h-10.55v11.4z" />
+        <g transform="translate(2 0)">
+          <g transform="translate(100 61)" fill="url(#ayresWord)">
+            <path d="M0 21.5L13.7 0H24.9L38.6 21.5H28.5L25.9 17H12.3L9.7 21.5H0ZM15.5 10.8H22.6L19 4.6L15.5 10.8Z" />
+            <path d="M48.4 21.5V13.7L34.7 0H45.9L53.3 7.6L60.8 0H71.4L57.9 13.7V21.5H48.4Z" />
+            <path d="M78.9 21.5V0H101.5C106.5 0 110.1 1 112.2 3C113.8 4.5 114.6 6.5 114.6 9.1C114.6 12.5 113.1 14.9 110.1 16.3L116.2 21.5H104.7L99.8 17.1H88.3V21.5H78.9ZM88.3 10.9H99.6C101.5 10.9 102.8 10.7 103.5 10.2C104.1 9.8 104.4 9.2 104.4 8.4C104.4 7.5 104.1 6.9 103.5 6.5C102.8 6 101.5 5.8 99.6 5.8H88.3V10.9Z" />
+            <path d="M123.6 21.5V0H155.1V5.8H133V8.2H153.1V13.1H133V15.7H155.6V21.5H123.6Z" />
+            <path d="M164.3 21.5V15.6H184.2C185.2 15.6 185.9 15.5 186.3 15.2C186.7 15 186.9 14.6 186.9 14.1C186.9 13.1 186 12.6 184.3 12.6H174.4C167.3 12.6 163.8 10.5 163.8 6.3C163.8 2.1 167.5 0 174.9 0H195.4V5.9H176.5C174.9 5.9 174.1 6.3 174.1 7.2C174.1 8.1 174.9 8.5 176.6 8.5H186.5C193.7 8.5 197.3 10.7 197.3 15.1C197.3 19.4 193.7 21.5 186.4 21.5H164.3Z" />
+          </g>
+          <text x="101" y="91" fill="#AFC4F7" fontSize="8" fontWeight="800" letterSpacing="5.8">LOGISTICA INTELIGENTE</text>
         </g>
       )}
     </svg>
