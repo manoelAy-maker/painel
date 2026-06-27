@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAuthContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import NotificationBell from './NotificationBell'
 import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
@@ -13,7 +13,16 @@ const MenuIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="non
 const SearchIcon = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
 const ChevronIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
 const cargoVisivel = (cargo) => cargo === 'Operador' || !cargo ? 'Analista Júnior' : cargo
-const TITULOS = { inicio: ['Dashboard', 'Resumo da operação'], lancadas: ['Estadias lançadas', 'Controle de lançamentos e anexos'], consultaLancadas: ['Consulta de estadias', 'Busca e acompanhamento de registros'], alancar: ['Pendências', 'Itens aguardando lançamento'], captacao: ['Captação', 'Motoristas, leads e próximas ações'], captacaoAdmin: ['Captação geral', 'Motoristas, leads e motivos'], relatorios: ['Relatórios', 'Análises e exportações'], historico: ['Histórico', 'Eventos e alterações'], lixeira: ['Lixeira', 'Registros removidos'], backup: ['Backup', 'Cópia e recuperação'], admin: ['Usuários e cargos', 'Acessos do sistema'] }
+const TITULOS = { inicio: ['Dashboard', 'Resumo da operação'], lancadas: ['Estadias lançadas', 'Controle de lançamentos e anexos'], consultaLancadas: ['Consulta de estadias', 'Busca e acompanhamento de registros'], finalizadas: ['Finalizadas', 'Registros encerrados e conferidos'], alancar: ['Pendências', 'Itens aguardando lançamento'], captacao: ['Captação', 'Motoristas, leads e próximas ações'], captacaoAdmin: ['Captação geral', 'Motoristas, leads e motivos'], relatorios: ['Relatórios', 'Análises e exportações'], historico: ['Histórico', 'Eventos e alterações'], lixeira: ['Lixeira', 'Registros removidos'], backup: ['Backup', 'Cópia e recuperação'], admin: ['Usuários e cargos', 'Acessos do sistema'] }
+
+function formatarDataPainel() {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date()).replace('.', '')
+}
 
 export default function Header({ onMenuMobile }) {
   const { usuarioAtual, logout } = useAuthContext()
@@ -22,6 +31,7 @@ export default function Header({ onMenuMobile }) {
   const [showPerfil, setShowPerfil] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [titulo, subtitulo] = TITULOS[abaAtiva] || ['AYRES', 'Central logística']
+  const dataPainel = useMemo(() => formatarDataPainel(), [])
 
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); window.dispatchEvent(new Event('ayres:modulo')) }
   const sair = () => { setMenuOpen(false); logout() }
@@ -38,6 +48,7 @@ export default function Header({ onMenuMobile }) {
           </div>
           <div className="ayres-header-search-v4"><SearchIcon /><span>Buscar placa, motorista ou NF…</span><kbd>⌘K</kbd></div>
           <div className="top-actions ayres-topbar-actions-pro ayres-header-actions-v4">
+            <div className="ayres-date-chip-v4" title="Data de hoje"><strong>{dataPainel}</strong><span>Hoje</span></div>
             <NotificationBell />
             <div className="ayres-user-menu-wrap-v4">
               <button className="topbar-profile-btn ayres-user-menu-btn-v4" onClick={() => setMenuOpen(v => !v)} title="Menu do usuário">
