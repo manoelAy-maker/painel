@@ -1,0 +1,45 @@
+/* Ajuste visual do Controle de Embarque: tira o amarelo forte da linha agendada */
+.embarque-table-v2 tr.aguardando td{
+  background:#fff7ed;
+}
+
+.embarque-table-v2 tr.agendado td{
+  background:#fef3c7;
+}
+
+.embarque-table-v2 tr.carregado td{
+  background:#dcfce7;
+}
+
+.embarque-table-v2 tr.cancelado td{
+  background:#f1f5f9;
+}
+
+.embarque-table-v2 tr.aguardando td:first-child,
+.embarque-table-v2 tr.agendado td:first-child,
+.embarque-table-v2 tr.carregado td:first-child,
+.embarque-table-v2 tr.cancelado td:first-child{
+  box-shadow:inset 4px 0 0 rgba(15,23,42,.28);
+}
+
+.embarque-table-v2 tr.agendado td:first-child{
+  box-shadow:inset 4px 0 0 #f59e0b;
+}
+
+.embarque-table-v2 tr.carregado td:first-child{
+  box-shadow:inset 4px 0 0 #22c55e;
+}
+
+.embarque-table-v2 tr.cancelado td:first-child{
+  box-shadow:inset 4px 0 0 #94a3b8;
+}
+
+.embarque-table-v2 td,
+.embarque-table-v2 input,
+.embarque-table-v2 select{
+  color:#172033;
+}
+
+.embarque-table-v2 tbody tr:hover td{
+  background:#ffffff;
+}
