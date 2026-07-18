@@ -25,13 +25,11 @@ import './styles/notification-rail.css'
 import './styles/estadia-ticker.css'
 import './styles/captacao-header-match.css'
 import './styles/db-command-center.css'
-import './modules/embarque/pages/controle-embarque-soft-status.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 const Captacao = lazy(() => import('./modules/captacao/pages/Captacao'))
-const ControleEmbarque = lazy(() => import('./modules/embarque/pages/ControleEmbarque'))
 const CaptacaoAdmin = lazy(() => import('./modules/captacao/pages/CaptacaoAdmin'))
 const Historico = lazy(() => import('./modules/admin/pages/Historico'))
 const Relatorios = lazy(() => import('./modules/admin/pages/Relatorios'))
@@ -65,9 +63,8 @@ function AppMobileOperacional() {
   )
 }
 
-function ModuloIsolado({ tipo, onPortal }) {
+function ModuloIsolado({ onPortal }) {
   const { usuarioAtual, logout } = useApp()
-  const isEmbarque = tipo === 'embarque'
   const sair = () => { localStorage.removeItem('moduloInicialViaLog'); logout() }
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); onPortal?.() }
   return (
@@ -75,11 +72,11 @@ function ModuloIsolado({ tipo, onPortal }) {
       <main className="capture-main-pro">
         <Header />
         <section className="capture-topbar-pro">
-          <div className="capture-title-pro"><div className="capture-eyebrow-pro">{isEmbarque ? 'Central de logística' : 'Central operacional'}</div><h1>{isEmbarque ? 'Controle de Embarque' : 'Painel de Captação'}</h1><p>{isEmbarque ? 'Cadastro de lotes, dias de carregamento e placas em quadro simples.' : 'Ambiente separado para registrar motoristas e acompanhar a operação.'}</p></div>
+          <div className="capture-title-pro"><div className="capture-eyebrow-pro">Central operacional</div><h1>Painel de Captação</h1><p>Ambiente separado para registrar motoristas e acompanhar a operação.</p></div>
           <div className="capture-actions-pro"><span className="capture-user-chip-pro">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="capture-action-btn-pro" onClick={voltarAoPortal}>Voltar ao portal</button><button className="capture-action-btn-pro" onClick={sair}>Sair</button></div>
         </section>
-        <section className="capture-panel-wrap-pro"><Suspense fallback={<FastFallback />}>{isEmbarque ? <ControleEmbarque /> : <Captacao />}</Suspense></section>
-        <div className="capture-footer-pro">AYRES · {isEmbarque ? 'Controle de embarque' : 'Central de captação'}</div>
+        <section className="capture-panel-wrap-pro"><Suspense fallback={<FastFallback />}><Captacao /></Suspense></section>
+        <div className="capture-footer-pro">AYRES · Central de captação</div>
       </main>
     </div>
   )
@@ -111,5 +108,5 @@ export default function App() {
   const mobileApk = isApkMobileMode()
   useEffect(() => { const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog')); window.addEventListener('storage', syncModulo); window.addEventListener('ayres:modulo', syncModulo); return () => { window.removeEventListener('storage', syncModulo); window.removeEventListener('ayres:modulo', syncModulo) } }, [])
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); setModuloInicial(null) }
-  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado tipo="captacao" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial === 'embarque' && <ModuloIsolado tipo="embarque" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && !['captacao', 'embarque'].includes(moduloInicial) && <PainelEstadia />}<Toast /></>
+  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}<Toast /></>
 }
