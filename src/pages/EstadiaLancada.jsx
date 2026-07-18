@@ -6,7 +6,7 @@ import { listarMotoristasBancoV2, listarTransportadorasV2, upsertMotoristaBasico
 import '../estadia-desktop-pro.css'
 
 const EMPTY = {
-  nf: '', cte: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '',
+  nf: '', cte: '', motorista: '', telefoneMotorista: '', transportadora: '', placa: '', peso: '',
   plataforma: 'G&O - GRÃOS E OLEAGINOSAS', regiaoAprovadora: '', localEstadia: 'Destino',
   motivo: '', sindicato: 'Não', prioridade: 'Normal', status: 'Aberto',
   chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '',
@@ -21,6 +21,10 @@ function agoraHistorico() { return new Date().toLocaleString('pt-BR') }
 function eventoHistorico(acao, usuario, detalhes = '') { return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes } }
 function numeroBR(valor) { if (!valor) return 0; return Number(String(valor).replace(/\./g, '').replace(',', '.')) || 0 }
 function dinheiroBR(valor) { return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
+function toneladasDoPeso(peso) {
+  const valor = numeroBR(peso)
+  return valor > 1000 ? valor / 1000 : valor
+}
 function horasEntre(dataIni, horaIni, dataFim, horaFim) {
   if (!dataIni || !horaIni || !dataFim || !horaFim) return 0
   const ini = new Date(`${dataIni}T${horaIni}`)
@@ -38,17 +42,18 @@ function calcularEstadiaOperacional(form) {
   const tipo = form.alterarCalculo ? form.tipoCalculo : 'Hora'
   const franquia = form.alterarCalculo ? numeroBR(form.franquia) : 12
   const fator = form.alterarCalculo ? numeroBR(form.valorHora || '0,80') : 0.8
-  const passouDaRegraMinima = totalHoras >= 24
-  const horasPagar = passouDaRegraMinima ? Math.max(0, totalHoras - franquia) : 0
+  const toneladas = toneladasDoPeso(form.peso)
+  const horasPagar = Math.max(0, totalHoras - franquia)
   let valorNumero = 0
   if (tipo === 'Diária') {
     const dias = Number(form.qtdDias) || 0
     valorNumero = numeroBR(form.valorDiaria) * dias
-    return { horas: String(dias * 24 || 0), totalHoras: totalHoras.toFixed(2), horasPagar: String(dias * 24 || 0), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: 'Diária manual', regraCurta: 'Manual', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
+    return { horas: String(dias * 24 || 0), totalHoras: totalHoras.toFixed(2), horasPagar: String(dias * 24 || 0), toneladas: toneladas.toFixed(3), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: 'Diária manual', regraCurta: 'Manual', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
   }
   if (tipo === 'Negociado') valorNumero = numeroBR(form.valorNegociado)
-  else valorNumero = horasPagar * fator
-  return { horas: horasPagar.toFixed(2), totalHoras: totalHoras.toFixed(2), horasPagar: horasPagar.toFixed(2), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: passouDaRegraMinima ? `Após 24h · tira ${franquia}h · fator ${String(fator).replace('.', ',')}` : 'Aguardando completar 24h', regraCurta: form.alterarCalculo ? 'Manual' : 'Padrão automático', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
+  else valorNumero = toneladas * horasPagar * fator
+  const temHorasCobraveis = horasPagar > 0
+  return { horas: horasPagar.toFixed(2), totalHoras: totalHoras.toFixed(2), horasPagar: horasPagar.toFixed(2), toneladas: toneladas.toFixed(3), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: temHorasCobraveis ? `${toneladas.toLocaleString('pt-BR', { maximumFractionDigits: 3 })} t × R$ ${String(fator).replace('.', ',')} × ${horasPagar.toFixed(2).replace('.', ',')} h após ${franquia}h de franquia` : `Franquia de ${franquia}h ainda não ultrapassada`, regraCurta: form.alterarCalculo ? 'Manual' : 'R$ 0,80/t/h', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
 }
 
 const motivos = ['Fila no carregamento', 'Fila na descarga', 'Atraso da unidade', 'Documento pendente', 'Troca de nota', 'Refugo', 'Reentrega', 'Aguardando liberação', 'Problema no sistema', 'Divergência de rota/frete', 'Outros']
@@ -96,7 +101,7 @@ export default function EstadiaLancada({ formRef }) {
     if (!e) return
     setEditandoId(e.id)
     setForm({
-      nf: e.nf || e.numeroNf || '', cte: e.cte || '', motorista: e.motorista || '', telefoneMotorista: e.telefoneMotorista || '', transportadora: e.transportadora || '', placa: e.placa || '',
+      nf: e.nf || e.numeroNf || '', cte: e.cte || '', motorista: e.motorista || '', telefoneMotorista: e.telefoneMotorista || '', transportadora: e.transportadora || '', placa: e.placa || '', peso: e.peso || '',
       plataforma: e.plataforma || 'G&O - GRÃOS E OLEAGINOSAS', regiaoAprovadora: e.regiaoAprovadora || '', localEstadia: e.localEstadia || 'Destino', motivo: e.motivo || '', sindicato: e.sindicato || 'Não', prioridade: e.prioridade || 'Normal', status: e.status || 'Aberto',
       chegadaData: e.chegadaData || '', chegadaHora: e.chegadaHora || '', saidaData: e.saidaData || '', saidaHora: e.saidaHora || '',
       alterarCalculo: Boolean(e.alterarCalculo), tipoCalculo: e.tipoCalculo || 'Hora', franquia: e.franquia || '12', valorHora: e.valorHora || '0,80', valorDiaria: e.valorDiaria || '', qtdDias: e.qtdDias || '', valorNegociado: e.valorNegociado || '', obs: e.obs || '',
@@ -110,7 +115,7 @@ export default function EstadiaLancada({ formRef }) {
     if (!itemParaLancar) return
     setForm(prev => ({
       ...prev,
-      nf: itemParaLancar.nf || itemParaLancar.numeroNf || '', cte: itemParaLancar.cte || '', placa: itemParaLancar.placa || '', transportadora: itemParaLancar.transportadora || '', prioridade: itemParaLancar.prioridade || 'Normal',
+      nf: itemParaLancar.nf || itemParaLancar.numeroNf || '', cte: itemParaLancar.cte || '', placa: itemParaLancar.placa || '', peso: itemParaLancar.peso || '', transportadora: itemParaLancar.transportadora || '', prioridade: itemParaLancar.prioridade || 'Normal',
       plataforma: itemParaLancar.plataforma || prev.plataforma, regiaoAprovadora: itemParaLancar.regiaoAprovadora || '', localEstadia: itemParaLancar.localEstadia || prev.localEstadia, motivo: itemParaLancar.motivo || '', sindicato: itemParaLancar.sindicato || 'Não',
       chegadaData: itemParaLancar.chegadaData || '', chegadaHora: itemParaLancar.chegadaHora || '', saidaData: itemParaLancar.saidaData || '', saidaHora: itemParaLancar.saidaHora || '',
       alterarCalculo: Boolean(itemParaLancar.alterarCalculo), tipoCalculo: itemParaLancar.tipoCalculo || prev.tipoCalculo, franquia: itemParaLancar.franquia || prev.franquia, valorHora: itemParaLancar.valorHora || prev.valorHora, valorDiaria: itemParaLancar.valorDiaria || '', qtdDias: itemParaLancar.qtdDias || '', valorNegociado: itemParaLancar.valorNegociado || '', obs: itemParaLancar.obs || '',
@@ -144,6 +149,7 @@ export default function EstadiaLancada({ formRef }) {
   const handleSalvar = async () => {
     if (!form.nf.trim()) { alert('Preencha o número da NF.'); return }
     if (!form.placa.trim()) { alert('Preencha a placa.'); return }
+    if ((form.alterarCalculo ? form.tipoCalculo === 'Hora' : true) && !toneladasDoPeso(form.peso)) { alert('Preencha o peso carregado para calcular a estadia.'); return }
     if (!form.motivo.trim()) { alert('Escolha o motivo da estadia.'); return }
     if (!form.chegadaData || !form.chegadaHora || !form.saidaData || !form.saidaHora) { alert('Preencha chegada e saída.'); return }
     if (form.alterarCalculo && form.tipoCalculo === 'Hora' && !numeroBR(form.valorHora)) { alert('Preencha o fator/valor 0,80 ou outro valor negociado.'); return }
@@ -206,6 +212,7 @@ export default function EstadiaLancada({ formRef }) {
               <div className="estadia-grid-clean cols-4">
                 <div className="field span-2"><label>Motorista opcional</label><input list="motoristas-estadia" value={form.motorista} onChange={e => set('motorista', e.target.value)} onBlur={preencherTelefoneMotorista} placeholder="Selecione ou digite" /><datalist id="motoristas-estadia">{motoristasOptions.map(m => <option key={m.nome} value={m.nome} label={`${m.telefone ? m.telefone + ' · ' : ''}${m.origem}${m.carregou ? ` · carregou ${m.carregou}x` : ''}`} />)}</datalist></div>
                 <div className="field"><label>Placa</label><input className="placa-input" value={form.placa} onChange={e => set('placa', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7))} placeholder="ABC1D23" /></div>
+                <div className="field"><label>Peso carregado (kg)</label><input value={form.peso} onChange={e => set('peso', e.target.value.replace(/[^0-9.,]/g, ''))} placeholder="Ex: 38.380" inputMode="decimal" /></div>
                 <div className="field"><label>WhatsApp opcional</label><input value={form.telefoneMotorista} onChange={e => set('telefoneMotorista', e.target.value.replace(/[^0-9]/g, ''))} placeholder="64999999999" /></div>
                 <div className="field span-2"><label>Transportadora opcional</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
               </div>
@@ -234,6 +241,7 @@ export default function EstadiaLancada({ formRef }) {
             <p>{calc.regraResumo}</p>
             <div className="summary-metrics">
               <div><span>Regra</span><strong>{calc.regraCurta}</strong></div>
+              <div><span>Peso</span><strong>{calc.toneladas.replace('.', ',')} t</strong></div>
               <div><span>Total parado</span><strong>{calc.totalHoras.replace('.', ',')} h</strong></div>
               <div><span>Horas a pagar</span><strong>{calc.horasPagar.replace('.', ',')} h</strong></div>
             </div>
