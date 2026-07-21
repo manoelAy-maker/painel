@@ -14,11 +14,12 @@ const ICONES = {
   logout: <Svg width="16" height="16"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></Svg>,
   shield: <Svg width="16" height="16"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z" /></Svg>,
   user: <Svg width="16" height="16"><path d="M20 21a8 8 0 10-16 0" /><circle cx="12" cy="7" r="4" /></Svg>,
+  truck: <Svg><path d="M10 17h4V5H2v12h3m0 0a2 2 0 104 0m-4 0a2 2 0 104 0m5 0a2 2 0 104 0m-4 0a2 2 0 104 0m3-3V7l4 2v5h-4z" /></Svg>,
 }
 
 const TRADUCOES = {
-  pt: { marca: 'Operações', saudacao: 'Olá', escolher: 'Escolha o módulo para continuar.', entrar: 'ENTRAR NO MÓDULO', sessao: 'Sua sessão continua ativa até clicar em', sair: 'Sair', logout: 'SAIR', painel: 'Painel de', modulos: [{ id: 'estadia', nome: 'Estadia', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operação', bullets: ['Estadias', 'Pendências', 'Relatórios'] }, { id: 'captacao', nome: 'Captação', subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento da operação.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Comercial', bullets: ['Motoristas', 'Contatos', 'Ranking'] }] },
-  en: { marca: 'Operations', saudacao: 'Hello', escolher: 'Choose a module to continue.', entrar: 'OPEN MODULE', sessao: 'Your session remains active until you click', sair: 'Sign out', logout: 'SIGN OUT', painel: 'Panel', modulos: [{ id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operations', bullets: ['Records', 'Pending', 'Reports'] }, { id: 'captacao', nome: 'Capture', subtitulo: 'Drivers, contacts, captured loads and operational follow-up.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Commercial', bullets: ['Drivers', 'Contacts', 'Ranking'] }] },
+  pt: { marca: 'Operações', saudacao: 'Olá', escolher: 'Escolha o módulo para continuar.', entrar: 'ENTRAR NO MÓDULO', sessao: 'Sua sessão continua ativa até clicar em', sair: 'Sair', logout: 'SAIR', painel: 'Painel de', modulos: [{ id: 'estadia', nome: 'Estadia', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operação', bullets: ['Estadias', 'Pendências', 'Relatórios'] }, { id: 'captacao', nome: 'Captação', subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento da operação.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Comercial', bullets: ['Motoristas', 'Contatos', 'Ranking'] }, { id: 'embarque', nome: 'Embarque', subtitulo: 'Controle de cargas, fretes e localização em tempo real.', icon: 'truck', cor: 'emerald', aba: 'embarque', etiqueta: 'Logística', bullets: ['Localização', 'Fretes', 'Cargas'] }] },
+  en: { marca: 'Operations', saudacao: 'Hello', escolher: 'Choose a module to continue.', entrar: 'OPEN MODULE', sessao: 'Your session remains active until you click', sair: 'Sign out', logout: 'SIGN OUT', painel: 'Panel', modulos: [{ id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operations', bullets: ['Records', 'Pending', 'Reports'] }, { id: 'captacao', nome: 'Capture', subtitulo: 'Drivers, contacts, captured loads and operational follow-up.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Commercial', bullets: ['Drivers', 'Contacts', 'Ranking'] }, { id: 'embarque', nome: 'Shipment', subtitulo: 'Load control, freight and real-time location.', icon: 'truck', cor: 'emerald', aba: 'embarque', etiqueta: 'Logistics', bullets: ['Location', 'Freight', 'Loads'] }] },
 }
 
 const cores = {
@@ -37,7 +38,15 @@ export default function SelecaoPainel() {
 
   useEffect(() => { const t = setTimeout(() => setHeroVisivel(true), 60); return () => clearTimeout(t) }, [])
   const moverGlow = (e) => { const rect = e.currentTarget.getBoundingClientRect(); e.currentTarget.style.setProperty('--x', `${e.clientX - rect.left}px`); e.currentTarget.style.setProperty('--y', `${e.clientY - rect.top}px`) }
-  const acessar = (m) => { localStorage.setItem('moduloInicialViaLog', m.id); mudarAba(m.aba); window.dispatchEvent(new Event('ayres:modulo')) }
+  const acessar = (m) => { 
+    if (m.id === 'embarque') {
+      window.location.href = '/controle-embarques.html';
+      return;
+    }
+    localStorage.setItem('moduloInicialViaLog', m.id); 
+    mudarAba(m.aba); 
+    window.dispatchEvent(new Event('ayres:modulo')) 
+  }
   const sair = () => { localStorage.removeItem('moduloInicialViaLog'); logout() }
 
   return (
