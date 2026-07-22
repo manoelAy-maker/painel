@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
+import { podeAdministrar } from '../utils/roles'
 import AyresLogo from './AyresLogo'
 import '../styles/portal-zero.css'
+import '../styles/portal-admin.css'
 
 const Svg = ({ children, ...p }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>{children}</svg>
@@ -15,6 +17,9 @@ const ICONES = {
   shield: <Svg width="16" height="16"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z" /></Svg>,
   user: <Svg width="16" height="16"><path d="M20 21a8 8 0 10-16 0" /><circle cx="12" cy="7" r="4" /></Svg>,
   truck: <Svg><path d="M10 17h4V5H2v12h3m0 0a2 2 0 104 0m-4 0a2 2 0 104 0m5 0a2 2 0 104 0m-4 0a2 2 0 104 0m3-3V7l4 2v5h-4z" /></Svg>,
+  dashboard: <Svg><path d="M4 13h6V5H4v8z" /><path d="M14 19h6V5h-6v14z" /><path d="M4 19h6v-3H4v3z" /></Svg>,
+  users: <Svg><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></Svg>,
+  report: <Svg><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /><path d="M9 7h7" /><path d="M9 11h7" /></Svg>,
 }
 
 const TRADUCOES = {
@@ -22,30 +27,46 @@ const TRADUCOES = {
     marca: 'Operações',
     saudacao: 'Olá',
     escolher: 'Escolha onde quer trabalhar agora. Cada área abre separada, limpa e sem poluir sua operação.',
+    adminEscolher: 'Você está com acesso Admin. Além dos módulos operacionais, use os atalhos de gestão sem precisar caçar no menu lateral.',
     entrar: 'Abrir módulo',
     sessao: 'Sua sessão continua ativa até clicar em',
     sair: 'Sair',
     logout: 'Sair',
     painel: 'Painel de',
+    notaComum: 'Acesso separado por módulo para manter a operação limpa e rápida.',
+    notaAdmin: 'Portal administrativo liberado: usuários, relatórios e dashboard ficam em cartões próprios.',
     modulos: [
       { id: 'estadia', nome: 'Estadia', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operação', bullets: ['Estadias', 'Pendências', 'Relatórios'] },
       { id: 'captacao', nome: 'Captação', subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento comercial.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Comercial', bullets: ['Motoristas', 'Contatos', 'Ranking'] },
       { id: 'embarque', nome: 'Embarque', subtitulo: 'Controle de cargas, fretes, veículos e localização da operação.', icon: 'truck', cor: 'emerald', aba: 'embarque', etiqueta: 'Logística', bullets: ['Localização', 'Fretes', 'Cargas'] },
+    ],
+    adminModulos: [
+      { id: 'dashboard-admin', nome: 'Dashboard', subtitulo: 'Visão geral da operação, indicadores e atalhos principais.', icon: 'dashboard', cor: 'cyan', aba: 'inicio', etiqueta: 'Admin', bullets: ['Resumo', 'Indicadores', 'Visão geral'], admin: true },
+      { id: 'usuarios-admin', nome: 'Usuários', subtitulo: 'Adicionar usuários, trocar cargos, ajustar filial e revisar acessos.', icon: 'users', cor: 'purple', aba: 'admin', etiqueta: 'Admin', bullets: ['Adicionar', 'Cargos', 'Filiais'], admin: true },
+      { id: 'relatorios-admin', nome: 'Relatórios', subtitulo: 'Consultar relatórios, filtros e histórico administrativo.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Admin', bullets: ['Filtros', 'Exportar', 'Histórico'], admin: true },
     ],
   },
   en: {
     marca: 'Operations',
     saudacao: 'Hello',
     escolher: 'Choose where you want to work now. Each area opens cleanly and separately.',
+    adminEscolher: 'You have Admin access. Management shortcuts appear here alongside operational modules.',
     entrar: 'Open module',
     sessao: 'Your session remains active until you click',
     sair: 'Sign out',
     logout: 'Sign out',
     painel: 'Panel',
+    notaComum: 'Separate access by module keeps the operation clean and fast.',
+    notaAdmin: 'Admin portal enabled: users, reports and dashboard have their own cards.',
     modulos: [
       { id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operations', bullets: ['Records', 'Pending', 'Reports'] },
       { id: 'captacao', nome: 'Capture', subtitulo: 'Drivers, contacts, captured loads and commercial follow-up.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Commercial', bullets: ['Drivers', 'Contacts', 'Ranking'] },
       { id: 'embarque', nome: 'Shipment', subtitulo: 'Load control, freight, vehicles and operation location.', icon: 'truck', cor: 'emerald', aba: 'embarque', etiqueta: 'Logistics', bullets: ['Location', 'Freight', 'Loads'] },
+    ],
+    adminModulos: [
+      { id: 'dashboard-admin', nome: 'Dashboard', subtitulo: 'Operational overview, indicators and main shortcuts.', icon: 'dashboard', cor: 'cyan', aba: 'inicio', etiqueta: 'Admin', bullets: ['Summary', 'Indicators', 'Overview'], admin: true },
+      { id: 'usuarios-admin', nome: 'Users', subtitulo: 'Add users, change roles, adjust branches and review access.', icon: 'users', cor: 'purple', aba: 'admin', etiqueta: 'Admin', bullets: ['Add', 'Roles', 'Branches'], admin: true },
+      { id: 'relatorios-admin', nome: 'Reports', subtitulo: 'View reports, filters and administrative history.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Admin', bullets: ['Filters', 'Export', 'History'], admin: true },
     ],
   },
 }
@@ -57,6 +78,8 @@ export default function SelecaoPainel() {
   const t = TRADUCOES[idioma] || TRADUCOES.pt
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'usuário'
   const filialLabel = usuarioAtual?.filial === 'oleo' ? 'Operação do Óleo' : (usuarioAtual?.filial || 'jatai-go')
+  const isAdmin = podeAdministrar(usuarioAtual)
+  const modulosPortal = isAdmin ? [...t.modulos, ...t.adminModulos] : t.modulos
 
   useEffect(() => {
     const timer = setTimeout(() => setPronto(true), 40)
@@ -86,14 +109,14 @@ export default function SelecaoPainel() {
   }
 
   return (
-    <div className="portal-zero">
+    <div className={`portal-zero ${isAdmin ? 'admin-access' : ''}`}>
       <div className="portal-zero-shell">
         <header className="portal-zero-header">
           <div className="portal-zero-brand">
             <div className="portal-zero-logo"><AyresLogo size={44} /></div>
             <div>
               <h1>AYRES</h1>
-              <p>{t.marca}</p>
+              <p>{isAdmin ? 'Administração' : t.marca}</p>
             </div>
           </div>
 
@@ -104,20 +127,20 @@ export default function SelecaoPainel() {
         </header>
 
         <main className="portal-zero-main">
-          <section className={`portal-zero-hero ${pronto ? 'ready' : ''}`}>
+          <section className={`portal-zero-hero ${isAdmin ? 'admin-access' : ''} ${pronto ? 'ready' : ''}`}>
             <div className="portal-zero-copy">
-              <div className="portal-zero-chip">{ICONES.shield}<span>{filialLabel}</span></div>
+              <div className="portal-zero-chip">{ICONES.shield}<span>{isAdmin ? 'Acesso Admin' : filialLabel}</span></div>
               <h2>{t.saudacao}, <span>{primeiroNome}</span></h2>
-              <p>{t.escolher}</p>
-              <div className="portal-zero-note"><strong>↳</strong><span>Portal refeito em layout compacto, sem cards gigantes e sem botão global espremendo a tela.</span></div>
+              <p>{isAdmin ? t.adminEscolher : t.escolher}</p>
+              <div className={`portal-zero-note ${isAdmin ? 'admin-note' : ''}`}><strong>↳</strong><span>{isAdmin ? t.notaAdmin : t.notaComum}</span></div>
             </div>
 
-            <div className="portal-zero-modules" aria-label="Módulos do sistema">
-              {t.modulos.map((modulo) => (
+            <div className={`portal-zero-modules ${isAdmin ? 'admin-list' : ''}`} aria-label="Módulos do sistema">
+              {modulosPortal.map((modulo) => (
                 <button
                   key={modulo.id}
                   type="button"
-                  className={`portal-zero-card ${modulo.cor}`}
+                  className={`portal-zero-card ${modulo.cor} ${modulo.admin ? 'admin-card' : ''}`}
                   onClick={() => acessar(modulo)}
                   onMouseMove={moverGlow}
                 >
