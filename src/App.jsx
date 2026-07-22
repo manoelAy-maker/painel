@@ -100,6 +100,33 @@ function UsuariosIsolado({ onPortal }) {
   )
 }
 
+function AdminModuloIsolado({ tipo, onPortal }) {
+  const { usuarioAtual, logout } = useApp()
+  const sair = () => { localStorage.removeItem('moduloInicialViaLog'); logout() }
+  const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); onPortal?.() }
+  const isRelatorio = tipo === 'relatorios'
+  const titulo = isRelatorio ? 'Relatórios' : 'Dashboard'
+  const subtitulo = isRelatorio
+    ? 'Módulo isolado para consultar relatórios, filtros e exportações. Sem menu lateral e sem outras áreas do painel.'
+    : 'Módulo isolado para acompanhar indicadores e visão geral. Sem menu lateral e sem atalhos para outras áreas.'
+
+  return (
+    <div className={`users-isolated-shell ${isRelatorio ? 'relatorios-only-shell' : 'dashboard-only-shell'}`}>
+      <main className="users-isolated-main admin-only-main">
+        <section className="users-isolated-topbar">
+          <div className="users-isolated-title"><span>Administração</span><h1>{titulo}</h1><p>{subtitulo}</p></div>
+          <div className="users-isolated-actions"><span className="users-isolated-user">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="users-isolated-btn" onClick={voltarAoPortal}>Voltar ao portal</button><button className="users-isolated-btn danger" onClick={sair}>Sair</button></div>
+        </section>
+        <section className={`users-isolated-content ${isRelatorio ? 'relatorios-isolated-content' : 'dashboard-isolated-content'}`}>
+          <Suspense fallback={<FastFallback />}>
+            {isRelatorio ? <Relatorios /> : <Dashboard />}
+          </Suspense>
+        </section>
+      </main>
+    </div>
+  )
+}
+
 function PainelEstadia() {
   const { abaAtiva, mudarAba, usuarioAtual } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -124,7 +151,8 @@ export default function App() {
   const { usuarioAtual } = useApp()
   const [moduloInicial, setModuloInicial] = useState(() => localStorage.getItem('moduloInicialViaLog'))
   const mobileApk = isApkMobileMode()
+  const isAdmin = podeAdministrar(usuarioAtual)
   useEffect(() => { const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog')); window.addEventListener('storage', syncModulo); window.addEventListener('ayres:modulo', syncModulo); return () => { window.removeEventListener('storage', syncModulo); window.removeEventListener('ayres:modulo', syncModulo) } }, [])
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); setModuloInicial(null) }
-  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial === 'usuarios-admin' && <UsuariosIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && moduloInicial !== 'usuarios-admin' && <PainelEstadia />}<Toast /></>
+  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'usuarios-admin' && <UsuariosIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'dashboard-admin' && <AdminModuloIsolado tipo="dashboard" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'relatorios-admin' && <AdminModuloIsolado tipo="relatorios" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && moduloInicial !== 'usuarios-admin' && moduloInicial !== 'dashboard-admin' && moduloInicial !== 'relatorios-admin' && <PainelEstadia />}<Toast /></>
 }
