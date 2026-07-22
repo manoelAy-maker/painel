@@ -9,6 +9,8 @@ import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
 import Dashboard from './pages/Dashboard'
 import EstadiaTicker from './components/EstadiaTicker'
+import PerfilUsuarioModal from './components/modals/PerfilUsuarioModal'
+import UserSettingsModal from './components/UserSettingsModal'
 import './styles/app.css'
 import './cargo-options-runtime.js'
 import './login-dark-restore.css'
@@ -48,6 +50,23 @@ function isApkMobileMode() {
     if (window.Capacitor) return true
   } catch {}
   return false
+}
+
+function IsolatedActions({ usuarioAtual, voltarAoPortal, sair }) {
+  const [showConfig, setShowConfig] = useState(false)
+  const [showPerfil, setShowPerfil] = useState(false)
+  return (
+    <>
+      <div className="users-isolated-actions">
+        <span className="users-isolated-user">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
+        <button className="settings-trigger-btn" type="button" onClick={() => setShowConfig(true)}>⚙️ <span>Config</span></button>
+        <button className="users-isolated-btn" onClick={voltarAoPortal}>Voltar ao portal</button>
+        <button className="users-isolated-btn danger" onClick={sair}>Sair</button>
+      </div>
+      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
+      <UserSettingsModal show={showConfig} onClose={() => setShowConfig(false)} onOpenPerfil={() => setShowPerfil(true)} />
+    </>
+  )
 }
 
 function AppMobileOperacional() {
@@ -92,7 +111,7 @@ function UsuariosIsolado({ onPortal }) {
       <main className="users-isolated-main">
         <section className="users-isolated-topbar">
           <div className="users-isolated-title"><span>Administração</span><h1>Usuários e cargos</h1><p>Módulo isolado para criar colaboradores, ajustar cargos e manter filiais. Sem menu lateral e sem outras áreas do painel.</p></div>
-          <div className="users-isolated-actions"><span className="users-isolated-user">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="users-isolated-btn" onClick={voltarAoPortal}>Voltar ao portal</button><button className="users-isolated-btn danger" onClick={sair}>Sair</button></div>
+          <IsolatedActions usuarioAtual={usuarioAtual} voltarAoPortal={voltarAoPortal} sair={sair} />
         </section>
         <section className="users-isolated-content"><Suspense fallback={<FastFallback />}><Admin /></Suspense></section>
       </main>
@@ -115,7 +134,7 @@ function AdminModuloIsolado({ tipo, onPortal }) {
       <main className="users-isolated-main admin-only-main">
         <section className="users-isolated-topbar">
           <div className="users-isolated-title"><span>Administração</span><h1>{titulo}</h1><p>{subtitulo}</p></div>
-          <div className="users-isolated-actions"><span className="users-isolated-user">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="users-isolated-btn" onClick={voltarAoPortal}>Voltar ao portal</button><button className="users-isolated-btn danger" onClick={sair}>Sair</button></div>
+          <IsolatedActions usuarioAtual={usuarioAtual} voltarAoPortal={voltarAoPortal} sair={sair} />
         </section>
         <section className={`users-isolated-content ${isRelatorio ? 'relatorios-isolated-content' : 'dashboard-isolated-content'}`}>
           <Suspense fallback={<FastFallback />}>
