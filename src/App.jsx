@@ -25,6 +25,7 @@ import './styles/notification-rail.css'
 import './styles/estadia-ticker.css'
 import './styles/captacao-header-match.css'
 import './styles/db-command-center.css'
+import './styles/users-isolated.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
@@ -82,6 +83,23 @@ function ModuloIsolado({ onPortal }) {
   )
 }
 
+function UsuariosIsolado({ onPortal }) {
+  const { usuarioAtual, logout } = useApp()
+  const sair = () => { localStorage.removeItem('moduloInicialViaLog'); logout() }
+  const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); onPortal?.() }
+  return (
+    <div className="users-isolated-shell">
+      <main className="users-isolated-main">
+        <section className="users-isolated-topbar">
+          <div className="users-isolated-title"><span>Administração</span><h1>Usuários e cargos</h1><p>Módulo isolado para criar colaboradores, ajustar cargos e manter filiais. Sem menu lateral e sem outras áreas do painel.</p></div>
+          <div className="users-isolated-actions"><span className="users-isolated-user">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span><button className="users-isolated-btn" onClick={voltarAoPortal}>Voltar ao portal</button><button className="users-isolated-btn danger" onClick={sair}>Sair</button></div>
+        </section>
+        <section className="users-isolated-content"><Suspense fallback={<FastFallback />}><Admin /></Suspense></section>
+      </main>
+    </div>
+  )
+}
+
 function PainelEstadia() {
   const { abaAtiva, mudarAba, usuarioAtual } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -108,5 +126,5 @@ export default function App() {
   const mobileApk = isApkMobileMode()
   useEffect(() => { const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog')); window.addEventListener('storage', syncModulo); window.addEventListener('ayres:modulo', syncModulo); return () => { window.removeEventListener('storage', syncModulo); window.removeEventListener('ayres:modulo', syncModulo) } }, [])
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); setModuloInicial(null) }
-  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}<Toast /></>
+  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial === 'usuarios-admin' && <UsuariosIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && moduloInicial !== 'usuarios-admin' && <PainelEstadia />}<Toast /></>
 }
