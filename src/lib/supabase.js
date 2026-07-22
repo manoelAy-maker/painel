@@ -61,17 +61,28 @@ export const carregarUsuarios = async () => {
 
 export const salvarUsuario = async (usuario) => {
   const sb = getClient()
-  const { error } = await sb.from(USUARIOS_TABLE).upsert({
-    usuario: usuario.usuario,
+  const registro = {
+    usuario: String(usuario.usuario || '').trim().toLowerCase(),
     senha: usuario.senha,
     nome: usuario.nome || usuario.usuario,
     cargo: usuario.cargo || 'Operador',
     avatar: usuario.avatar || '',
     foto: usuario.foto || '',
     filial: usuario.filial || 'jatai-go',
+    ativo: usuario.ativo !== false,
     updated_at: new Date().toISOString(),
-  }, { onConflict: 'usuario' })
+    atualizado_em: new Date().toISOString(),
+  }
+
+  const { data, error } = await sb
+    .from(USUARIOS_TABLE)
+    .upsert(registro, { onConflict: 'usuario' })
+    .select('*')
+    .single()
+
   if (error) throw error
+  if (!data?.usuario) throw new Error('O Supabase não confirmou o cadastro do usuário.')
+  return data
 }
 
 export const deletarUsuario = async (usuario) => {
