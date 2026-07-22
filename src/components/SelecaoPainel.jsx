@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import { podeAdministrar } from '../utils/roles'
 import AyresLogo from './AyresLogo'
+import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
+import UserSettingsModal from './UserSettingsModal'
 import '../styles/portal-zero.css'
 import '../styles/portal-admin.css'
 
@@ -20,6 +22,7 @@ const ICONES = {
   dashboard: <Svg><path d="M4 13h6V5H4v8z" /><path d="M14 19h6V5h-6v14z" /><path d="M4 19h6v-3H4v3z" /></Svg>,
   users: <Svg><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></Svg>,
   report: <Svg><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /><path d="M9 7h7" /><path d="M9 11h7" /></Svg>,
+  settings: <Svg width="16" height="16"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6l-.1.1a2 2 0 01-3.8-1v-.1a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1l-.1-.1a2 2 0 011-3.8h.1a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6c.39-.16.72-.42 1-.76l.1-.1a2 2 0 013.8 1v.1a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.16.39.42.72.76 1l.1.1a2 2 0 01-1 3.8h-.1a1.65 1.65 0 00-1.51 1z" /></Svg>,
 }
 
 const TRADUCOES = {
@@ -32,6 +35,7 @@ const TRADUCOES = {
     sessao: 'Sua sessão continua ativa até clicar em',
     sair: 'Sair',
     logout: 'Sair',
+    config: 'Config',
     painel: 'Painel de',
     notaComum: 'Acesso separado por módulo para manter a operação limpa e rápida.',
     notaAdmin: 'Portal administrativo liberado: usuários, relatórios e dashboard ficam em cartões próprios.',
@@ -55,6 +59,7 @@ const TRADUCOES = {
     sessao: 'Your session remains active until you click',
     sair: 'Sign out',
     logout: 'Sign out',
+    config: 'Settings',
     painel: 'Panel',
     notaComum: 'Separate access by module keeps the operation clean and fast.',
     notaAdmin: 'Admin portal enabled: users, reports and dashboard have their own cards.',
@@ -74,6 +79,8 @@ const TRADUCOES = {
 export default function SelecaoPainel() {
   const { usuarioAtual, mudarAba, logout } = useApp()
   const [pronto, setPronto] = useState(false)
+  const [showConfig, setShowConfig] = useState(false)
+  const [showPerfil, setShowPerfil] = useState(false)
   const idioma = localStorage.getItem('idiomaAyres') || 'pt'
   const t = TRADUCOES[idioma] || TRADUCOES.pt
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'usuário'
@@ -122,6 +129,7 @@ export default function SelecaoPainel() {
 
           <div className="portal-zero-userbar">
             <div className="portal-zero-userpill">{ICONES.user}<span>{usuarioAtual?.nome || usuarioAtual?.usuario}</span></div>
+            <button type="button" className="settings-trigger-btn portal-config-btn" onClick={() => setShowConfig(true)} title="Configurações">{ICONES.settings}<span>{t.config}</span></button>
             <button type="button" className="portal-zero-exit" onClick={sair}>{ICONES.logout}<span>{t.logout}</span></button>
           </div>
         </header>
@@ -160,6 +168,8 @@ export default function SelecaoPainel() {
 
         <footer className="portal-zero-footer">{t.sessao} <span>{t.sair}</span>.</footer>
       </div>
+      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
+      <UserSettingsModal show={showConfig} onClose={() => setShowConfig(false)} onOpenPerfil={() => setShowPerfil(true)} />
     </div>
   )
 }
