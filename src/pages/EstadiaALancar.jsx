@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import DropZone from '../components/DropZone'
 import { nomeFilial } from '../data/filiais'
 import { tempoDecorrido, slaPendencia } from '../utils/index'
 import { arquivarEstadiaALancar } from '../lib/ayresSafety'
+import '../styles/pendencias-pro.css'
 
 const criarFormVazio = (filial = 'jatai-go') => ({
   filial,
@@ -34,48 +35,108 @@ function SlaBadge({ data }) {
   return <span className={`sla-badge sla-${sla.nivel}`}>{sla.label}</span>
 }
 
+function CloudBadge({ status }) {
+  const cls = status === 'online' ? 'online' : status === 'syncing' ? 'syncing' : 'offline'
+  const label = status === 'online' ? 'Supabase online' : status === 'syncing' ? 'Sincronizando' : 'Nuvem offline'
+  const icon = status === 'online' ? '🟢' : status === 'syncing' ? '🔄' : '🟠'
+  return <span className={`cloud-pill ${cls}`}>{icon} {label}</span>
+}
+
 export default function EstadiaALancar({ formRef }) {
-  const { estadiasALancar, adicionarALancar, abrirParaLancar, excluirALancar, filiais, usuarioAtual, toast } = useApp()
+  const {
+    estadiasALancar,
+    adicionarALancar,
+    abrirParaLancar,
+    excluirALancar,
+    filiais,
+    usuarioAtual,
+    toast,
+    cloudStatus,
+    cloudText,
+    ultimoSave,
+    baixarNuvem,
+    conectarSupabase,
+  } = useApp()
+
   const filialPadrao = usuarioAtual?.filial || 'jatai-go'
   const [form, setForm] = useState(criarFormVazio(filialPadrao))
   const [arquivos, setArquivos] = useState([])
+  const [salvando, setSalvando] = useState(false)
+  const [processandoId, setProcessandoId] = useState(null)
+  const [atualizando, setAtualizando] = useState(false)
   const isAdmin = usuarioAtual?.cargo === 'Admin'
 
   const listaBase = isAdmin
     ? estadiasALancar
     : estadiasALancar.filter(e => (e.filial || 'jatai-go') === filialPadrao)
 
-  const lista = [...listaBase].sort((a, b) => slaPendencia(b.dataCriacao).ordem - slaPendencia(a.dataCriacao).ordem)
+  const lista = useMemo(
+    () => [...listaBase].sort((a, b) => slaPendencia(b.dataCriacao).ordem - slaPendencia(a.dataCriacao).ordem),
+    [listaBase]
+  )
   const criticas = lista.filter(e => slaPendencia(e.dataCriacao).nivel === 'critico').length
   const urgentes = lista.filter(e => slaPendencia(e.dataCriacao).nivel === 'urgente').length
+  const comAnexo = lista.filter(e => e.anexos?.length).length
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
-  const handleSalvar = async () => {
-    if (!form.filial) { alert('Escolha a filial que vai lançar.'); return }
-    if (!form.placa.trim()) { alert('Preencha a placa.'); return }
+  const atualizarDaNuvem = async () => {
+    setAtualizando(true)
+    try {
+      await conectarSupabase?.()
+      await baixarNuvem?.(true)
+    } finally {
+      setAtualizando(false)
+    }
+  }
 
-    await adicionarALancar({
-      ...form,
-      placa: form.placa.trim().toUpperCase(),
-    }, arquivos)
-    setForm(criarFormVazio(filialPadrao))
-    setArquivos([])
+  const handleSalvar = async () => {
+    if (salvando) return
+    if (!form.filial) { toast?.('Escolha a filial que vai lançar.', 'err'); return }
+    if (!form.placa.trim()) { toast?.('Preencha a placa.', 'err'); return }
+
+    setSalvando(true)
+    try {
+      await adicionarALancar({
+        ...form,
+        placa: form.placa.trim().toUpperCase(),
+      }, arquivos)
+      setForm(criarFormVazio(filialPadrao))
+      setArquivos([])
+    } catch (err) {
+      toast?.(`Erro ao salvar pendência: ${err?.message || 'verifique o Supabase.'}`, 'err')
+    } finally {
+      setSalvando(false)
+    }
   }
 
   const handleArquivar = async (e) => {
-    if (!confirm('Arquivar esta pendência? Ela vai sair da tela, mas ficará salva na Lixeira com os anexos.')) return
+    if (processandoId) return
+    if (!confirm(`Excluir/arquivar a pendência da placa ${e.placa || '-'}? Ela sai da tela e fica salva na Lixeira.`)) return
+    setProcessandoId(e.id)
     try {
       await arquivarEstadiaALancar(e, usuarioAtual?.usuario || '-', 'Pendência arquivada pela tela A lançar')
       await excluirALancar(e.id)
-      toast?.('Pendência arquivada na Lixeira.', 'ok')
-    } catch {
-      toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err')
+      toast?.('Pendência excluída da tela e salva na Lixeira.', 'ok')
+    } catch (err) {
+      toast?.(`Não consegui excluir a pendência: ${err?.message || 'verifique o Supabase/Lixeira.'}`, 'err')
+    } finally {
+      setProcessandoId(null)
+    }
+  }
+
+  const handleAbrirParaLancar = async (id) => {
+    if (processandoId) return
+    setProcessandoId(id)
+    try {
+      await abrirParaLancar(id)
+    } finally {
+      setProcessandoId(null)
     }
   }
 
   return (
-    <section className="aba active" id="abaALancar">
+    <section className="aba active pendencias-pro" id="abaALancar">
       {(criticas > 0 || urgentes > 0) && (
         <div className={`sla-alert ${criticas > 0 ? 'critico' : 'urgente'}`}>
           <strong>{criticas > 0 ? 'Atenção crítica' : 'Atenção operacional'}</strong>
@@ -83,10 +144,43 @@ export default function EstadiaALancar({ formRef }) {
         </div>
       )}
 
-      <div className="box" ref={formRef}>
+      <section className="pendencias-hero">
+        <div className="pendencias-card">
+          <div className="pendencias-title">
+            <div>
+              <h2>Lançar pendência</h2>
+              <span>Envie uma placa para a filial tratar depois, com anexo e SLA automático.</span>
+            </div>
+            <CloudBadge status={cloudStatus} />
+          </div>
+
+          <div className="pendencias-kpis">
+            <div className="pendencias-kpi"><span>Pendências</span><strong>{lista.length}</strong></div>
+            <div className="pendencias-kpi warn"><span>Urgentes</span><strong>{urgentes}</strong></div>
+            <div className="pendencias-kpi danger"><span>Críticas</span><strong>{criticas}</strong></div>
+          </div>
+        </div>
+
+        <div className="pendencias-card pendencias-cloud-box">
+          <div className="pendencias-title">
+            <div>
+              <h2>Banco Supabase</h2>
+              <span>{cloudText || 'Verificando conexão com a nuvem.'}</span>
+            </div>
+          </div>
+          <p>Último salvamento: <strong>{ultimoSave || 'ainda não registrado nesta sessão'}</strong></p>
+          <p>Anexos em pendências visíveis: <strong>{comAnexo}</strong></p>
+          <div className="pendencias-cloud-actions">
+            <button type="button" onClick={atualizarDaNuvem} disabled={atualizando}>{atualizando ? 'Atualizando...' : 'Atualizar da nuvem'}</button>
+            <button type="button" onClick={() => conectarSupabase?.()}>Reconectar Supabase</button>
+          </div>
+        </div>
+      </section>
+
+      <div className="box pendencias-form" ref={formRef}>
         <div className="box-title">
-          <h2>Adicionar estadia a lançar</h2>
-          <span>Envie uma pendência simples para a filial lançar depois.</span>
+          <h2>Nova pendência</h2>
+          <span>Campos mínimos: filial e placa. O restante ajuda quem vai lançar depois.</span>
         </div>
 
         <div className="form-grid">
@@ -124,10 +218,20 @@ export default function EstadiaALancar({ formRef }) {
           <DropZone arquivos={arquivos} onChange={setArquivos} />
         </div>
 
-        <button type="button" className="btn-purple btn-full" onClick={handleSalvar}>Enviar para filial lançar</button>
+        <button type="button" className="btn-purple btn-full" onClick={handleSalvar} disabled={salvando}>
+          {salvando ? 'Salvando no painel...' : 'Enviar para filial lançar'}
+        </button>
       </div>
 
-      <div className="table-wrap">
+      <div className="pendencias-list-head">
+        <div>
+          <h3>Pendências a lançar</h3>
+          <p>{lista.length} pendência(s) visível(is) para {isAdmin ? 'todas as filiais' : nomeFilial(filialPadrao)}.</p>
+        </div>
+        <button type="button" className="pendencia-refresh" onClick={atualizarDaNuvem} disabled={atualizando}>↻ {atualizando ? 'Atualizando' : 'Atualizar'}</button>
+      </div>
+
+      <div className="table-wrap pendencias-table">
         <div className="table-scroll">
           <table>
             <thead>
@@ -140,6 +244,7 @@ export default function EstadiaALancar({ formRef }) {
                 ? <tr><td colSpan={10} className="empty">Nenhuma estadia a lançar para sua filial.</td></tr>
                 : lista.map(e => {
                   const sla = slaPendencia(e.dataCriacao)
+                  const processando = String(processandoId) === String(e.id)
                   return (
                     <tr key={e.id} className={`sla-row sla-row-${sla.nivel}`}>
                       <td><span className="badge badge-logistica">{nomeFilial(e.filial)}</span></td>
@@ -151,7 +256,12 @@ export default function EstadiaALancar({ formRef }) {
                       <td>{e.criadoPor || '-'}<br /><small>{e.dataCriacao || ''}</small></td>
                       <td><TempoPendente data={e.dataCriacao} /></td>
                       <td><span className="status status-lancar">{e.status || 'A lançar'}</span></td>
-                      <td><div className="actions"><button className="btn-green btn-small" onClick={() => abrirParaLancar(e.id)}>Lançar</button><button className="btn-red btn-small" onClick={() => handleArquivar(e)}>Arquivar</button></div></td>
+                      <td>
+                        <div className="pendencia-acoes">
+                          <button className="btn-green btn-small" disabled={processando} onClick={() => handleAbrirParaLancar(e.id)}>{processando ? 'Abrindo...' : 'Lançar'}</button>
+                          <button className="btn-red btn-small" disabled={processando} onClick={() => handleArquivar(e)}>{processando ? 'Excluindo...' : 'Excluir'}</button>
+                        </div>
+                      </td>
                     </tr>
                   )
                 })}
