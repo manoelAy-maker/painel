@@ -7,6 +7,11 @@ const IDIOMAS = [
   { id: 'en', label: 'English', detalhe: 'Portal e textos principais em inglês' },
 ]
 
+const TEMAS = [
+  { id: 'dark', label: 'Escuro AYRES', detalhe: 'Visual original, fundo preto e cartões premium' },
+  { id: 'light', label: 'Branco AYRES', detalhe: 'Tela clara para uso de dia, leitura rápida e menos cansaço' },
+]
+
 const CORES = [
   { id: 'blue', label: 'Azul AYRES', hex: '#60a5fa' },
   { id: 'purple', label: 'Roxo premium', hex: '#a78bfa' },
@@ -21,19 +26,22 @@ function lerPreferencias() {
     const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
     return {
       idioma: salvo.idioma || localStorage.getItem('idiomaAyres') || 'pt',
+      tema: salvo.tema || localStorage.getItem('ayresTheme') || 'dark',
       cor: salvo.cor || localStorage.getItem('ayresAccentColor') || 'blue',
     }
   } catch {
-    return { idioma: 'pt', cor: 'blue' }
+    return { idioma: 'pt', tema: 'dark', cor: 'blue' }
   }
 }
 
 export function aplicarPreferenciasAyres() {
   const pref = lerPreferencias()
   document.documentElement.dataset.ayresAccent = pref.cor
+  document.documentElement.dataset.ayresTheme = pref.tema
   document.documentElement.lang = pref.idioma === 'en' ? 'en' : 'pt-BR'
   localStorage.setItem('idiomaAyres', pref.idioma)
   localStorage.setItem('ayresAccentColor', pref.cor)
+  localStorage.setItem('ayresTheme', pref.tema)
   return pref
 }
 
@@ -58,6 +66,7 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
 
   const corAtual = useMemo(() => CORES.find(c => c.id === form.cor) || CORES[0], [form.cor])
   const idiomaAtual = useMemo(() => IDIOMAS.find(i => i.id === form.idioma) || IDIOMAS[0], [form.idioma])
+  const temaAtual = useMemo(() => TEMAS.find(t => t.id === form.tema) || TEMAS[0], [form.tema])
 
   if (!show) return null
 
@@ -66,6 +75,7 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(form))
     localStorage.setItem('idiomaAyres', form.idioma)
     localStorage.setItem('ayresAccentColor', form.cor)
+    localStorage.setItem('ayresTheme', form.tema)
     aplicarPreferenciasAyres()
     window.dispatchEvent(new Event('ayres:settings'))
     toast?.('Configurações salvas.', 'ok')
@@ -87,7 +97,7 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
           <div>
             <span>Configurações</span>
             <h2>Preferências do painel</h2>
-            <p>Idioma, cor do sistema e acesso rápido ao seu perfil.</p>
+            <p>Idioma, tema, cor do sistema e acesso rápido ao seu perfil.</p>
           </div>
           <button type="button" className="settings-close" onClick={onClose}>×</button>
         </div>
@@ -109,6 +119,21 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
             <div className="settings-option-grid two">
               {IDIOMAS.map(item => (
                 <button type="button" key={item.id} className={form.idioma === item.id ? 'active' : ''} onClick={() => setForm(p => ({ ...p, idioma: item.id }))}>
+                  <strong>{item.label}</strong>
+                  <span>{item.detalhe}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="settings-section">
+            <div className="settings-section-title">
+              <strong>Tema do AYRES</strong>
+              <span>Atual: {temaAtual.label}</span>
+            </div>
+            <div className="settings-option-grid two">
+              {TEMAS.map(item => (
+                <button type="button" key={item.id} className={form.tema === item.id ? 'active' : ''} onClick={() => setForm(p => ({ ...p, tema: item.id }))}>
                   <strong>{item.label}</strong>
                   <span>{item.detalhe}</span>
                 </button>
