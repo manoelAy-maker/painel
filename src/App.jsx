@@ -7,7 +7,6 @@ import Header from './components/Header'
 import LivePanel from './components/LivePanel'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
-import Dashboard from './pages/Dashboard'
 import EstadiaTicker from './components/EstadiaTicker'
 import PerfilUsuarioModal from './components/modals/PerfilUsuarioModal'
 import UserSettingsModal from './components/UserSettingsModal'
@@ -29,6 +28,7 @@ import './styles/captacao-header-match.css'
 import './styles/db-command-center.css'
 import './styles/users-isolated.css'
 
+const Dashboard = lazy(() => import('./pages/Dashboard'))
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
