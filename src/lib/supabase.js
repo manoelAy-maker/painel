@@ -110,11 +110,41 @@ export const uploadAnexoLocal = (file) =>
     reader.readAsDataURL(file)
   })
 
+// Agrupa rajadas de eventos do Realtime e impede vários refreshes completos concorrentes.
+// Isso evita que uma sequência de saves de vários usuários deixe a UI ocupada reprocessando a mesma lista repetidamente.
 export const iniciarRealtime = (onMudanca) => {
   const sb = getClient()
+  let timer = null
+  let executando = false
+  let pendente = false
+
+  const processar = async () => {
+    if (executando) {
+      pendente = true
+      return
+    }
+
+    executando = true
+    try {
+      await onMudanca?.()
+    } finally {
+      executando = false
+      if (pendente) {
+        pendente = false
+        clearTimeout(timer)
+        timer = setTimeout(processar, 250)
+      }
+    }
+  }
+
+  const agendar = () => {
+    clearTimeout(timer)
+    timer = setTimeout(processar, 250)
+  }
+
   return sb
     .channel('ldc-estadias-realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, onMudanca)
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, agendar)
     .subscribe()
 }
 
