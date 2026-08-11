@@ -40,7 +40,24 @@ const Backup = lazy(() => import('./modules/admin/pages/Backup'))
 const Admin = lazy(() => import('./modules/admin/pages/Admin'))
 const Lixeira = lazy(() => import('./modules/admin/pages/Lixeira'))
 
-const FastFallback = () => null
+function FastFallback() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        minHeight: 84,
+        display: 'grid',
+        placeItems: 'center',
+        opacity: 0.72,
+        fontSize: 13,
+        letterSpacing: '.02em',
+      }}
+    >
+      Carregando módulo…
+    </div>
+  )
+}
 
 function isApkMobileMode() {
   try {
@@ -158,10 +175,35 @@ function PainelEstadia() {
   const focarLancada = () => { mudarAba('lancadas'); setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50) }
   const focarALancar = () => { mudarAba('alancar'); setTimeout(() => formALancarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50) }
   useEffect(() => { if (!isAdmin && abaProtegida) mudarAba('inicio') }, [isAdmin, abaProtegida, mudarAba])
+
   return (
     <div className="app" style={{ display: 'block' }}>
       {sidebarOpen && <button className="sidebar-backdrop" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
-      <div className="app-layout"><Sidebar onFechar={() => setSidebarOpen(false)} /><section className="main-pro"><Header onMenuMobile={() => setSidebarOpen(v => !v)} /><main className="container"><EstadiaTicker /><LivePanel />{abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}<Suspense fallback={<FastFallback />}>{abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}{abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}{abaRender === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}{abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}{abaRender === 'captacao' && <Captacao />}{isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}{isAdmin && abaRender === 'historico' && <Historico />}{isAdmin && abaRender === 'relatorios' && <Relatorios />}{isAdmin && abaRender === 'lixeira' && <Lixeira />}{isAdmin && abaRender === 'backup' && <Backup />}{isAdmin && abaRender === 'admin' && <Admin />}</Suspense><div className="footer">by Manoel</div></main></section></div>
+      <div className="app-layout">
+        <Sidebar onFechar={() => setSidebarOpen(false)} />
+        <section className="main-pro">
+          <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
+          <main className="container">
+            <EstadiaTicker />
+            <LivePanel />
+            <Suspense fallback={<FastFallback />}>
+              {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
+              {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
+              {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
+              {abaRender === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
+              {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
+              {abaRender === 'captacao' && <Captacao />}
+              {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
+              {isAdmin && abaRender === 'historico' && <Historico />}
+              {isAdmin && abaRender === 'relatorios' && <Relatorios />}
+              {isAdmin && abaRender === 'lixeira' && <Lixeira />}
+              {isAdmin && abaRender === 'backup' && <Backup />}
+              {isAdmin && abaRender === 'admin' && <Admin />}
+            </Suspense>
+            <div className="footer">by Manoel</div>
+          </main>
+        </section>
+      </div>
     </div>
   )
 }
