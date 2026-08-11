@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 import DropZone from '../components/DropZone'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 import { listarMotoristasBancoV2, listarTransportadorasV2, upsertMotoristaBasicoV2, upsertTransportadoraV2 } from '../lib/supabaseV2'
+import { calcularEstadiaOperacional, numeroBR, toneladasDoPeso } from '../modules/estadia/services/estadiaCalculo'
 import '../estadia-desktop-pro.css'
 
 const EMPTY = {
@@ -19,53 +20,30 @@ function uniq(arr) { return [...new Set(arr.map(v => String(v || '').trim()).fil
 function chaveNome(nome) { return String(nome || '').trim().toUpperCase() }
 function agoraHistorico() { return new Date().toLocaleString('pt-BR') }
 function eventoHistorico(acao, usuario, detalhes = '') { return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes } }
-function numeroBR(valor) { if (!valor) return 0; return Number(String(valor).replace(/\./g, '').replace(',', '.')) || 0 }
-function dinheiroBR(valor) { return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
-function toneladasDoPeso(peso) {
-  const valor = numeroBR(peso)
-  return valor > 1000 ? valor / 1000 : valor
-}
-function horasEntre(dataIni, horaIni, dataFim, horaFim) {
-  if (!dataIni || !horaIni || !dataFim || !horaFim) return 0
-  const ini = new Date(`${dataIni}T${horaIni}`)
-  const fim = new Date(`${dataFim}T${horaFim}`)
-  if (Number.isNaN(ini.getTime()) || Number.isNaN(fim.getTime()) || fim <= ini) return 0
-  return (fim - ini) / 36e5
-}
-function formatarDataHora(data, hora) {
-  if (!data || !hora) return '-'
-  const [ano, mes, dia] = data.split('-')
-  return `${dia}/${mes}/${ano} ${hora}`
-}
-function calcularEstadiaOperacional(form) {
-  const totalHoras = horasEntre(form.chegadaData, form.chegadaHora, form.saidaData, form.saidaHora)
-  const tipo = form.alterarCalculo ? form.tipoCalculo : 'Hora'
-  const franquia = form.alterarCalculo ? numeroBR(form.franquia) : 12
-  const fator = form.alterarCalculo ? numeroBR(form.valorHora || '0,80') : 0.8
-  const toneladas = toneladasDoPeso(form.peso)
-  const horasPagar = Math.max(0, totalHoras - franquia)
-  let valorNumero = 0
-  if (tipo === 'Diária') {
-    const dias = Number(form.qtdDias) || 0
-    valorNumero = numeroBR(form.valorDiaria) * dias
-    return { horas: String(dias * 24 || 0), totalHoras: totalHoras.toFixed(2), horasPagar: String(dias * 24 || 0), toneladas: toneladas.toFixed(3), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: 'Diária manual', regraCurta: 'Manual', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
-  }
-  if (tipo === 'Negociado') valorNumero = numeroBR(form.valorNegociado)
-  else valorNumero = toneladas * horasPagar * fator
-  const temHorasCobraveis = horasPagar > 0
-  return { horas: horasPagar.toFixed(2), totalHoras: totalHoras.toFixed(2), horasPagar: horasPagar.toFixed(2), toneladas: toneladas.toFixed(3), valorNumero, valor: dinheiroBR(valorNumero), regraResumo: temHorasCobraveis ? `${toneladas.toLocaleString('pt-BR', { maximumFractionDigits: 3 })} t × R$ ${String(fator).replace('.', ',')} × ${horasPagar.toFixed(2).replace('.', ',')} h após ${franquia}h de franquia` : `Franquia de ${franquia}h ainda não ultrapassada`, regraCurta: form.alterarCalculo ? 'Manual' : 'R$ 0,80/t/h', chegada: formatarDataHora(form.chegadaData, form.chegadaHora), saida: formatarDataHora(form.saidaData, form.saidaHora) }
-}
 
 const motivos = ['Fila no carregamento', 'Fila na descarga', 'Atraso da unidade', 'Documento pendente', 'Troca de nota', 'Refugo', 'Reentrega', 'Aguardando liberação', 'Problema no sistema', 'Divergência de rota/frete', 'Outros']
 
 export default function EstadiaLancada({ formRef }) {
-  const { estadias, adicionarLancada, editarLancada, excluirLancada, itemParaLancar, limparItemParaLancar, uploadAnexoItem, usuarioAtual, toast, mudarAba } = useApp()
+  const {
+    estadias,
+    adicionarLancada,
+    editarLancada,
+    excluirLancada,
+    excluirALancar,
+    itemParaLancar,
+    limparItemParaLancar,
+    uploadAnexoItem,
+    usuarioAtual,
+    toast,
+    mudarAba,
+  } = useApp()
   const [form, setForm] = useState(EMPTY)
   const [editandoId, setEditandoId] = useState(null)
   const [arquivos, setArquivos] = useState([])
   const [existingAnexos, setExistingAnexos] = useState([])
   const [bancoMotoristas, setBancoMotoristas] = useState([])
   const [bancoTransportadoras, setBancoTransportadoras] = useState([])
+  const [salvando, setSalvando] = useState(false)
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const calc = calcularEstadiaOperacional(form)
 
@@ -91,7 +69,12 @@ export default function EstadiaLancada({ formRef }) {
     })
     return [...map.values()].sort((a, b) => a.nome.localeCompare(b.nome))
   }, [bancoMotoristas, estadias])
-  const transportadorasOptions = useMemo(() => uniq([...TRANSPORTADORAS_BASE, ...bancoTransportadoras.map(t => t.nome), ...estadias.map(e => e.transportadora)]).sort((a, b) => a.localeCompare(b)), [bancoTransportadoras, estadias])
+
+  const transportadorasOptions = useMemo(
+    () => uniq([...TRANSPORTADORAS_BASE, ...bancoTransportadoras.map(t => t.nome), ...estadias.map(e => e.transportadora)]).sort((a, b) => a.localeCompare(b)),
+    [bancoTransportadoras, estadias]
+  )
+
   const preencherTelefoneMotorista = () => {
     const achou = motoristasOptions.find(m => chaveNome(m.nome) === chaveNome(form.motorista))
     if (achou?.telefone) set('telefoneMotorista', String(achou.telefone).replace(/[^0-9]/g, ''))
@@ -122,7 +105,7 @@ export default function EstadiaLancada({ formRef }) {
     }))
     setExistingAnexos(itemParaLancar.anexos || [])
     setArquivos([])
-    limparItemParaLancar()
+    // Importante: não limpa itemParaLancar aqui. A referência é mantida até o save concluir.
     formRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [itemParaLancar]) // eslint-disable-line
 
@@ -135,7 +118,13 @@ export default function EstadiaLancada({ formRef }) {
     preencherFormularioEdicao(item)
   }, [estadias]) // eslint-disable-line
 
-  const handleCancelarEdicao = () => { setEditandoId(null); setForm(EMPTY); setArquivos([]); setExistingAnexos([]) }
+  const handleCancelarEdicao = () => {
+    setEditandoId(null)
+    setForm(EMPTY)
+    setArquivos([])
+    setExistingAnexos([])
+  }
+
   const encontrarDuplicada = () => {
     const nf = String(form.nf || '').trim()
     const placa = String(form.placa || '').trim().toUpperCase()
@@ -146,7 +135,9 @@ export default function EstadiaLancada({ formRef }) {
       return mesmaNf || mesmaPlaca
     })
   }
+
   const handleSalvar = async () => {
+    if (salvando) return
     if (!form.nf.trim()) { alert('Preencha o número da NF.'); return }
     if (!form.placa.trim()) { alert('Preencha a placa.'); return }
     if ((form.alterarCalculo ? form.tipoCalculo === 'Hora' : true) && !toneladasDoPeso(form.peso)) { alert('Preencha o peso carregado para calcular a estadia.'); return }
@@ -155,29 +146,76 @@ export default function EstadiaLancada({ formRef }) {
     if (form.alterarCalculo && form.tipoCalculo === 'Hora' && !numeroBR(form.valorHora)) { alert('Preencha o fator/valor 0,80 ou outro valor negociado.'); return }
     if (form.alterarCalculo && form.tipoCalculo === 'Diária' && (!numeroBR(form.valorDiaria) || !form.qtdDias)) { alert('Preencha valor diária e quantidade de dias.'); return }
     if (form.alterarCalculo && form.tipoCalculo === 'Negociado' && !numeroBR(form.valorNegociado)) { alert('Preencha o valor negociado.'); return }
+
     const duplicada = encontrarDuplicada()
     if (!editandoId && duplicada && !confirm(`Já existe uma estadia parecida para ${duplicada.placa || 'esta placa'} / NF ${duplicada.nf || duplicada.numeroNf || '-'}. Deseja salvar mesmo assim?`)) return
+
+    setSalvando(true)
     try {
-      if (form.motorista.trim()) await upsertMotoristaBasicoV2({ nome: form.motorista.trim(), telefone: form.telefoneMotorista, observacao: 'Criado/atualizado pelo lançamento de estadia' }, usuarioAtual)
-      if (form.transportadora.trim()) await upsertTransportadoraV2(form.transportadora, usuarioAtual)
-    } catch {}
-    const novosAnexos = []
-    for (const file of arquivos.slice(0, 2)) { const up = await uploadAnexoItem(file); if (up) novosAnexos.push(up) }
-    const anexos = [...existingAnexos, ...novosAnexos]
-    const payload = { ...form, placa: form.placa.trim().toUpperCase(), tipoCalculo: form.alterarCalculo ? form.tipoCalculo : 'Hora', franquia: form.alterarCalculo ? form.franquia : '12', valorHora: form.alterarCalculo ? form.valorHora : '0,80', numeroNf: form.nf, valorCalculado: calc.valor, totalHoras: calc.totalHoras, horasPagar: calc.horasPagar, regraCalculo: calc.regraResumo, ...calc, anexos }
-    if (editandoId) {
-      const atual = estadias.find(e => String(e.id) === String(editandoId))
-      const historicoItem = [eventoHistorico('Editou dados da estadia', usuarioAtual?.usuario, `Placa ${form.placa}`), ...(atual?.historicoItem || [])].slice(0, 20)
-      await editarLancada(editandoId, { ...payload, historicoItem })
-      setEditandoId(null)
-    } else await adicionarLancada({ ...payload, historicoItem: [eventoHistorico('Criou estadia lançada', usuarioAtual?.usuario, `Placa ${form.placa}`)] })
-    setForm(EMPTY); setArquivos([]); setExistingAnexos([]); carregarCadastros()
+      try {
+        if (form.motorista.trim()) await upsertMotoristaBasicoV2({ nome: form.motorista.trim(), telefone: form.telefoneMotorista, observacao: 'Criado/atualizado pelo lançamento de estadia' }, usuarioAtual)
+        if (form.transportadora.trim()) await upsertTransportadoraV2(form.transportadora, usuarioAtual)
+      } catch {}
+
+      const novosAnexos = []
+      for (const file of arquivos.slice(0, 2)) {
+        const up = await uploadAnexoItem(file)
+        if (up) novosAnexos.push(up)
+      }
+      const anexos = [...existingAnexos, ...novosAnexos]
+      const payload = {
+        ...form,
+        placa: form.placa.trim().toUpperCase(),
+        tipoCalculo: form.alterarCalculo ? form.tipoCalculo : 'Hora',
+        franquia: form.alterarCalculo ? form.franquia : '12',
+        valorHora: form.alterarCalculo ? form.valorHora : '0,80',
+        numeroNf: form.nf,
+        valorCalculado: calc.valor,
+        totalHoras: calc.totalHoras,
+        horasPagar: calc.horasPagar,
+        regraCalculo: calc.regraResumo,
+        ...calc,
+        anexos,
+      }
+
+      if (editandoId) {
+        const atual = estadias.find(e => String(e.id) === String(editandoId))
+        const historicoItem = [eventoHistorico('Editou dados da estadia', usuarioAtual?.usuario, `Placa ${form.placa}`), ...(atual?.historicoItem || [])].slice(0, 20)
+        await editarLancada(editandoId, { ...payload, historicoItem })
+        setEditandoId(null)
+      } else {
+        await adicionarLancada({ ...payload, historicoItem: [eventoHistorico('Criou estadia lançada', usuarioAtual?.usuario, `Placa ${form.placa}`)] })
+
+        // Conversão segura: só remove a pendência depois que a nova estadia foi salva ou enfileirada para sincronização.
+        if (itemParaLancar?.id) {
+          await excluirALancar(itemParaLancar.id)
+          limparItemParaLancar()
+        }
+      }
+
+      setForm(EMPTY)
+      setArquivos([])
+      setExistingAnexos([])
+      carregarCadastros()
+    } catch (err) {
+      toast?.(`Não consegui salvar a estadia: ${err?.message || 'verifique a conexão e tente novamente.'}`, 'err')
+    } finally {
+      setSalvando(false)
+    }
   }
+
   const handleArquivarEdicao = async () => {
     const atual = estadias.find(e => String(e.id) === String(editandoId))
     if (!atual) return
     if (!confirm('Arquivar esta estadia? Ela vai sair da tela, mas ficará salva na Lixeira com os anexos.')) return
-    try { await arquivarEstadiaLancada(atual, usuarioAtual?.usuario || '-', 'Estadia arquivada pela tela de edição'); await excluirLancada(atual.id); toast?.('Estadia arquivada na Lixeira.', 'ok'); handleCancelarEdicao() } catch { toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err') }
+    try {
+      await arquivarEstadiaLancada(atual, usuarioAtual?.usuario || '-', 'Estadia arquivada pela tela de edição')
+      await excluirLancada(atual.id)
+      toast?.('Estadia arquivada na Lixeira.', 'ok')
+      handleCancelarEdicao()
+    } catch {
+      toast?.('Não consegui arquivar. Verifique o Supabase/Lixeira.', 'err')
+    }
   }
 
   return (
@@ -194,6 +232,7 @@ export default function EstadiaLancada({ formRef }) {
             {editandoId && <button className="btn-red btn-small" onClick={handleArquivarEdicao}>Arquivar</button>}
           </div>
         </header>
+
         <div className="estadia-body-clean">
           <main className="estadia-main-clean">
             <section className="estadia-card-clean">
@@ -207,6 +246,7 @@ export default function EstadiaLancada({ formRef }) {
                 {editandoId && <div className="field"><label>Status</label><select value={form.status} onChange={e => set('status', e.target.value)}><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select></div>}
               </div>
             </section>
+
             <section className="estadia-card-clean">
               <div className="estadia-card-title"><strong>Motorista e veículo</strong><span>Placa junto do motorista</span></div>
               <div className="estadia-grid-clean cols-4">
@@ -217,6 +257,7 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field span-2"><label>Transportadora opcional</label><input list="transportadoras-estadia" value={form.transportadora} onChange={e => set('transportadora', e.target.value)} placeholder="Selecione ou digite" /><datalist id="transportadoras-estadia">{transportadorasOptions.map(t => <option key={t} value={t} />)}</datalist></div>
               </div>
             </section>
+
             <section className="estadia-card-clean">
               <div className="estadia-card-title"><strong>Período</strong><span>Chegada e saída/descarga</span></div>
               <div className="estadia-grid-clean cols-4">
@@ -226,6 +267,7 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
               </div>
             </section>
+
             <section className="estadia-card-clean muted-card">
               <div className="estadia-card-title"><strong>Complementares</strong><span>Opcional</span></div>
               <div className="estadia-grid-clean cols-4">
@@ -235,6 +277,7 @@ export default function EstadiaLancada({ formRef }) {
               </div>
             </section>
           </main>
+
           <aside className="estadia-summary-clean">
             <div className="summary-topline">Cálculo automático</div>
             <h3>{calc.valor}</h3>
@@ -259,7 +302,7 @@ export default function EstadiaLancada({ formRef }) {
               {existingAnexos.length > 0 && <div className="anexos-existentes">{existingAnexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">📄 {a.nome || `Arquivo ${i + 1}`}</a>)}</div>}
             </div>
             <div className="summary-note field"><label>Observação</label><input value={form.obs} onChange={e => set('obs', e.target.value)} placeholder="Detalhe rápido..." /></div>
-            <button className="btn-green btn-full summary-save" onClick={handleSalvar}>{editandoId ? 'Salvar alterações' : 'Salvar estadia'}</button>
+            <button className="btn-green btn-full summary-save" onClick={handleSalvar} disabled={salvando}>{salvando ? 'Salvando...' : editandoId ? 'Salvar alterações' : 'Salvar estadia'}</button>
             {editandoId && <button className="btn-light summary-cancel" onClick={handleCancelarEdicao}>Cancelar edição</button>}
           </aside>
         </div>
