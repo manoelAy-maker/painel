@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, useRef, useCallback } from 'react'
 import { defaultUsers, ADMIN_USERNAME } from '../data/defaultUsers'
 import { FILIAIS } from '../data/filiais'
-import { gerarId, baixarArquivo, dataISOTexto, calcularEstadia } from '../utils/index'
+import { gerarId, baixarArquivo, calcularEstadia } from '../utils/index'
 import { podeAdministrar } from '../utils/roles'
 import * as sb from '../lib/supabase'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
@@ -25,8 +25,6 @@ const dataRegistroMs = (item) => {
   return Number.isNaN(dt.getTime()) ? 0 : dt.getTime()
 }
 
-// Quando estamos online, a nuvem é a fonte de verdade.
-// Só preservamos um item local ausente da nuvem se ele ainda estiver aguardando upload na fila offline.
 const mesclarRegistros = (locais = [], remotos = [], idsLocaisProtegidos = new Set()) => {
   const map = new Map()
 
@@ -119,7 +117,6 @@ export function AppProvider({ children }) {
     dispatch({ type: 'SET_CLOUD', status, text })
   }, [])
 
-  // Persistências separadas: uma mudança em estadia não serializa usuários, filiais e histórico inteiro de novo.
   useEffect(() => { localStorage.setItem('usuariosPainelViaLog', JSON.stringify(state.usuarios)) }, [state.usuarios])
   useEffect(() => { localStorage.setItem('filiaisViaLog', JSON.stringify(state.filiais)) }, [state.filiais])
   useEffect(() => { localStorage.setItem('estadias', JSON.stringify(state.estadias)) }, [state.estadias])
@@ -177,7 +174,7 @@ export function AppProvider({ children }) {
 
       if (aviso) toast('Dados baixados da nuvem.', 'ok')
       return true
-    } catch (err) {
+    } catch {
       recebendoNuvem.current = false
       if (aviso) toast('Erro ao baixar dados da nuvem.', 'warn')
       return false
@@ -231,8 +228,9 @@ export function AppProvider({ children }) {
           setCloud('online', 'Atualizado em tempo real.')
         })
       }
+      const tinhaFila = stateRef.current.filaNuvem.length > 0
       await sincronizarFila()
-      await baixarNuvem(false)
+      if (tinhaFila) await baixarNuvem(false)
       setCloud('online', 'Conectado. Salvamento automático ativo.')
       toast('Nuvem conectada.', 'ok')
       return true
@@ -444,11 +442,15 @@ export function AppProvider({ children }) {
     await atualizarLancada(id, { status: 'Aberto', feitoPor: '', finalizadoPor: '' })
   }, [atualizarLancada])
 
-  const excluirLancada = useCallback(async (id) => {
+  const removerLancadaLocal = useCallback((id) => {
     dispatch({ type: 'SET_ESTADIAS', payload: stateRef.current.estadias.filter(e => String(e.id) !== String(id)) })
+  }, [])
+
+  const excluirLancada = useCallback(async (id) => {
+    removerLancadaLocal(id)
     toast('Estadia excluída.', 'ok')
     await deletarNuvem(id)
-  }, [deletarNuvem, toast])
+  }, [deletarNuvem, removerLancadaLocal, toast])
 
   const adicionarALancar = useCallback(async (dados, arquivos) => {
     const anexos = []
@@ -466,7 +468,6 @@ export function AppProvider({ children }) {
     await salvarNuvem(novo, 'a_lancar')
   }, [uploadAnexoItem, salvarNuvem, toast, feed])
 
-  // Abrir uma pendência para lançamento não apaga nada. Ela só será removida após a nova estadia ser salva.
   const abrirParaLancar = useCallback(async (id) => {
     const s = stateRef.current
     const item = s.estadiasALancar.find(e => String(e.id) === String(id))
@@ -483,7 +484,6 @@ export function AppProvider({ children }) {
     if (!calc) { toast('Verifique peso, chegada e saída.', 'err'); return }
     const s = stateRef.current
     const existente = s.estadias.find(e => String(e.id) === String(id))
-    // Dados calculados pela tela (inclusive Diária/Negociado) vencem o cálculo padrão de compatibilidade.
     const item = { ...existente, ...calc, ...dados }
     dispatch({ type: 'SET_ESTADIAS', payload: s.estadias.map(e => String(e.id) === String(id) ? item : e) })
     dispatch({ type: 'SET_HISTORICO', payload: [{ data: new Date().toLocaleString('pt-BR'), usuario: usuarioRef.current?.usuario || '-', acao: 'Editou estadia', detalhes: `Placa ${item.placa}` }, ...s.historico].slice(0, 300) })
@@ -492,15 +492,19 @@ export function AppProvider({ children }) {
     await salvarNuvem(item, 'lancada')
   }, [salvarNuvem, toast, feed])
 
-  const excluirALancar = useCallback(async (id) => {
+  const removerALancarLocal = useCallback((id) => {
     dispatch({ type: 'SET_A_LANCAR', payload: stateRef.current.estadiasALancar.filter(e => String(e.id) !== String(id)) })
+  }, [])
+
+  const excluirALancar = useCallback(async (id) => {
+    removerALancarLocal(id)
     await deletarNuvem(id)
-  }, [deletarNuvem])
+  }, [deletarNuvem, removerALancarLocal])
 
   const value = {
     ...state, dispatch, entrar, logout, verificarSenhaAdmin,
-    adicionarLancada, atualizarLancada, editarLancada, excluirLancada, marcarFeito, finalizar, reabrir,
-    adicionarALancar, abrirParaLancar, excluirALancar, limparItemParaLancar,
+    adicionarLancada, atualizarLancada, editarLancada, excluirLancada, removerLancadaLocal, marcarFeito, finalizar, reabrir,
+    adicionarALancar, abrirParaLancar, excluirALancar, removerALancarLocal, limparItemParaLancar,
     uploadAnexoItem, baixarArquivo, baixarNuvem, conectarSupabase,
     criarUsuario, editarUsuario, excluirUsuario, criarFilial, excluirFilial,
     toast, feed,
