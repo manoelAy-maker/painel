@@ -3,15 +3,18 @@ export const FATOR_PADRAO_TONELADA_HORA = 0.8
 
 export function numeroBR(valor) {
   if (valor === null || valor === undefined || valor === '') return 0
-  const texto = String(valor).trim()
+  let texto = String(valor).trim().replace(/[^0-9,.-]/g, '')
   if (!texto) return 0
 
-  // Aceita 38.380, 38380, 0,80 e 0.80 sem confundir milhar com decimal.
-  const normalizado = texto.includes(',')
-    ? texto.replace(/\./g, '').replace(',', '.')
-    : texto
+  if (texto.includes(',')) {
+    // pt-BR: 1.234,56 -> 1234.56
+    texto = texto.replace(/\./g, '').replace(',', '.')
+  } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texto)) {
+    // Peso/valor digitado com ponto de milhar: 38.380 -> 38380
+    texto = texto.replace(/\./g, '')
+  }
 
-  return Number(normalizado.replace(/[^0-9.-]/g, '')) || 0
+  return Number(texto) || 0
 }
 
 export function dinheiroBR(valor) {
@@ -67,7 +70,7 @@ export function calcularEstadiaOperacional(dados = {}) {
   let valorNumero = 0
   let horasResultado = horasPagar
   let regraResumo = ''
-  let regraCurta = manual ? 'Manual' : 'R$ 0,80/t/h'
+  const regraCurta = manual ? 'Manual' : 'R$ 0,80/t/h'
 
   if (tipo === 'Diária') {
     const dias = Math.max(0, Number(dados.qtdDias) || 0)
