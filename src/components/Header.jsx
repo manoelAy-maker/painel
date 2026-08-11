@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useAuthContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import NotificationBell from './NotificationBell'
-import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
-import UserSettingsModal from './UserSettingsModal'
 import AyresLogo from './AyresLogo'
 import '../topbar-profile-pro.css'
 import '../topbar-clean-v2.css'
 import '../topbar-date-chip.css'
+
+const PerfilUsuarioModal = lazy(() => import('./modals/PerfilUsuarioModal'))
+const UserSettingsModal = lazy(() => import('./UserSettingsModal'))
 
 const Ic = ({ d, d2, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} />{d2 && <path d={d2} />}</svg>
@@ -68,8 +69,8 @@ export default function Header({ onMenuMobile }) {
           </div>
         </div>
       </header>
-      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
-      <UserSettingsModal show={showConfig} onClose={() => setShowConfig(false)} onOpenPerfil={() => setShowPerfil(true)} />
+      {showPerfil && <Suspense fallback={null}><PerfilUsuarioModal show onClose={() => setShowPerfil(false)} /></Suspense>}
+      {showConfig && <Suspense fallback={null}><UserSettingsModal show onClose={() => setShowConfig(false)} onOpenPerfil={() => { setShowConfig(false); setShowPerfil(true) }} /></Suspense>}
     </>
   )
 }
