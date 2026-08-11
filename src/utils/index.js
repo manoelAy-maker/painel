@@ -1,3 +1,5 @@
+import { calcularEstadiaPadrao } from '../modules/estadia/services/estadiaCalculo'
+
 export const dinheiro = (v) =>
   Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -21,11 +23,9 @@ export const dataISOTexto = (txt) => {
   const raw = String(txt).trim()
   if (!raw) return ''
 
-  // Já veio no formato usado por input date: 2026-06-16
   const isoCurto = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
   if (isoCurto) return `${isoCurto[1]}-${isoCurto[2]}-${isoCurto[3]}`
 
-  // Formato brasileiro: 16/06/2026, 13:45 ou 16/06/2026 13:45
   const br = raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)
   if (br) {
     const dia = br[1].padStart(2, '0')
@@ -33,7 +33,6 @@ export const dataISOTexto = (txt) => {
     return `${br[3]}-${mes}-${dia}`
   }
 
-  // Última tentativa: Date nativo do navegador
   const dt = new Date(raw)
   if (!Number.isNaN(dt.getTime())) {
     dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset())
@@ -130,26 +129,8 @@ export const linkWhatsapp = (e) => {
   return `https://wa.me/${n}?text=${encodeURIComponent(msg)}`
 }
 
-export const calcularEstadia = (peso, chegadaData, chegadaHora, saidaData, saidaHora) => {
-  const p = Number(String(peso).replaceAll('.', '').replace(',', '.'))
-  if (!p || !chegadaData || !chegadaHora || !saidaData || !saidaHora) return null
-
-  const chegada = new Date(`${chegadaData}T${chegadaHora}`)
-  const saida = new Date(`${saidaData}T${saidaHora}`)
-  if (saida <= chegada) return null
-
-  let horas = (saida - chegada) / 3_600_000 - 12
-  if (horas < 0) horas = 0
-  const toneladas = p > 1000 ? p / 1000 : p
-  const valor = toneladas * 0.8 * horas
-
-  return {
-    horas: horas.toFixed(2),
-    valor: dinheiro(valor),
-    chegada: formatarData(chegadaData, chegadaHora),
-    saida: formatarData(saidaData, saidaHora),
-  }
-}
+// Compatibilidade: chamadas antigas continuam funcionando, mas agora usam o motor oficial do módulo Estadia.
+export const calcularEstadia = calcularEstadiaPadrao
 
 export const gerarId = () => Date.now() + Math.floor(Math.random() * 1000)
 
