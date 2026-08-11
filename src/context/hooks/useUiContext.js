@@ -8,9 +8,12 @@ export function useUiContext() {
     toasts,
     toast,
     mudarAba,
-    alternarTema,
-    alternarSom,
+    setTema,
+    setSomAtivo,
   } = useApp()
+
+  const alternarTema = () => setTema?.(tema === 'dark' ? 'light' : 'dark')
+  const alternarSom = () => setSomAtivo?.(!somAtivo)
 
   return {
     abaAtiva,

@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import { podeAdministrar } from '../utils/roles'
 import AyresLogo from './AyresLogo'
-import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
-import UserSettingsModal from './UserSettingsModal'
 import '../styles/portal-zero.css'
 import '../styles/portal-admin.css'
+
+const PerfilUsuarioModal = lazy(() => import('./modals/PerfilUsuarioModal'))
+const UserSettingsModal = lazy(() => import('./UserSettingsModal'))
 
 const Svg = ({ children, ...p }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>{children}</svg>
@@ -168,8 +169,8 @@ export default function SelecaoPainel() {
 
         <footer className="portal-zero-footer">{t.sessao} <span>{t.sair}</span>.</footer>
       </div>
-      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
-      <UserSettingsModal show={showConfig} onClose={() => setShowConfig(false)} onOpenPerfil={() => setShowPerfil(true)} />
+      {showPerfil && <Suspense fallback={null}><PerfilUsuarioModal show onClose={() => setShowPerfil(false)} /></Suspense>}
+      {showConfig && <Suspense fallback={null}><UserSettingsModal show onClose={() => setShowConfig(false)} onOpenPerfil={() => { setShowConfig(false); setShowPerfil(true) }} /></Suspense>}
     </div>
   )
 }
