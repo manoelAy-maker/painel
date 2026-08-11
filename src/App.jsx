@@ -1,15 +1,13 @@
 import { useRef, useState, useEffect, lazy, Suspense } from 'react'
 import { useApp } from './context/AppContext'
 import { podeAdministrar } from './utils/roles'
-import { Login, SelecaoPainel } from './modules/portal'
+import Login from './components/Login'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import LivePanel from './components/LivePanel'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
 import EstadiaTicker from './components/EstadiaTicker'
-import PerfilUsuarioModal from './components/modals/PerfilUsuarioModal'
-import UserSettingsModal from './components/UserSettingsModal'
 import './styles/app.css'
 import './cargo-options-runtime.js'
 import './login-dark-restore.css'
@@ -22,6 +20,9 @@ import './styles/estadia-ticker.css'
 import './styles/db-command-center.css'
 import './styles/users-isolated.css'
 
+const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
+const PerfilUsuarioModal = lazy(() => import('./components/modals/PerfilUsuarioModal'))
+const UserSettingsModal = lazy(() => import('./components/UserSettingsModal'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
@@ -74,8 +75,16 @@ function IsolatedActions({ usuarioAtual, voltarAoPortal, sair }) {
         <button className="users-isolated-btn" onClick={voltarAoPortal}>Voltar ao portal</button>
         <button className="users-isolated-btn danger" onClick={sair}>Sair</button>
       </div>
-      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
-      <UserSettingsModal show={showConfig} onClose={() => setShowConfig(false)} onOpenPerfil={() => setShowPerfil(true)} />
+      {showPerfil && (
+        <Suspense fallback={null}>
+          <PerfilUsuarioModal show onClose={() => setShowPerfil(false)} />
+        </Suspense>
+      )}
+      {showConfig && (
+        <Suspense fallback={null}>
+          <UserSettingsModal show onClose={() => setShowConfig(false)} onOpenPerfil={() => { setShowConfig(false); setShowPerfil(true) }} />
+        </Suspense>
+      )}
     </>
   )
 }
@@ -209,5 +218,5 @@ export default function App() {
   const isAdmin = podeAdministrar(usuarioAtual)
   useEffect(() => { const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog')); window.addEventListener('storage', syncModulo); window.addEventListener('ayres:modulo', syncModulo); return () => { window.removeEventListener('storage', syncModulo); window.removeEventListener('ayres:modulo', syncModulo) } }, [])
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); setModuloInicial(null) }
-  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'usuarios-admin' && <UsuariosIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'dashboard-admin' && <AdminModuloIsolado tipo="dashboard" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'relatorios-admin' && <AdminModuloIsolado tipo="relatorios" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && moduloInicial !== 'usuarios-admin' && moduloInicial !== 'dashboard-admin' && moduloInicial !== 'relatorios-admin' && <PainelEstadia />}<Toast /></>
+  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <Suspense fallback={<FastFallback />}><SelecaoPainel /></Suspense>}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'usuarios-admin' && <UsuariosIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'dashboard-admin' && <AdminModuloIsolado tipo="dashboard" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'relatorios-admin' && <AdminModuloIsolado tipo="relatorios" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && moduloInicial !== 'usuarios-admin' && moduloInicial !== 'dashboard-admin' && moduloInicial !== 'relatorios-admin' && <PainelEstadia />}<Toast /></>
 }
