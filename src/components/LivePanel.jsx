@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useCloudContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import { slaPendencia, tempoDecorrido } from '../utils/index'
 
@@ -16,18 +17,26 @@ export default function LivePanel() {
     filaNuvem,
     ultimoSave,
     conectarSupabase,
-    sincronizarFila,
+    baixarNuvem,
   } = useCloudContext()
   const { estadiasALancar } = useEstadiaContext()
   const { mudarAba } = useUiContext()
 
   const db = statusBanco[cloudStatus] || statusBanco.offline
 
-  const pendenciasCriticas = estadiasALancar
+  const pendenciasCriticas = useMemo(() => estadiasALancar
     .map(p => ({ ...p, sla: slaPendencia(p.dataCriacao) }))
     .filter(p => ['critico', 'urgente'].includes(p.sla.nivel))
     .sort((a, b) => b.sla.ordem - a.sla.ordem)
-    .slice(0, 4)
+    .slice(0, 4), [estadiasALancar])
+
+  const sincronizarAgora = async () => {
+    if (cloudStatus === 'offline') {
+      await conectarSupabase?.()
+      return
+    }
+    await baixarNuvem?.(true)
+  }
 
   return (
     <section className="live-dashboard live-command-center live-command-center-db">
@@ -57,7 +66,7 @@ export default function LivePanel() {
 
         <div className="live-db-actions">
           <button className="btn-light btn-small" onClick={conectarSupabase}>Reconectar</button>
-          <button className="btn-light btn-small" onClick={sincronizarFila}>Sincronizar fila</button>
+          <button className="btn-light btn-small" onClick={sincronizarAgora}>Atualizar agora</button>
         </div>
       </div>
 
@@ -105,7 +114,7 @@ export default function LivePanel() {
           {activityFeed.length === 0
             ? <div className="feed-item"><div className="feed-icon">·</div><div><strong>Aguardando ações</strong><span>Nenhuma alteração recente.</span></div></div>
             : activityFeed.map((i, idx) => (
-              <div key={idx} className="feed-item">
+              <div key={`${i.tempo || ''}-${i.titulo || ''}-${idx}`} className="feed-item">
                 <div className="feed-icon">{i.icone}</div>
                 <div><strong>{i.titulo}</strong><span>{i.texto}<br />{i.tempo}</span></div>
               </div>
