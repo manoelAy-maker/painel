@@ -1,5 +1,6 @@
 import { useAuthContext, useCloudContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import { podeAdministrar } from '../utils/roles'
+import { ADMIN_NAV_GROUPS, OPERATOR_NAV_GROUPS } from '../config/navigation'
 import AyresLogo from './AyresLogo'
 
 const Ic = ({ d, d2, size = 18, ...p }) => (
@@ -24,13 +25,6 @@ const ICONS = {
   admin:         <Ic d="M12 15a3 3 0 100-6 3 3 0 000 6z" d2="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />,
 }
 
-const OPERADOR_GRUPOS = [{ titulo: 'Operação', itens: [{ id: 'inicio', label: 'Dashboard' }, { id: 'lancadas', label: 'Lançar estadia' }, { id: 'consultaLancadas', label: 'Estadias lançadas' }, { id: 'finalizadas', label: 'Finalizadas' }, { id: 'alancar', label: 'Pendências' }] }]
-const ADMIN_GRUPOS = [
-  { titulo: 'Operação', itens: [{ id: 'inicio', label: 'Dashboard' }, { id: 'lancadas', label: 'Lançar estadia' }, { id: 'consultaLancadas', label: 'Estadias lançadas' }, { id: 'finalizadas', label: 'Finalizadas' }, { id: 'alancar', label: 'Pendências' }] },
-  { titulo: 'Comercial', itens: [{ id: 'captacaoAdmin', label: 'Captação geral' }, { id: 'captacao', label: 'Captação rápida' }] },
-  { titulo: 'Gestão', itens: [{ id: 'relatorios', label: 'Relatórios' }, { id: 'historico', label: 'Histórico' }, { id: 'lixeira', label: 'Lixeira' }, { id: 'backup', label: 'Backup' }, { id: 'admin', label: 'Usuários e cargos' }] },
-]
-
 const CloudIcon = ({ status }) => {
   if (status === 'online') return <Ic size={14} d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" style={{ color: '#22c55e' }} />
   if (status === 'syncing') return <Ic size={14} d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.2" style={{ color: '#60a5fa' }} />
@@ -43,7 +37,7 @@ export default function Sidebar({ onFechar }) {
   const { cloudStatus, cloudText } = useCloudContext()
   const { abaAtiva, mudarAba } = useUiContext()
   const isAdmin = podeAdministrar(usuarioAtual)
-  const grupos = isAdmin ? ADMIN_GRUPOS : OPERADOR_GRUPOS
+  const grupos = isAdmin ? ADMIN_NAV_GROUPS : OPERATOR_NAV_GROUPS
 
   const handleTab = (id) => { mudarAba(id); onFechar?.() }
   const filialLabel = (usuarioAtual?.filial || 'jatai-go').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())

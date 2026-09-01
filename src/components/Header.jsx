@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo, useState } from 'react'
 import { useAuthContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import NotificationBell from './NotificationBell'
 import AyresLogo from './AyresLogo'
+import { PAGE_META } from '../config/navigation'
 import '../topbar-profile-pro.css'
 import '../topbar-clean-v2.css'
 import '../topbar-date-chip.css'
@@ -17,8 +18,6 @@ const SearchIcon = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="n
 const ChevronIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
 const GearIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6l-.1.1a2 2 0 01-3.8-1v-.1a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1l-.1-.1a2 2 0 011-3.8h.1a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6c.39-.16.72-.42 1-.76l.1-.1a2 2 0 013.8 1v.1a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.16.39.42.72.76 1l.1.1a2 2 0 01-1 3.8h-.1a1.65 1.65 0 00-1.51 1z" /></svg>
 const cargoVisivel = (cargo) => cargo === 'Operador' || !cargo ? 'Analista Júnior' : cargo
-const TITULOS = { inicio: ['Dashboard', 'Resumo da operação'], lancadas: ['Estadias lançadas', 'Controle de lançamentos e anexos'], consultaLancadas: ['Consulta de estadias', 'Busca e acompanhamento de registros'], finalizadas: ['Finalizadas', 'Registros encerrados e conferidos'], alancar: ['Pendências', 'Itens aguardando lançamento'], captacao: ['Captação', 'Motoristas, leads e próximas ações'], captacaoAdmin: ['Captação geral', 'Motoristas, leads e motivos'], relatorios: ['Relatórios', 'Análises e exportações'], historico: ['Histórico', 'Eventos e alterações'], lixeira: ['Lixeira', 'Registros removidos'], backup: ['Backup', 'Cópia e recuperação'], admin: ['Usuários e cargos', 'Acessos do sistema'] }
-
 function formatarDataPainel() {
   return new Intl.DateTimeFormat('pt-BR', {
     weekday: 'short',
@@ -35,7 +34,7 @@ export default function Header({ onMenuMobile }) {
   const [showPerfil, setShowPerfil] = useState(false)
   const [showConfig, setShowConfig] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [titulo, subtitulo] = TITULOS[abaAtiva] || ['AYRES', 'Central logística']
+  const [titulo, subtitulo] = PAGE_META[abaAtiva] || ['AYRES', 'Central logística']
   const dataPainel = useMemo(() => formatarDataPainel(), [])
 
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); window.dispatchEvent(new Event('ayres:modulo')) }
