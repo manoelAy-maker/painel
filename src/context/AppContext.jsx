@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, useRef, useCallback } from 'react'
 import { defaultUsers, ADMIN_USERNAME } from '../data/defaultUsers'
 import { FILIAIS } from '../data/filiais'
-import { gerarId, baixarArquivo, dataISOTexto, calcularEstadia } from '../utils/index'
+import { gerarId, baixarArquivo, calcularEstadia } from '../utils/index'
 import { podeAdministrar } from '../utils/roles'
 import * as sb from '../lib/supabase'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
@@ -25,16 +25,20 @@ const dataRegistroMs = (item) => {
   return Number.isNaN(dt.getTime()) ? 0 : dt.getTime()
 }
 
-const mesclarRegistros = (locais = [], remotos = []) => {
+const mesclarRegistros = (locais = [], remotos = [], idsLocaisProtegidos = new Set()) => {
   const map = new Map()
-  locais.forEach(item => {
+
+  remotos.forEach(item => {
     const chave = chaveRegistro(item)
     if (chave) map.set(chave, item)
   })
-  remotos.forEach(item => {
+
+  locais.forEach(item => {
     const chave = chaveRegistro(item)
-    if (chave) map.set(chave, { ...map.get(chave), ...item })
+    if (!chave || !idsLocaisProtegidos.has(chave)) return
+    map.set(chave, { ...map.get(chave), ...item })
   })
+
   return [...map.values()].sort((a, b) => dataRegistroMs(b) - dataRegistroMs(a))
 }
 
@@ -90,6 +94,7 @@ export function AppProvider({ children }) {
   const canalRealtime = useRef(null)
   const canalPresenca = useRef(null)
   const recebendoNuvem = useRef(false)
+  const baixandoNuvem = useRef(false)
   const conectando = useRef(false)
   const conectarRef = useRef(null)
   const usuarioRef = useRef(initialState.usuarioAtual)
@@ -112,13 +117,11 @@ export function AppProvider({ children }) {
     dispatch({ type: 'SET_CLOUD', status, text })
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem('usuariosPainelViaLog', JSON.stringify(state.usuarios))
-    localStorage.setItem('filiaisViaLog', JSON.stringify(state.filiais))
-    localStorage.setItem('estadias', JSON.stringify(state.estadias))
-    localStorage.setItem('estadiasALancar', JSON.stringify(state.estadiasALancar))
-    localStorage.setItem('historicoEstadias', JSON.stringify(state.historico))
-  }, [state.usuarios, state.filiais, state.estadias, state.estadiasALancar, state.historico])
+  useEffect(() => { localStorage.setItem('usuariosPainelViaLog', JSON.stringify(state.usuarios)) }, [state.usuarios])
+  useEffect(() => { localStorage.setItem('filiaisViaLog', JSON.stringify(state.filiais)) }, [state.filiais])
+  useEffect(() => { localStorage.setItem('estadias', JSON.stringify(state.estadias)) }, [state.estadias])
+  useEffect(() => { localStorage.setItem('estadiasALancar', JSON.stringify(state.estadiasALancar)) }, [state.estadiasALancar])
+  useEffect(() => { localStorage.setItem('historicoEstadias', JSON.stringify(state.historico)) }, [state.historico])
 
   useEffect(() => {
     localStorage.setItem('temaPainelViaLog', state.tema)
@@ -145,6 +148,9 @@ export function AppProvider({ children }) {
 
   const baixarNuvem = useCallback(async (aviso = true) => {
     if (!navigator.onLine) return false
+    if (baixandoNuvem.current) return true
+
+    baixandoNuvem.current = true
     try {
       const usuario = usuarioRef.current
       const isAdmin = podeAdministrar(usuario)
@@ -154,18 +160,26 @@ export function AppProvider({ children }) {
       recebendoNuvem.current = true
       const lancadasRemotas = data.filter(x => x.tipo === 'lancada').map(x => x.dados).filter(Boolean)
       const pendentesRemotas = data.filter(x => x.tipo === 'a_lancar').map(x => x.dados).filter(Boolean)
-      const lancadas = mesclarRegistros(stateRef.current.estadias, lancadasRemotas)
-      const pendentes = mesclarRegistros(stateRef.current.estadiasALancar, pendentesRemotas)
+      const idsLocaisProtegidos = new Set(
+        stateRef.current.filaNuvem
+          .filter(item => item.acao === 'upsert')
+          .map(item => String(item.payload?.local_id || ''))
+          .filter(Boolean)
+      )
+      const lancadas = mesclarRegistros(stateRef.current.estadias, lancadasRemotas, idsLocaisProtegidos)
+      const pendentes = mesclarRegistros(stateRef.current.estadiasALancar, pendentesRemotas, idsLocaisProtegidos)
       dispatch({ type: 'SET_ESTADIAS', payload: lancadas })
       dispatch({ type: 'SET_A_LANCAR', payload: pendentes })
       recebendoNuvem.current = false
 
       if (aviso) toast('Dados baixados da nuvem.', 'ok')
       return true
-    } catch (err) {
+    } catch {
       recebendoNuvem.current = false
       if (aviso) toast('Erro ao baixar dados da nuvem.', 'warn')
       return false
+    } finally {
+      baixandoNuvem.current = false
     }
   }, [toast])
 
@@ -214,8 +228,9 @@ export function AppProvider({ children }) {
           setCloud('online', 'Atualizado em tempo real.')
         })
       }
+      const tinhaFila = stateRef.current.filaNuvem.length > 0
       await sincronizarFila()
-      await baixarNuvem(false)
+      if (tinhaFila) await baixarNuvem(false)
       setCloud('online', 'Conectado. Salvamento automático ativo.')
       toast('Nuvem conectada.', 'ok')
       return true
@@ -404,6 +419,7 @@ export function AppProvider({ children }) {
     feed('Estadia lançada', `Placa ${novo.placa} salva.`, '✅')
     toast('Estadia salva.', 'ok')
     await salvarNuvem(novo, 'lancada')
+    return novo
   }, [salvarNuvem, toast, feed])
 
   const atualizarLancada = useCallback(async (id, changes) => {
@@ -426,11 +442,15 @@ export function AppProvider({ children }) {
     await atualizarLancada(id, { status: 'Aberto', feitoPor: '', finalizadoPor: '' })
   }, [atualizarLancada])
 
-  const excluirLancada = useCallback(async (id) => {
+  const removerLancadaLocal = useCallback((id) => {
     dispatch({ type: 'SET_ESTADIAS', payload: stateRef.current.estadias.filter(e => String(e.id) !== String(id)) })
+  }, [])
+
+  const excluirLancada = useCallback(async (id) => {
+    removerLancadaLocal(id)
     toast('Estadia excluída.', 'ok')
     await deletarNuvem(id)
-  }, [deletarNuvem, toast])
+  }, [deletarNuvem, removerLancadaLocal, toast])
 
   const adicionarALancar = useCallback(async (dados, arquivos) => {
     const anexos = []
@@ -452,12 +472,10 @@ export function AppProvider({ children }) {
     const s = stateRef.current
     const item = s.estadiasALancar.find(e => String(e.id) === String(id))
     if (!item) return
-    dispatch({ type: 'SET_A_LANCAR', payload: s.estadiasALancar.filter(e => String(e.id) !== String(id)) })
     dispatch({ type: 'SET_ABA', payload: 'lancadas' })
     dispatch({ type: 'SET_ITEM_LANCAR', payload: item })
-    await deletarNuvem(id)
-    toast('Preencha os dados e salve a estadia.', 'ok')
-  }, [deletarNuvem, toast])
+    toast('Pendência carregada. Ela só será removida depois que a estadia for salva.', 'ok')
+  }, [toast])
 
   const limparItemParaLancar = useCallback(() => dispatch({ type: 'SET_ITEM_LANCAR', payload: null }), [])
 
@@ -466,7 +484,7 @@ export function AppProvider({ children }) {
     if (!calc) { toast('Verifique peso, chegada e saída.', 'err'); return }
     const s = stateRef.current
     const existente = s.estadias.find(e => String(e.id) === String(id))
-    const item = { ...existente, ...dados, ...calc }
+    const item = { ...existente, ...calc, ...dados }
     dispatch({ type: 'SET_ESTADIAS', payload: s.estadias.map(e => String(e.id) === String(id) ? item : e) })
     dispatch({ type: 'SET_HISTORICO', payload: [{ data: new Date().toLocaleString('pt-BR'), usuario: usuarioRef.current?.usuario || '-', acao: 'Editou estadia', detalhes: `Placa ${item.placa}` }, ...s.historico].slice(0, 300) })
     feed('Estadia editada', `Placa ${item.placa} atualizada.`, '✏️')
@@ -474,15 +492,19 @@ export function AppProvider({ children }) {
     await salvarNuvem(item, 'lancada')
   }, [salvarNuvem, toast, feed])
 
-  const excluirALancar = useCallback(async (id) => {
+  const removerALancarLocal = useCallback((id) => {
     dispatch({ type: 'SET_A_LANCAR', payload: stateRef.current.estadiasALancar.filter(e => String(e.id) !== String(id)) })
+  }, [])
+
+  const excluirALancar = useCallback(async (id) => {
+    removerALancarLocal(id)
     await deletarNuvem(id)
-  }, [deletarNuvem])
+  }, [deletarNuvem, removerALancarLocal])
 
   const value = {
     ...state, dispatch, entrar, logout, verificarSenhaAdmin,
-    adicionarLancada, atualizarLancada, editarLancada, excluirLancada, marcarFeito, finalizar, reabrir,
-    adicionarALancar, abrirParaLancar, excluirALancar, limparItemParaLancar,
+    adicionarLancada, atualizarLancada, editarLancada, excluirLancada, removerLancadaLocal, marcarFeito, finalizar, reabrir,
+    adicionarALancar, abrirParaLancar, excluirALancar, removerALancarLocal, limparItemParaLancar,
     uploadAnexoItem, baixarArquivo, baixarNuvem, conectarSupabase,
     criarUsuario, editarUsuario, excluirUsuario, criarFilial, excluirFilial,
     toast, feed,

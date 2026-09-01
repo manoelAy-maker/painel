@@ -1,0 +1,63 @@
+/* Logo correta no painel de captação: ícone AYRES + nome, igual identidade do painel */
+.ay-cap-brand{
+  gap:14px!important;
+  align-items:center!important;
+}
+
+.ay-cap-logo{
+  width:50px!important;
+  height:50px!important;
+  flex:0 0 50px!important;
+  border-radius:17px!important;
+  color:transparent!important;
+  font-size:0!important;
+  display:grid!important;
+  place-items:center!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02)),
+    url("data:image/svg+xml,%3Csvg width='72' height='72' viewBox='0 0 72 72' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='17' y1='10' x2='55' y2='64' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%2335C4FF'/%3E%3Cstop offset='0.48' stop-color='%232563EB'/%3E%3Cstop offset='1' stop-color='%237C3AED'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='16' y1='56' x2='48' y2='14' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23061B5C'/%3E%3Cstop offset='0.55' stop-color='%231647D9'/%3E%3Cstop offset='1' stop-color='%233B82F6'/%3E%3C/linearGradient%3E%3ClinearGradient id='c' x1='43' y1='32' x2='61' y2='61' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%232563EB'/%3E%3Cstop offset='1' stop-color='%238B5CF6'/%3E%3C/linearGradient%3E%3ClinearGradient id='d' x1='16' y1='47' x2='60' y2='28' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23FFFFFF'/%3E%3Cstop offset='0.58' stop-color='%23EAF6FF'/%3E%3Cstop offset='1' stop-color='%23A7F3FF'/%3E%3C/linearGradient%3E%3Cfilter id='g' x='-20' y='-20' width='112' height='112' filterUnits='userSpaceOnUse'%3E%3CfeGaussianBlur stdDeviation='2.5' result='blur'/%3E%3CfeColorMatrix in='blur' type='matrix' values='0 0 0 0 0.16 0 0 0 0 0.42 0 0 0 0 1 0 0 0 .42 0'/%3E%3CfeBlend in='SourceGraphic'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='72' height='72' rx='20' fill='%23071224'/%3E%3Cg filter='url(%23g)'%3E%3Cpath d='M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z' fill='url(%23a)'/%3E%3Cpath d='M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l7.66 15.65-8.3 5.22-3.08-6.5L15.7 65.38h-4.56c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z' fill='url(%23b)' opacity='.96'/%3E%3Cpath d='M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z' fill='url(%23c)'/%3E%3Cpath d='M15.4 50.55c10.82-10.8 24.9-18.46 42.22-22.98l-3.76 5.8C40.2 36.95 28.03 43.15 17.34 52.05l-1.94-1.5z' fill='url(%23d)'/%3E%3Cpath d='M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z' fill='%23fff'/%3E%3Cpath d='M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25' stroke='%230B3EA8' stroke-width='2.4' stroke-linecap='round' opacity='.72'/%3E%3C/g%3E%3C/svg%3E") center/76% 76% no-repeat!important;
+  background-color:#071224!important;
+  border:1px solid rgba(125,211,252,.22)!important;
+  box-shadow:0 16px 34px rgba(37,99,235,.34), inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+
+.ay-cap-logo::before,
+.ay-cap-logo::after{
+  content:none!important;
+  display:none!important;
+}
+
+.ay-cap-brand > div:last-child strong{
+  display:block!important;
+  font-size:26px!important;
+  letter-spacing:.13em!important;
+  line-height:1!important;
+  background:linear-gradient(135deg,#F8FAFC 0%,#35C4FF 35%,#2563EB 68%,#A78BFA 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+}
+
+.ay-cap-brand > div:last-child span{
+  display:block!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  color:#9fb0c8!important;
+}
+
+.ayres-mobile-logo{
+  color:transparent!important;
+  font-size:0!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02)),
+    url("data:image/svg+xml,%3Csvg width='72' height='72' viewBox='0 0 72 72' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='72' height='72' rx='20' fill='%23071224'/%3E%3Cpath d='M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z' fill='%232563EB'/%3E%3Cpath d='M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z' fill='%23fff'/%3E%3C/svg%3E") center/76% 76% no-repeat!important;
+  background-color:#071224!important;
+  border:1px solid rgba(125,211,252,.22)!important;
+  box-shadow:0 16px 34px rgba(37,99,235,.34), inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+
+.ayres-mobile-logo::before,
+.ayres-mobile-logo::after{
+  content:none!important;
+  display:none!important;
+}

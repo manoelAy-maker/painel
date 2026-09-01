@@ -1,0 +1,159 @@
+/* Contraste executivo vermelho fino para mais telas do painel */
+:root{
+  --ay-red:#dc2626;
+  --ay-red-soft:#ef4444;
+  --ay-red-dark:#7f1d1d;
+  --ay-purple:#7c3aed;
+  --ay-red-glow:rgba(220,38,38,.24);
+}
+
+.estadia-alert-banner{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:0 0 16px;
+  padding:11px 14px;
+  min-height:54px;
+  border-radius:14px;
+  background:
+    linear-gradient(90deg,rgba(220,38,38,.96) 0 5px,transparent 5px),
+    radial-gradient(420px circle at 0% 0%,rgba(255,255,255,.13),transparent 35%),
+    linear-gradient(135deg,#b91c1c 0%,#991b1b 44%,#6d28d9 100%);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 12px 28px rgba(220,38,38,.16),0 8px 24px rgba(124,58,237,.13);
+}
+.estadia-alert-banner:after{content:'';position:absolute;right:-44px;top:-70px;width:170px;height:170px;border-radius:999px;background:rgba(255,255,255,.10)}
+.estadia-alert-banner strong{position:relative;z-index:1;display:block;font-size:14px;font-weight:950;letter-spacing:.045em;text-transform:uppercase}
+.estadia-alert-banner span{position:relative;z-index:1;display:block;margin-top:2px;color:rgba(255,255,255,.80);font-size:12px;font-weight:700}
+.estadia-alert-banner .estadia-alert-chip{position:relative;z-index:1;flex:0 0 auto;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.20);font-size:10px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+
+/* Menu lateral da estadia igual ao efeito da captação */
+.sidebar-pro.ayres-sidebar-v4{
+  position:relative!important;
+  overflow:hidden!important;
+  border-color:rgba(148,163,184,.18)!important;
+}
+.sidebar-pro.ayres-sidebar-v4::before{
+  content:'';
+  position:absolute;
+  inset:-90px auto auto -100px;
+  width:230px;
+  height:230px;
+  border-radius:999px;
+  background:rgba(239,68,68,.22);
+  filter:blur(72px);
+  pointer-events:none;
+}
+.sidebar-pro.ayres-sidebar-v4::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(220,38,38,.10),transparent 34%,rgba(124,58,237,.08));
+}
+.sidebar-pro.ayres-sidebar-v4 .brand-pro,
+.sidebar-pro.ayres-sidebar-v4 .sidebar-nav,
+.sidebar-pro.ayres-sidebar-v4 .ayres-sidebar-today,
+.sidebar-pro.ayres-sidebar-v4 .sidebar-status{
+  position:relative;
+  z-index:1;
+}
+.sidebar-pro.ayres-sidebar-v4 .tab{
+  position:relative!important;
+  overflow:hidden!important;
+  border-radius:15px!important;
+  border:1px solid transparent!important;
+  transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease,color .22s ease!important;
+}
+.sidebar-pro.ayres-sidebar-v4 .tab::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:11px;
+  bottom:11px;
+  width:3px;
+  border-radius:999px;
+  background:transparent;
+  transition:background .22s ease,box-shadow .22s ease;
+}
+.sidebar-pro.ayres-sidebar-v4 .tab::after{
+  content:'';
+  position:absolute;
+  inset:-38%;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.20) 44%,transparent 64%);
+  transform:translateX(-130%) rotate(8deg);
+  transition:transform .42s ease;
+  pointer-events:none;
+}
+.sidebar-pro.ayres-sidebar-v4 .tab:hover,
+.sidebar-pro.ayres-sidebar-v4 .tab.active{
+  background:linear-gradient(135deg,#dc2626 0%,#7c3aed 48%,#2563eb 100%)!important;
+  color:#fff!important;
+  transform:translateX(4px)!important;
+  border-color:rgba(255,255,255,.18)!important;
+  box-shadow:0 14px 30px rgba(220,38,38,.22),0 12px 28px rgba(37,99,235,.18)!important;
+}
+.sidebar-pro.ayres-sidebar-v4 .tab:hover::before,
+.sidebar-pro.ayres-sidebar-v4 .tab.active::before{
+  background:#fff;
+  box-shadow:0 0 14px rgba(255,255,255,.72);
+}
+.sidebar-pro.ayres-sidebar-v4 .tab:hover::after{
+  transform:translateX(130%) rotate(8deg);
+}
+.sidebar-pro.ayres-sidebar-v4 .tab:hover .tab-icon,
+.sidebar-pro.ayres-sidebar-v4 .tab.active .tab-icon,
+.sidebar-pro.ayres-sidebar-v4 .tab:hover .tab-label,
+.sidebar-pro.ayres-sidebar-v4 .tab.active .tab-label{
+  color:#fff!important;
+}
+.sidebar-pro.ayres-sidebar-v4 .tab:hover .pending-badge,
+.sidebar-pro.ayres-sidebar-v4 .tab.active .pending-badge{
+  background:rgba(255,255,255,.18)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+}
+
+/* Faixa fina nos cards principais */
+.app .card,.app .stat-card,.app .metric-card,.app .dashboard-card,.app .panel-card,.app .glass-card{position:relative}
+.app .card::before,.app .stat-card::before,.app .metric-card::before,.app .dashboard-card::before,.app .panel-card::before,.app .glass-card::before{content:'';position:absolute;top:0;left:18px;right:18px;height:2px;border-radius:999px;background:linear-gradient(90deg,rgba(220,38,38,.85),rgba(124,58,237,.55),transparent);opacity:.70;pointer-events:none}
+
+/* Sidebar e menus com detalhe vermelho, sem pesar */
+.app .sidebar .active,.app .nav-item.active,.app .menu-item.active,.app aside button.active{border-color:rgba(239,68,68,.35)!important;box-shadow:0 10px 24px rgba(220,38,38,.15),0 8px 22px rgba(37,99,235,.10)!important}
+.app .sidebar .active::before,.app .nav-item.active::before,.app .menu-item.active::before{background:linear-gradient(180deg,#ef4444,#7c3aed)!important}
+
+/* Botões e ações */
+.app .btn-primary,.app button.primary,.app button[type="submit"],.app .save-btn,.app .action-primary{box-shadow:0 14px 32px rgba(220,38,38,.13),0 10px 28px rgba(37,99,235,.12)!important}
+.app .btn-primary:hover,.app button.primary:hover,.app button[type="submit"]:hover,.app .save-btn:hover,.app .action-primary:hover{filter:saturate(1.08)!important;box-shadow:0 16px 34px rgba(220,38,38,.18),0 12px 28px rgba(124,58,237,.14)!important}
+
+/* Hover vivo dos botões da estadia, no estilo da captação */
+.app:not(.capture-shell-pro) button:not(.tab),.app:not(.capture-shell-pro) .btn,.app:not(.capture-shell-pro) .action-btn,.app:not(.capture-shell-pro) .icon-btn,.app:not(.capture-shell-pro) .tab-btn,.app:not(.capture-shell-pro) .filter-btn,.app:not(.capture-shell-pro) .toolbar button,.app:not(.capture-shell-pro) .card button,.app:not(.capture-shell-pro) .panel button{position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease,color .18s ease,filter .18s ease!important}
+.app:not(.capture-shell-pro) button:not(.tab)::after,.app:not(.capture-shell-pro) .btn::after,.app:not(.capture-shell-pro) .action-btn::after,.app:not(.capture-shell-pro) .icon-btn::after,.app:not(.capture-shell-pro) .tab-btn::after,.app:not(.capture-shell-pro) .filter-btn::after,.app:not(.capture-shell-pro) .toolbar button::after,.app:not(.capture-shell-pro) .card button::after,.app:not(.capture-shell-pro) .panel button::after{content:'';position:absolute;inset:-35%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.18) 42%,transparent 64%);transform:translateX(-120%) rotate(8deg);transition:transform .38s ease;pointer-events:none}
+.app:not(.capture-shell-pro) button:not(.tab):hover,.app:not(.capture-shell-pro) .btn:hover,.app:not(.capture-shell-pro) .action-btn:hover,.app:not(.capture-shell-pro) .icon-btn:hover,.app:not(.capture-shell-pro) .tab-btn:hover,.app:not(.capture-shell-pro) .filter-btn:hover,.app:not(.capture-shell-pro) .toolbar button:hover,.app:not(.capture-shell-pro) .card button:hover,.app:not(.capture-shell-pro) .panel button:hover{transform:translateY(-2px)!important;color:#fff!important;border-color:rgba(239,68,68,.48)!important;background:linear-gradient(135deg,rgba(220,38,38,.92),rgba(124,58,237,.82),rgba(37,99,235,.72))!important;box-shadow:0 14px 30px rgba(220,38,38,.20),0 10px 24px rgba(124,58,237,.16)!important;filter:saturate(1.08)!important}
+.app:not(.capture-shell-pro) button:not(.tab):hover::after,.app:not(.capture-shell-pro) .btn:hover::after,.app:not(.capture-shell-pro) .action-btn:hover::after,.app:not(.capture-shell-pro) .icon-btn:hover::after,.app:not(.capture-shell-pro) .tab-btn:hover::after,.app:not(.capture-shell-pro) .filter-btn:hover::after,.app:not(.capture-shell-pro) .toolbar button:hover::after,.app:not(.capture-shell-pro) .card button:hover::after,.app:not(.capture-shell-pro) .panel button:hover::after{transform:translateX(120%) rotate(8deg)}
+.app:not(.capture-shell-pro) button:active,.app:not(.capture-shell-pro) .btn:active,.app:not(.capture-shell-pro) .action-btn:active,.app:not(.capture-shell-pro) .icon-btn:active{transform:translateY(0) scale(.98)!important}
+.app:not(.capture-shell-pro) button[disabled],.app:not(.capture-shell-pro) .btn[disabled],.app:not(.capture-shell-pro) button[aria-disabled="true"]{transform:none!important;filter:none!important;box-shadow:none!important;opacity:.55!important}
+
+/* Inputs em foco com vermelho fino */
+.app input:focus,.app select:focus,.app textarea:focus{border-color:rgba(239,68,68,.42)!important;box-shadow:0 0 0 3px rgba(220,38,38,.08),0 0 0 1px rgba(124,58,237,.10)!important}
+
+/* Tabelas */
+.app table thead th{border-top:1px solid rgba(220,38,38,.18)!important}
+.app tbody tr:hover td{background:linear-gradient(90deg,rgba(220,38,38,.035),rgba(37,99,235,.025))!important}
+
+/* Captação também recebe o mesmo tempero vermelho */
+.ay-cap-panel,.ay-cap-card,.ay-cap-side,.cap-crm-form,.cap-crm-table,.cap-crm-stats div{position:relative}
+.ay-cap-panel::before,.ay-cap-card::before,.cap-crm-form::before,.cap-crm-table::before,.cap-crm-stats div::before{content:'';position:absolute;top:0;left:18px;right:18px;height:2px;border-radius:999px;background:linear-gradient(90deg,rgba(239,68,68,.88),rgba(124,58,237,.55),transparent);opacity:.72;pointer-events:none;z-index:2}
+.ay-cap-menu button.active,.ay-cap-menu button:hover{background:linear-gradient(135deg,#dc2626 0%,#7c3aed 48%,#2563eb 100%)!important;box-shadow:0 14px 30px rgba(220,38,38,.20),0 12px 28px rgba(37,99,235,.18)!important}
+.ay-cap-save{background:linear-gradient(135deg,#dc2626 0%,#7c3aed 48%,#2563eb 100%)!important;box-shadow:0 18px 38px rgba(220,38,38,.20),0 12px 32px rgba(37,99,235,.18)!important}
+.ay-cap-title small,.cap-crm-hero span{background:rgba(220,38,38,.12)!important;color:#fecaca!important;border-color:rgba(239,68,68,.24)!important}
+.ay-cap-sync i,.cap-crm-sync i{box-shadow:0 0 0 4px rgba(220,38,38,.08)!important}
+
+/* Badges de status com vermelho mais limpo */
+.ay-pill.nao_carregou,.cap-crm-pill.nao_carregou{background:rgba(220,38,38,.13)!important;color:#fecaca!important;border-color:rgba(239,68,68,.34)!important}
+
+@media(max-width:760px){.estadia-alert-banner{display:block;padding:11px 13px;border-radius:14px}.estadia-alert-banner .estadia-alert-chip{display:inline-flex;margin-top:9px}}

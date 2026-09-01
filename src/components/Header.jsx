@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useAuthContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import NotificationBell from './NotificationBell'
-import PerfilUsuarioModal from './modals/PerfilUsuarioModal'
 import AyresLogo from './AyresLogo'
+import { PAGE_META } from '../config/navigation'
 import '../topbar-profile-pro.css'
 import '../topbar-clean-v2.css'
+import '../topbar-date-chip.css'
+
+const PerfilUsuarioModal = lazy(() => import('./modals/PerfilUsuarioModal'))
+const UserSettingsModal = lazy(() => import('./UserSettingsModal'))
 
 const Ic = ({ d, d2, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} />{d2 && <path d={d2} />}</svg>
@@ -12,20 +16,31 @@ const Ic = ({ d, d2, size = 18 }) => (
 const MenuIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
 const SearchIcon = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
 const ChevronIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
+const GearIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6l-.1.1a2 2 0 01-3.8-1v-.1a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1l-.1-.1a2 2 0 011-3.8h.1a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6c.39-.16.72-.42 1-.76l.1-.1a2 2 0 013.8 1v.1a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.16.39.42.72.76 1l.1.1a2 2 0 01-1 3.8h-.1a1.65 1.65 0 00-1.51 1z" /></svg>
 const cargoVisivel = (cargo) => cargo === 'Operador' || !cargo ? 'Analista Júnior' : cargo
-const TITULOS = { inicio: ['Dashboard', 'Resumo da operação'], lancadas: ['Estadias lançadas', 'Controle de lançamentos e anexos'], consultaLancadas: ['Consulta de estadias', 'Busca e acompanhamento de registros'], alancar: ['Pendências', 'Itens aguardando lançamento'], captacao: ['Captação', 'Motoristas, leads e próximas ações'], captacaoAdmin: ['Captação geral', 'Motoristas, leads e motivos'], relatorios: ['Relatórios', 'Análises e exportações'], historico: ['Histórico', 'Eventos e alterações'], lixeira: ['Lixeira', 'Registros removidos'], backup: ['Backup', 'Cópia e recuperação'], admin: ['Usuários e cargos', 'Acessos do sistema'] }
+function formatarDataPainel() {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date()).replace('.', '')
+}
 
 export default function Header({ onMenuMobile }) {
   const { usuarioAtual, logout } = useAuthContext()
   const { estadiasALancar } = useEstadiaContext()
   const { abaAtiva } = useUiContext()
   const [showPerfil, setShowPerfil] = useState(false)
+  const [showConfig, setShowConfig] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [titulo, subtitulo] = TITULOS[abaAtiva] || ['AYRES', 'Central logística']
+  const [titulo, subtitulo] = PAGE_META[abaAtiva] || ['AYRES', 'Central logística']
+  const dataPainel = useMemo(() => formatarDataPainel(), [])
 
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); window.dispatchEvent(new Event('ayres:modulo')) }
   const sair = () => { setMenuOpen(false); logout() }
   const alternarMenuLateral = () => { try { if (window.matchMedia('(min-width: 1101px)').matches) { document.body.classList.toggle('sidebar-open'); return } } catch {} onMenuMobile?.() }
+  const abrirConfiguracoes = () => { setMenuOpen(false); setShowConfig(true) }
 
   return (
     <>
@@ -38,7 +53,9 @@ export default function Header({ onMenuMobile }) {
           </div>
           <div className="ayres-header-search-v4"><SearchIcon /><span>Buscar placa, motorista ou NF…</span><kbd>⌘K</kbd></div>
           <div className="top-actions ayres-topbar-actions-pro ayres-header-actions-v4">
+            <div className="ayres-date-chip-v4" title="Data de hoje"><strong>{dataPainel}</strong><span>Hoje</span></div>
             <NotificationBell />
+            <button type="button" className="settings-trigger-btn" onClick={abrirConfiguracoes} title="Configurações"><GearIcon /><span>Config</span></button>
             <div className="ayres-user-menu-wrap-v4">
               <button className="topbar-profile-btn ayres-user-menu-btn-v4" onClick={() => setMenuOpen(v => !v)} title="Menu do usuário">
                 <div className="topbar-user-photo">{usuarioAtual?.foto ? <img src={usuarioAtual.foto} alt="Perfil" /> : (usuarioAtual?.avatar || '?')}</div>
@@ -46,12 +63,13 @@ export default function Header({ onMenuMobile }) {
                 {estadiasALancar.length > 0 && <span className="pending-badge">{estadiasALancar.length}</span>}
                 <ChevronIcon />
               </button>
-              {menuOpen && <div className="ayres-user-dropdown-v4"><div className="ayres-user-dropdown-head-v4"><strong>{usuarioAtual?.nome || 'Usuário'}</strong><span>{usuarioAtual?.filial || 'jatai-go'} · {cargoVisivel(usuarioAtual?.cargo)}</span></div><button onClick={() => { setMenuOpen(false); setShowPerfil(true) }}><Ic size={14} d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" d2="M12 11a4 4 0 100-8 4 4 0 000 8z" />Meu perfil</button><button onClick={voltarAoPortal}><Ic size={14} d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />Voltar ao portal</button><button className="danger" onClick={sair}><Ic size={14} d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />Sair</button></div>}
+              {menuOpen && <div className="ayres-user-dropdown-v4"><div className="ayres-user-dropdown-head-v4"><strong>{usuarioAtual?.nome || 'Usuário'}</strong><span>{usuarioAtual?.filial || 'jatai-go'} · {cargoVisivel(usuarioAtual?.cargo)}</span></div><button onClick={() => { setMenuOpen(false); setShowPerfil(true) }}><Ic size={14} d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" d2="M12 11a4 4 0 100-8 4 4 0 000 8z" />Meu perfil</button><button onClick={abrirConfiguracoes}><GearIcon />Configurações</button><button onClick={voltarAoPortal}><Ic size={14} d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />Voltar ao portal</button><button className="danger" onClick={sair}><Ic size={14} d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />Sair</button></div>}
             </div>
           </div>
         </div>
       </header>
-      <PerfilUsuarioModal show={showPerfil} onClose={() => setShowPerfil(false)} />
+      {showPerfil && <Suspense fallback={null}><PerfilUsuarioModal show onClose={() => setShowPerfil(false)} /></Suspense>}
+      {showConfig && <Suspense fallback={null}><UserSettingsModal show onClose={() => setShowConfig(false)} onOpenPerfil={() => { setShowConfig(false); setShowPerfil(true) }} /></Suspense>}
     </>
   )
 }
