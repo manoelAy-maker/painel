@@ -8,10 +8,10 @@ import LivePanel from './components/LivePanel'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
 import EstadiaTicker from './components/EstadiaTicker'
+import { ADMIN_ONLY_TABS } from './config/navigation'
 import './styles/app.css'
 import './cargo-options-runtime.js'
 import './login-dark-restore.css'
-import './styles/ayres-design-system.css'
 import './styles/ayres-estadia-form-clean.css'
 import './estadia-contrast.css'
 import './styles/professional-system.css'
@@ -172,7 +172,7 @@ function PainelEstadia() {
   const formLancadaRef = useRef()
   const formALancarRef = useRef()
   const isAdmin = podeAdministrar(usuarioAtual)
-  const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin', 'lixeira'].includes(abaAtiva)
+  const abaProtegida = ADMIN_ONLY_TABS.includes(abaAtiva)
   const abaRender = !isAdmin && abaProtegida ? 'inicio' : abaAtiva
   useEffect(() => { document.body.classList.toggle('sidebar-open', sidebarOpen); return () => document.body.classList.remove('sidebar-open') }, [sidebarOpen])
   const focarLancada = () => { mudarAba('lancadas'); setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50) }
@@ -218,5 +218,32 @@ export default function App() {
   const isAdmin = podeAdministrar(usuarioAtual)
   useEffect(() => { const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog')); window.addEventListener('storage', syncModulo); window.addEventListener('ayres:modulo', syncModulo); return () => { window.removeEventListener('storage', syncModulo); window.removeEventListener('ayres:modulo', syncModulo) } }, [])
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); setModuloInicial(null) }
-  return <><SoundManager />{!usuarioAtual && <Login />}{usuarioAtual && mobileApk && <AppMobileOperacional />}{usuarioAtual && !mobileApk && !moduloInicial && <Suspense fallback={<FastFallback />}><SelecaoPainel /></Suspense>}{usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <ModuloIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'usuarios-admin' && <UsuariosIsolado onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'dashboard-admin' && <AdminModuloIsolado tipo="dashboard" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'relatorios-admin' && <AdminModuloIsolado tipo="relatorios" onPortal={voltarAoPortal} />}{usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && moduloInicial !== 'usuarios-admin' && moduloInicial !== 'dashboard-admin' && moduloInicial !== 'relatorios-admin' && <PainelEstadia />}<Toast /></>
+  const modulosSomenteAdmin = ['usuarios-admin', 'dashboard-admin', 'relatorios-admin']
+  const moduloAdmin = modulosSomenteAdmin.includes(moduloInicial)
+  const abrirPainelEstadia = moduloInicial && moduloInicial !== 'captacao' && !moduloAdmin
+
+  return (
+    <>
+      <SoundManager />
+      {!usuarioAtual && <Login />}
+      {usuarioAtual && mobileApk && <AppMobileOperacional />}
+      {usuarioAtual && !mobileApk && !moduloInicial && (
+        <Suspense fallback={<FastFallback />}><SelecaoPainel /></Suspense>
+      )}
+      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && (
+        <ModuloIsolado onPortal={voltarAoPortal} />
+      )}
+      {usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'usuarios-admin' && (
+        <UsuariosIsolado onPortal={voltarAoPortal} />
+      )}
+      {usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'dashboard-admin' && (
+        <AdminModuloIsolado tipo="dashboard" onPortal={voltarAoPortal} />
+      )}
+      {usuarioAtual && !mobileApk && isAdmin && moduloInicial === 'relatorios-admin' && (
+        <AdminModuloIsolado tipo="relatorios" onPortal={voltarAoPortal} />
+      )}
+      {usuarioAtual && !mobileApk && abrirPainelEstadia && <PainelEstadia />}
+      <Toast />
+    </>
+  )
 }
