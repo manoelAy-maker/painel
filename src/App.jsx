@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useApp } from './context/AppContext'
 import Login from './components/Login'
 import Toast from './components/Toast'
@@ -11,14 +11,16 @@ import './styles/estadias-only.css'
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
+const Relatorios = lazy(() => import('./pages/Relatorios'))
+const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
 
-const ABAS_VALIDAS = ['consultaLancadas', 'finalizadas', 'lancadas', 'alancar']
+const ABAS_VALIDAS = ['consultaLancadas', 'finalizadas', 'lancadas', 'alancar', 'relatorios']
 
 function FastFallback() {
   return <div className="est-only-loading">Carregando módulo de estadias…</div>
 }
 
-function PainelEstadiasOnly() {
+function PainelEstadiasOnly({ onVoltarPortal }) {
   const { abaAtiva, mudarAba, usuarioAtual, logout } = useApp()
   const aba = ABAS_VALIDAS.includes(abaAtiva) ? abaAtiva : 'consultaLancadas'
 
@@ -32,7 +34,9 @@ function PainelEstadiasOnly() {
       ? 'Lançar estadia'
       : aba === 'finalizadas'
         ? 'Estadias finalizadas'
-        : 'Controle de estadias'
+        : aba === 'relatorios'
+          ? 'Relatórios de estadias'
+          : 'Controle de estadias'
 
   return (
     <div className="est-only-shell">
@@ -46,6 +50,7 @@ function PainelEstadiasOnly() {
         </div>
 
         <div className="est-only-user">
+          <button className="est-only-portal" type="button" onClick={onVoltarPortal}>← Voltar ao portal</button>
           <span className="est-only-user-name">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
           <button className="est-only-logout" type="button" onClick={logout}>Sair</button>
         </div>
@@ -65,6 +70,7 @@ function PainelEstadiasOnly() {
           <button className={aba === 'finalizadas' ? 'active' : ''} onClick={() => mudarAba('finalizadas')}>Finalizadas</button>
           <button className={aba === 'lancadas' ? 'active' : ''} onClick={() => mudarAba('lancadas')}>+ Lançar estadia</button>
           <button className={aba === 'alancar' ? 'active' : ''} onClick={() => mudarAba('alancar')}>+ Lançar pendência</button>
+          <button className={aba === 'relatorios' ? 'active' : ''} onClick={() => mudarAba('relatorios')}>Relatórios</button>
         </nav>
 
         <section className="est-only-stage">
@@ -73,6 +79,7 @@ function PainelEstadiasOnly() {
             {aba === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
             {aba === 'lancadas' && <EstadiaLancada />}
             {aba === 'alancar' && <EstadiaALancar />}
+            {aba === 'relatorios' && <Relatorios />}
           </Suspense>
         </section>
 
@@ -84,11 +91,31 @@ function PainelEstadiasOnly() {
 
 export default function App() {
   const { usuarioAtual } = useApp()
+  const [moduloAberto, setModuloAberto] = useState(() => localStorage.getItem('moduloInicialViaLog') || '')
+
+  useEffect(() => {
+    const sincronizarModulo = () => setModuloAberto(localStorage.getItem('moduloInicialViaLog') || '')
+    window.addEventListener('ayres:modulo', sincronizarModulo)
+    return () => window.removeEventListener('ayres:modulo', sincronizarModulo)
+  }, [])
+
+  useEffect(() => {
+    if (!usuarioAtual) setModuloAberto('')
+  }, [usuarioAtual])
+
+  const voltarAoPortal = () => {
+    localStorage.removeItem('moduloInicialViaLog')
+    setModuloAberto('')
+  }
 
   return (
     <>
       <SoundManager />
-      {!usuarioAtual ? <Login /> : <PainelEstadiasOnly />}
+      {!usuarioAtual
+        ? <Login />
+        : !moduloAberto
+          ? <Suspense fallback={<FastFallback />}><SelecaoPainel /></Suspense>
+          : <PainelEstadiasOnly onVoltarPortal={voltarAoPortal} />}
       <Toast />
     </>
   )
