@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { baixarArquivo, dataISOTexto, dinheiro, moedaNumero, resumirSLA } from '../utils/index'
 import { nomeFilial } from '../data/filiais'
-import { podeAdministrar } from '../utils/roles'
 import { filtrarPorAcesso, resumirAlertasPrazo, gerarResumoProdutividade } from '../utils/regrasOperacionais'
 import '../relatorios-pro.css'
 
@@ -72,8 +71,6 @@ export default function Relatorios() {
   const [statusFiltro, setStatusFiltro] = useState('')
   const [filialFiltro, setFilialFiltro] = useState('')
   const [responsavelFiltro, setResponsavelFiltro] = useState('')
-
-  const isAdmin = podeAdministrar(usuarioAtual)
 
   const base = useMemo(() => {
     const lancadas = filtrarPorAcesso(estadias, usuarioAtual).map(e => ({ ...e, origemRelatorio: 'Lançada' }))
@@ -153,10 +150,58 @@ export default function Relatorios() {
     setResponsavelFiltro('')
   }
 
-  const exportarCSV = () => {
-    const header = ['Origem', 'Data', 'NF', 'Chamado', 'Filial', 'Local', 'Motivo', 'Tipo frete', 'Transportadora', 'Placa', 'Motorista', 'Peso', 'Horas', 'Valor estadia', 'Status', 'Responsável']
-    const body = linhas.map(l => [l.origem, l.data, l.nf, l.chamado, l.filial, l.local, l.motivo, l.tipoFrete, l.transportadora, l.placa, l.motorista, l.peso, l.horas, l.valorEstadia, l.status, l.responsavel].map(csvEscape).join(';'))
-    baixarArquivo(`relatorio-estadias-${new Date().toISOString().slice(0, 10)}.csv`, [header.map(csvEscape).join(';'), ...body].join('\n'), 'text/csv;charset=utf-8')
+  const exportarExcel = () => {
+    const colunas = [
+      ['NF', e => e.nf || e.numeroNf || ''],
+      ['CT-e', e => e.cte || ''],
+      ['MOTORISTA', e => e.motorista || ''],
+      ['PLACA', e => e.placa || ''],
+      ['TRANSPORTADORA', e => e.transportadora || ''],
+      ['ORIGEM / LOCAL', e => e.localEstadia || e.local || ''],
+      ['FILIAL', e => nomeFilial(e.filial)],
+      ['PRODUTO / PLATAFORMA', e => e.plataforma || e.produto || ''],
+      ['PESO (KG)', e => e.peso || ''],
+      ['CHEGADA', e => [e.chegadaData, e.chegadaHora].filter(Boolean).join(' ')],
+      ['SAÍDA / DESCARGA', e => [e.saidaData, e.saidaHora].filter(Boolean).join(' ')],
+      ['FRANQUIA', e => e.franquia ? `${e.franquia}:00` : '12:00'],
+      ['HORAS A PAGAR', e => e.horasPagar || e.horas || e.totalHoras || ''],
+      ['FATOR', e => e.valorHora || '0,80'],
+      ['VALOR', e => e.valor || e.valorCalculado || ''],
+      ['DATA LANÇAMENTO', e => e.dataLancamento || e.dataCriacao || ''],
+      ['CHAMADO', e => e.chamado || ''],
+      ['STATUS', e => e.status || ''],
+      ['OBSERVAÇÃO / CONTROLE', e => e.obs || e.observacao || ''],
+      ['RESPONSÁVEL', e => e.finalizadoPor || e.feitoPor || e.emAnalisePor || e.lancadoPor || e.criadoPor || ''],
+    ]
+
+    const cabecalho = colunas.map(([titulo]) => `<th>${htmlEscape(titulo)}</th>`).join('')
+    const corpo = lista.map(e => {
+      const concluida = e.status === 'Finalizado' || e.status === 'Feito'
+      const classe = concluida ? 'linha-ok' : 'linha-pendente'
+      return `<tr class="${classe}">${colunas.map(([, obter]) => `<td>${htmlEscape(obter(e))}</td>`).join('')}</tr>`
+    }).join('')
+
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+      body{font-family:Calibri,Arial,sans-serif;font-size:11pt}
+      table{border-collapse:collapse}
+      th,td{border:1px solid #222;padding:4px 8px;white-space:nowrap;vertical-align:middle}
+      th{background:#d9e1f2;font-weight:700;text-align:center}
+      td{min-width:92px}
+      td:nth-child(3),td:nth-child(5),td:nth-child(18),td:nth-child(19){min-width:210px}
+      .linha-ok td{background:#70ad47}
+      .linha-pendente td{background:#ffc7ce}
+      .linha-ok td:nth-child(-n+17),.linha-pendente td:nth-child(-n+17){background:#fff}
+    </style></head><body><table><thead><tr>${cabecalho}</tr></thead><tbody>${corpo}</tbody></table></body></html>`
+
+    const blob = new Blob(['\ufeff', html], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `relatorio-estadias-${new Date().toISOString().slice(0, 10)}.xls`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
   }
 
   const exportarResumo = () => {
@@ -212,7 +257,7 @@ export default function Relatorios() {
       <div class="grid">${htmlRank('Filiais com mais estadia', porFilial)}${htmlRank('Responsáveis / produtividade', porResponsavel)}${htmlRank('Motivos mais frequentes', porMotivo)}${htmlRank('Transportadoras', porTransportadora)}</div>
       <div class="section-title"><h2>Detalhamento por caminhão</h2><p>Lista com placa, motorista, NF, chamado e valor individual de cada registro filtrado.</p></div>
       <div class="table"><table><thead><tr><th>#</th><th>Data</th><th>Placa</th><th>Motorista</th><th>Transportadora</th><th>NF</th><th>Chamado</th><th>Filial</th><th>Peso</th><th>Horas</th><th>Valor</th><th>Status</th><th>Responsável</th></tr></thead><tbody>${linhasDetalhadas || '<tr><td colspan="13">Sem dados no filtro.</td></tr>'}<tr class="total-row"><td colspan="9">Total filtrado</td><td>${horasTotal.toFixed(2)}h</td><td>${dinheiro(valorTotal)}</td><td colspan="2">${totalEstadias} registro(s)</td></tr></tbody></table></div>
-      <div class="obs">Observação: o PDF imprime até 180 registros por vez para não travar o navegador. Para base completa, use Exportar CSV.</div>
+      <div class="obs">Observação: o PDF imprime até 180 registros por vez para não travar o navegador. Para a base completa, use Exportar Excel.</div>
       <script>setTimeout(()=>window.print(),400)</script>
     </body></html>`
     const w = window.open('', '_blank')
@@ -221,22 +266,17 @@ export default function Relatorios() {
     w.document.close()
   }
 
-  if (!isAdmin) {
-    return <section className="aba active"><div className="box" style={{ padding: 28, textAlign: 'center' }}><h2>Acesso restrito</h2><p style={{ color: 'var(--muted)' }}>Relatórios ficam disponíveis somente para cargos administrativos.</p></div></section>
-  }
-
   return (
     <section className="aba active">
       <div className="report-pro-hero">
         <div className="report-pro-head">
           <div>
-            <h1>Relatórios Administrativos</h1>
-            <p>Analise filiais, status, responsáveis, alertas de prazo, motivos, locais, fretes e transportadoras. Exporte os dados para planilha, PDF ou resumo executivo.</p>
+            <h1>Relatórios de Estadias</h1>
+            <p>Filtre as estadias e gere os dois formatos usados na operação: Excel e PDF.</p>
           </div>
           <div className="report-actions">
-            <button className="report-export-btn" onClick={exportarCSV}>Exportar CSV</button>
-            <button className="report-export-btn secondary" onClick={exportarPDF}>Relatório PDF</button>
-            <button className="report-export-btn dark" onClick={exportarResumo}>Resumo JSON</button>
+            <button className="report-export-btn" onClick={exportarExcel}>Exportar Excel</button>
+            <button className="report-export-btn secondary" onClick={exportarPDF}>Exportar PDF</button>
           </div>
         </div>
         <div className="report-kpis">
