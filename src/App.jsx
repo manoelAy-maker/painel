@@ -1,104 +1,139 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useApp } from './context/AppContext'
 import Login from './components/Login'
+import Sidebar from './components/Sidebar'
+import Header from './components/Header'
+import LivePanel from './components/LivePanel'
+import EstadiaTicker from './components/EstadiaTicker'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
 import './styles/app.css'
+import './login-dark-restore.css'
 import './styles/ayres-estadia-form-clean.css'
 import './estadia-contrast.css'
-import './styles/estadias-only.css'
+import './styles/professional-system.css'
+import './styles/notification-rail.css'
+import './styles/estadia-ticker.css'
+import './styles/db-command-center.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 
-const ABAS_VALIDAS = ['consultaLancadas', 'finalizadas', 'lancadas', 'alancar']
+const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'finalizadas', 'lancadas', 'alancar']
 
 function FastFallback() {
-  return <div className="est-only-loading"><span className="est-loading-dot" />Carregando operação…</div>
+  return <div role="status" aria-live="polite" style={{ minHeight: 110, display: 'grid', placeItems: 'center', opacity: .72, fontSize: 13 }}>Carregando módulo…</div>
 }
 
-function NavIcon({ type }) {
-  const paths = {
-    andamento: 'M4 18V6m0 12h16M8 14l3-3 3 2 5-6',
-    finalizadas: 'M7 12l3 3 7-7M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-    nova: 'M12 5v14M5 12h14',
-    pendencia: 'M9 4h6l1 2h3v15H5V6h3l1-2zm1 9h4m-4 4h4'
-  }
+function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
+  const { estadias = [], estadiasALancar = [], usuarioAtual, cloudStatus } = useApp()
+  const emAndamento = estadias.filter(e => e.status !== 'Finalizado').length
+  const finalizadas = estadias.filter(e => e.status === 'Finalizado').length
+  const urgentes = estadiasALancar.filter(e => e.prioridade === 'Urgente').length
+  const primeiroNome = (usuarioAtual?.nome || usuarioAtual?.usuario || 'Operador').split(' ')[0]
+
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d={paths[type]} />
-    </svg>
+    <section className="aba active">
+      <div className="dashboard-hero">
+        <div className="hero-pro-card">
+          <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '.14em', opacity: .82 }}>CENTRAL DE ESTADIAS</span>
+          <h2 style={{ marginTop: 8 }}>Olá, {primeiroNome}. Operação na mão.</h2>
+          <p>Acompanhe estadias abertas, finalize registros e lance pendências sem carregar o painel com módulos que não fazem parte desta operação.</p>
+          <div className="hero-actions">
+            <button onClick={onNovaLancada}>+ Lançar estadia</button>
+            <button onClick={onNovaPendencia}>+ Criar pendência</button>
+          </div>
+        </div>
+        <div className="hero-side-card">
+          <h3>Resumo agora</h3>
+          <div className="system-health">
+            <div className="health-row"><span>Em andamento</span><strong>{emAndamento}</strong></div>
+            <div className="health-row"><span>Pendências</span><strong>{estadiasALancar.length}</strong></div>
+            <div className="health-row"><span>Urgentes</span><strong>{urgentes}</strong></div>
+            <div className="health-row"><span>Finalizadas</span><strong>{finalizadas}</strong></div>
+            <div className="health-row"><span>Nuvem</span><strong>{cloudStatus === 'online' ? 'Online' : 'Verificando'}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="stats" style={{ marginBottom: 16 }}>
+        <div className="stat-card"><span>Estadias registradas</span><strong>{estadias.length}</strong><small>Base operacional</small></div>
+        <div className="stat-card"><span>Em andamento</span><strong>{emAndamento}</strong><small>Aguardando conclusão</small></div>
+        <div className="stat-card"><span>Pendências</span><strong>{estadiasALancar.length}</strong><small>Aguardando lançamento</small></div>
+        <div className="stat-card"><span>Finalizadas</span><strong>{finalizadas}</strong><small>Registros encerrados</small></div>
+      </div>
+
+      <div className="dashboard-hero">
+        <div className="hero-side-card">
+          <h3>Fluxo de trabalho</h3>
+          <div className="system-health">
+            <div className="health-row"><span>1. Receber ocorrência</span><strong>Pendência</strong></div>
+            <div className="health-row"><span>2. Conferir informações</span><strong>Tratamento</strong></div>
+            <div className="health-row"><span>3. Lançar estadia</span><strong>Registro</strong></div>
+            <div className="health-row"><span>4. Encerrar</span><strong>Finalizada</strong></div>
+          </div>
+        </div>
+        <div className="hero-side-card">
+          <h3>Acesso rápido</h3>
+          <div className="hero-actions">
+            <button className="btn-blue" onClick={onNovaLancada}>Nova estadia</button>
+            <button className="btn-orange" onClick={onNovaPendencia}>Nova pendência</button>
+          </div>
+          <p className="muted" style={{ marginTop: 14, lineHeight: 1.5 }}>O AYRES continua com a identidade visual completa, mas agora o menu fica dedicado ao que interessa: estadias e pendências.</p>
+        </div>
+      </div>
+    </section>
   )
 }
 
-function PainelEstadiasOnly() {
-  const { abaAtiva, mudarAba, usuarioAtual, logout } = useApp()
-  const aba = ABAS_VALIDAS.includes(abaAtiva) ? abaAtiva : 'consultaLancadas'
+function PainelEstadias() {
+  const { abaAtiva, mudarAba } = useApp()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const formLancadaRef = useRef()
+  const formALancarRef = useRef()
+  const aba = ABAS_VALIDAS.includes(abaAtiva) ? abaAtiva : 'inicio'
 
   useEffect(() => {
-    if (!ABAS_VALIDAS.includes(abaAtiva)) mudarAba('consultaLancadas')
+    if (!ABAS_VALIDAS.includes(abaAtiva)) mudarAba('inicio')
   }, [abaAtiva, mudarAba])
 
+  useEffect(() => {
+    document.body.classList.toggle('sidebar-open', sidebarOpen)
+    return () => document.body.classList.remove('sidebar-open')
+  }, [sidebarOpen])
+
+  const focarLancada = () => {
+    mudarAba('lancadas')
+    setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+  }
+
+  const focarALancar = () => {
+    mudarAba('alancar')
+    setTimeout(() => formALancarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+  }
+
   return (
-    <div className="est-only-shell">
-      <header className="est-only-topbar">
-        <div className="est-only-brand">
-          <div className="est-only-mark">A</div>
-          <div className="est-only-brand-copy">
-            <strong>AYRES</strong>
-            <span>Controle de Estadias</span>
-          </div>
-        </div>
-
-        <div className="est-only-top-actions">
-          <span className="est-system-status"><i /> Operação online</span>
-          <div className="est-only-user">
-            <div className="est-user-avatar">{String(usuarioAtual?.nome || usuarioAtual?.usuario || 'U').trim().charAt(0).toUpperCase()}</div>
-            <div className="est-user-copy">
-              <strong>{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</strong>
-              <span>{usuarioAtual?.cargo || 'Operador'}</span>
-            </div>
-            <button className="est-only-logout" type="button" onClick={logout}>Sair</button>
-          </div>
-        </div>
-      </header>
-
-      <main className="est-only-main">
-        <div className="est-only-page-head">
-          <div>
-            <span className="est-only-kicker">CENTRAL OPERACIONAL</span>
-            <h1>Estadias</h1>
-          </div>
-          <p>Registre, acompanhe e finalize ocorrências sem sair da operação.</p>
-        </div>
-
-        <nav className="est-only-nav" aria-label="Navegação de estadias">
-          <button className={aba === 'consultaLancadas' ? 'active' : ''} onClick={() => mudarAba('consultaLancadas')}>
-            <NavIcon type="andamento" /><span>Em andamento</span>
-          </button>
-          <button className={aba === 'finalizadas' ? 'active' : ''} onClick={() => mudarAba('finalizadas')}>
-            <NavIcon type="finalizadas" /><span>Finalizadas</span>
-          </button>
-          <button className={aba === 'lancadas' ? 'active accent' : 'accent'} onClick={() => mudarAba('lancadas')}>
-            <NavIcon type="nova" /><span>Nova estadia</span>
-          </button>
-          <button className={aba === 'alancar' ? 'active' : ''} onClick={() => mudarAba('alancar')}>
-            <NavIcon type="pendencia" /><span>Pendências</span>
-          </button>
-        </nav>
-
-        <section className="est-only-stage">
-          <Suspense fallback={<FastFallback />}>
-            {aba === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
-            {aba === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
-            {aba === 'lancadas' && <EstadiaLancada />}
-            {aba === 'alancar' && <EstadiaALancar />}
-          </Suspense>
+    <div className="app" style={{ display: 'block' }}>
+      {sidebarOpen && <button className="sidebar-backdrop" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
+      <div className="app-layout">
+        <Sidebar onFechar={() => setSidebarOpen(false)} />
+        <section className="main-pro">
+          <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
+          <main className="container">
+            <EstadiaTicker />
+            <LivePanel />
+            <Suspense fallback={<FastFallback />}>
+              {aba === 'inicio' && <EstadiasHome onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
+              {aba === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
+              {aba === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
+              {aba === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
+              {aba === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
+            </Suspense>
+            <div className="footer">AYRES · Controle de Estadias · by Manoel</div>
+          </main>
         </section>
-
-        <footer className="est-only-footer">AYRES · Controle operacional de estadias</footer>
-      </main>
+      </div>
     </div>
   )
 }
@@ -108,7 +143,7 @@ export default function App() {
   return (
     <>
       <SoundManager />
-      {!usuarioAtual ? <Login /> : <PainelEstadiasOnly />}
+      {!usuarioAtual ? <Login /> : <PainelEstadias />}
       <Toast />
     </>
   )
