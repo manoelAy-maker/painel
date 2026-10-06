@@ -1,6 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
-import { podeAdministrar } from '../utils/roles'
 import AyresLogo from './AyresLogo'
 import '../styles/portal-zero.css'
 import '../styles/portal-admin.css'
@@ -41,15 +40,10 @@ const TRADUCOES = {
     notaComum: 'Acesso separado por módulo para manter a operação limpa e rápida.',
     notaAdmin: 'Portal administrativo liberado: usuários, relatórios e dashboard ficam em cartões próprios.',
     modulos: [
-      { id: 'estadia', nome: 'Estadia', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operação', bullets: ['Estadias', 'Pendências', 'Relatórios'] },
-      { id: 'captacao', nome: 'Captação', subtitulo: 'Motoristas, contatos, cargas captadas e acompanhamento comercial.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Comercial', bullets: ['Motoristas', 'Contatos', 'Ranking'] },
-      { id: 'embarque', nome: 'Embarque', subtitulo: 'Controle de cargas, fretes, veículos e localização da operação.', icon: 'truck', cor: 'emerald', aba: 'embarque', etiqueta: 'Logística', bullets: ['Localização', 'Fretes', 'Cargas'] },
+      { id: 'estadia', nome: 'Estadias', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'consultaLancadas', etiqueta: 'Operação', bullets: ['Em andamento', 'Pendências', 'Finalizadas'] },
+      { id: 'relatorios', nome: 'Relatórios', subtitulo: 'Filtre a operação e gere os arquivos que você precisa.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Exportação', bullets: ['Excel', 'PDF', 'Filtros'] },
     ],
-    adminModulos: [
-      { id: 'dashboard-admin', nome: 'Dashboard', subtitulo: 'Visão geral da operação, indicadores e atalhos principais.', icon: 'dashboard', cor: 'cyan', aba: 'inicio', etiqueta: 'Admin', bullets: ['Resumo', 'Indicadores', 'Visão geral'], admin: true },
-      { id: 'usuarios-admin', nome: 'Usuários', subtitulo: 'Adicionar usuários, trocar cargos, ajustar filial e revisar acessos.', icon: 'users', cor: 'purple', aba: 'admin', etiqueta: 'Admin', bullets: ['Adicionar', 'Cargos', 'Filiais'], admin: true },
-      { id: 'relatorios-admin', nome: 'Relatórios', subtitulo: 'Consultar relatórios, filtros e histórico administrativo.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Admin', bullets: ['Filtros', 'Exportar', 'Histórico'], admin: true },
-    ],
+    adminModulos: [],
   },
   en: {
     marca: 'Operations',
@@ -65,15 +59,10 @@ const TRADUCOES = {
     notaComum: 'Separate access by module keeps the operation clean and fast.',
     notaAdmin: 'Admin portal enabled: users, reports and dashboard have their own cards.',
     modulos: [
-      { id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', cor: 'blue', aba: 'inicio', etiqueta: 'Operations', bullets: ['Records', 'Pending', 'Reports'] },
-      { id: 'captacao', nome: 'Capture', subtitulo: 'Drivers, contacts, captured loads and commercial follow-up.', icon: 'chart', cor: 'orange', aba: 'captacao', etiqueta: 'Commercial', bullets: ['Drivers', 'Contacts', 'Ranking'] },
-      { id: 'embarque', nome: 'Shipment', subtitulo: 'Load control, freight, vehicles and operation location.', icon: 'truck', cor: 'emerald', aba: 'embarque', etiqueta: 'Logistics', bullets: ['Location', 'Freight', 'Loads'] },
+      { id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', cor: 'blue', aba: 'consultaLancadas', etiqueta: 'Operations', bullets: ['In progress', 'Pending', 'Finished'] },
+      { id: 'relatorios', nome: 'Reports', subtitulo: 'Filter the operation and generate the files you need.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Export', bullets: ['Excel', 'PDF', 'Filters'] },
     ],
-    adminModulos: [
-      { id: 'dashboard-admin', nome: 'Dashboard', subtitulo: 'Operational overview, indicators and main shortcuts.', icon: 'dashboard', cor: 'cyan', aba: 'inicio', etiqueta: 'Admin', bullets: ['Summary', 'Indicators', 'Overview'], admin: true },
-      { id: 'usuarios-admin', nome: 'Users', subtitulo: 'Add users, change roles, adjust branches and review access.', icon: 'users', cor: 'purple', aba: 'admin', etiqueta: 'Admin', bullets: ['Add', 'Roles', 'Branches'], admin: true },
-      { id: 'relatorios-admin', nome: 'Reports', subtitulo: 'View reports, filters and administrative history.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Admin', bullets: ['Filters', 'Export', 'History'], admin: true },
-    ],
+    adminModulos: [],
   },
 }
 
@@ -86,8 +75,8 @@ export default function SelecaoPainel() {
   const t = TRADUCOES[idioma] || TRADUCOES.pt
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'usuário'
   const filialLabel = usuarioAtual?.filial === 'oleo' ? 'Operação do Óleo' : (usuarioAtual?.filial || 'jatai-go')
-  const isAdmin = podeAdministrar(usuarioAtual)
-  const modulosPortal = isAdmin ? [...t.modulos, ...t.adminModulos] : t.modulos
+  const isAdmin = false
+  const modulosPortal = t.modulos
 
   useEffect(() => {
     const timer = setTimeout(() => setPronto(true), 40)
@@ -101,11 +90,6 @@ export default function SelecaoPainel() {
   }
 
   const acessar = (modulo) => {
-    if (modulo.id === 'embarque') {
-      window.location.href = '/controle-embarques.html'
-      return
-    }
-
     localStorage.setItem('moduloInicialViaLog', modulo.id)
     mudarAba(modulo.aba)
     window.dispatchEvent(new Event('ayres:modulo'))

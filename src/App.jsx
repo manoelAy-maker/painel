@@ -19,6 +19,8 @@ import './styles/db-command-center.css'
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
+const Relatorios = lazy(() => import('./pages/Relatorios'))
+const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
 
 const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'finalizadas', 'lancadas', 'alancar']
 
@@ -87,7 +89,7 @@ function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
   )
 }
 
-function PainelEstadias() {
+function PainelEstadias({ onVoltarPortal }) {
   const { abaAtiva, mudarAba } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const formLancadaRef = useRef()
@@ -121,6 +123,9 @@ function PainelEstadias() {
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+              <button type="button" className="btn-light btn-small" onClick={onVoltarPortal}>← Voltar ao portal</button>
+            </div>
             <EstadiaTicker />
             <LivePanel />
             <Suspense fallback={<FastFallback />}>
@@ -138,12 +143,51 @@ function PainelEstadias() {
   )
 }
 
+function PainelRelatorios({ onVoltarPortal }) {
+  return (
+    <div className="app" style={{ display: 'block' }}>
+      <section className="main-pro" style={{ marginLeft: 0 }}>
+        <main className="container" style={{ paddingTop: 18 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+            <button type="button" className="btn-light btn-small" onClick={onVoltarPortal}>← Voltar ao portal</button>
+          </div>
+          <Suspense fallback={<FastFallback />}><Relatorios /></Suspense>
+          <div className="footer">AYRES · Relatórios de Estadias · by Manoel</div>
+        </main>
+      </section>
+    </div>
+  )
+}
+
 export default function App() {
   const { usuarioAtual } = useApp()
+  const [moduloAberto, setModuloAberto] = useState(() => localStorage.getItem('moduloInicialViaLog') || '')
+
+  useEffect(() => {
+    const sincronizarModulo = () => setModuloAberto(localStorage.getItem('moduloInicialViaLog') || '')
+    window.addEventListener('ayres:modulo', sincronizarModulo)
+    return () => window.removeEventListener('ayres:modulo', sincronizarModulo)
+  }, [])
+
+  useEffect(() => {
+    if (!usuarioAtual) setModuloAberto('')
+  }, [usuarioAtual])
+
+  const voltarAoPortal = () => {
+    localStorage.removeItem('moduloInicialViaLog')
+    setModuloAberto('')
+  }
+
   return (
     <>
       <SoundManager />
-      {!usuarioAtual ? <Login /> : <PainelEstadias />}
+      {!usuarioAtual
+        ? <Login />
+        : !moduloAberto
+          ? <Suspense fallback={<FastFallback />}><SelecaoPainel /></Suspense>
+          : moduloAberto === 'relatorios'
+            ? <PainelRelatorios onVoltarPortal={voltarAoPortal} />
+            : <PainelEstadias onVoltarPortal={voltarAoPortal} />}
       <Toast />
     </>
   )
