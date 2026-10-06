@@ -90,6 +90,7 @@ body{
   font-weight:750;
 }
 
+.est-only-portal,
 .est-only-logout{
   border:1px solid var(--est-border);
   background:rgba(15,23,42,.74);
@@ -98,6 +99,17 @@ body{
   padding:9px 12px;
   font-weight:800;
   cursor:pointer;
+}
+
+.est-only-portal{
+  color:#bfdbfe;
+  background:rgba(37,99,235,.10);
+  border-color:rgba(96,165,250,.24);
+}
+
+.est-only-portal:hover,
+.est-only-logout:hover{
+  background:rgba(255,255,255,.08);
 }
 
 .est-only-main{
@@ -190,6 +202,7 @@ body{
 @media (max-width:760px){
   .est-only-topbar{padding:12px 14px}
   .est-only-user-name{display:none}
+  .est-only-portal{padding:9px 10px;font-size:12px}
   .est-only-main{width:min(100% - 20px,1560px);padding-top:14px}
   .est-only-hero{display:block}
   .est-only-hero h1{font-size:28px}
