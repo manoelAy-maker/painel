@@ -66,6 +66,98 @@ function resumoEstadia(e) {
   ].join('\n')
 }
 
+
+function excelEscape(valor) {
+  return String(valor ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function dataExcel(valor) {
+  if (!valor) return ''
+  const d = new Date(valor)
+  if (!Number.isNaN(d.getTime())) return d.toLocaleDateString('pt-BR')
+  const txt = String(valor)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(txt)) {
+    const [ano, mes, dia] = txt.split('-')
+    return `${dia}/${mes}/${ano}`
+  }
+  return txt
+}
+
+function horaExcel(data, hora) {
+  const d = dataExcel(data)
+  return [d, hora].filter(Boolean).join(' ')
+}
+
+function baixarPlanilhaEstadias(lista) {
+  const colunas = [
+    ['NF', e => e.nf || e.numeroNf || ''],
+    ['CT-e', e => e.cte || ''],
+    ['MOTORISTA', e => e.motorista || ''],
+    ['PLACA', e => e.placa || ''],
+    ['TRANSPORTADORA', e => e.transportadora || ''],
+    ['ORIGEM / LOCAL', e => e.localEstadia || ''],
+    ['FILIAL', e => nomeFilial(e.filial)],
+    ['PRODUTO / PLATAFORMA', e => e.plataforma || ''],
+    ['PESO (KG)', e => e.peso || ''],
+    ['CHEGADA', e => horaExcel(e.chegadaData, e.chegadaHora)],
+    ['SAÍDA / DESCARGA', e => horaExcel(e.saidaData, e.saidaHora)],
+    ['FRANQUIA', e => e.franquia ? `${e.franquia}:00` : '12:00'],
+    ['HORAS A PAGAR', e => e.horasPagar || e.horas || e.totalHoras || ''],
+    ['FATOR', e => e.valorHora || '0,80'],
+    ['VALOR', e => e.valor || e.valorCalculado || ''],
+    ['DATA LANÇAMENTO', e => dataExcel(e.dataLancamento)],
+    ['CHAMADO', e => e.chamado || ''],
+    ['STATUS', e => statusLabel(e.status)],
+    ['OBSERVAÇÃO / CONTROLE', e => e.obs || ''],
+    ['RESPONSÁVEL', e => e.finalizadoPor || e.feitoPor || e.emAnalisePor || e.lancadoPor || ''],
+  ]
+
+  const cabecalho = colunas.map(([titulo]) => `<th>${excelEscape(titulo)}</th>`).join('')
+  const linhas = lista.map(e => {
+    const classe = e.status === 'Finalizado' || e.status === 'Feito' ? 'linha-ok' : 'linha-pendente'
+    return `<tr class="${classe}">${colunas.map(([, obter]) => `<td>${excelEscape(obter(e))}</td>`).join('')}</tr>`
+  }).join('')
+
+  const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #222; padding: 4px 8px; white-space: nowrap; vertical-align: middle; }
+  th { background: #d9e1f2; font-weight: 700; text-align: center; }
+  td { min-width: 92px; }
+  td:nth-child(3), td:nth-child(5), td:nth-child(18), td:nth-child(19) { min-width: 210px; }
+  .linha-ok td { background: #70ad47; }
+  .linha-pendente td { background: #ffc7ce; }
+  .linha-ok td:nth-child(-n+17), .linha-pendente td:nth-child(-n+17) { background: #fff; }
+</style>
+</head>
+<body>
+<table>
+<thead><tr>${cabecalho}</tr></thead>
+<tbody>${linhas}</tbody>
+</table>
+</body>
+</html>`
+
+  const blob = new Blob(['\ufeff', html], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  const hoje = new Date().toISOString().slice(0, 10)
+  a.href = url
+  a.download = `estadias-ayres-${hoje}.xls`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
 export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' }) {
   const { estadias, editarLancada, excluirLancada, filiais, mudarAba, usuarioAtual, toast } = useApp()
   const [busca, setBusca] = useState('')
@@ -194,6 +286,15 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
     return null
   }
 
+  const exportarExcel = () => {
+    if (!listaFiltrada.length) {
+      toast?.('Não há estadias para exportar com os filtros atuais.', 'warn')
+      return
+    }
+    baixarPlanilhaEstadias(listaFiltrada)
+    toast?.(`Planilha gerada com ${listaFiltrada.length} estadia(s).`, 'ok')
+  }
+
   return (
     <section className="aba active consulta-pro" id="abaConsultaLancadas">
       <div className="consulta-pro-head">
@@ -204,6 +305,7 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
         </div>
         <div className="consulta-pro-head-actions">
           <button className="consulta-pro-primary" onClick={() => mudarAba('lancadas')}>+ Lançar nova</button>
+          <button className="consulta-pro-light" onClick={exportarExcel}>📊 Exportar Excel padrão</button>
           <button className="consulta-pro-light" onClick={limpar}>Limpar filtros</button>
         </div>
       </div>
