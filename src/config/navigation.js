@@ -2,6 +2,7 @@ export const PAGE_META = {
   inicio: ['Dashboard de Estadias', 'Visão geral da operação'],
   lancadas: ['Lançar estadia', 'Registrar uma nova estadia'],
   consultaLancadas: ['Estadias em andamento', 'Acompanhar registros ativos'],
+  planilha: ['Visão planilha', 'Conferência rápida em linhas'],
   finalizadas: ['Finalizadas', 'Registros encerrados e conferidos'],
   alancar: ['Pendências', 'Itens aguardando lançamento'],
 }
@@ -9,6 +10,7 @@ export const PAGE_META = {
 const OPERACAO = [
   { id: 'inicio', label: 'Visão geral' },
   { id: 'consultaLancadas', label: 'Em andamento' },
+  { id: 'planilha', label: 'Visão planilha' },
   { id: 'finalizadas', label: 'Finalizadas' },
   { id: 'lancadas', label: 'Lançar estadia' },
   { id: 'alancar', label: 'Pendências' },
