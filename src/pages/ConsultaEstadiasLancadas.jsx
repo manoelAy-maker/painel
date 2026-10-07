@@ -13,8 +13,9 @@ function classePrio(p) {
 }
 
 function classeStatus(s) {
-  if (s === 'Finalizado') return 'status-finalizado'
-  if (s === 'Feito') return 'status-feito'
+  if (s === 'Finalizado' || s === 'Pago') return 'status-finalizado'
+  if (s === 'Aprovado' || s === 'Em pagamento') return 'status-feito'
+  if (s === 'Recusado' || s === 'Cancelado') return 'status-cancelado'
   if (s === 'Em análise') return 'status-feito'
   return 'status-aberto'
 }
@@ -92,15 +93,22 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
   }), [listaFiltrada, visao])
 
   const stats = useMemo(() => {
-    const totalValor = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valor), 0)
+    const totalPrevisto = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valor || e.valorCalculado), 0)
+    const totalAprovado = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valorAprovado), 0)
+    const totalPago = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valorPago), 0)
     return {
       total: listaFiltrada.length,
       abertas: listaFiltrada.filter(e => !e.status || e.status === 'Aberto').length,
       analise: listaFiltrada.filter(e => e.status === 'Em análise').length,
-      feitas: listaFiltrada.filter(e => e.status === 'Feito').length,
-      andamento: listaFiltrada.filter(e => e.status !== 'Finalizado').length,
+      aprovadas: listaFiltrada.filter(e => e.status === 'Aprovado').length,
+      pagamento: listaFiltrada.filter(e => e.status === 'Em pagamento').length,
+      pagas: listaFiltrada.filter(e => e.status === 'Pago').length,
+      andamento: listaFiltrada.filter(e => !['Finalizado','Cancelado'].includes(e.status)).length,
       finalizadas: listaFiltrada.filter(e => e.status === 'Finalizado').length,
-      valor: totalValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      previsto: totalPrevisto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      aprovado: totalAprovado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      pago: totalPago.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      aPagar: Math.max(0, totalAprovado - totalPago).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
     }
   }, [listaFiltrada])
 
@@ -189,8 +197,10 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
 
   const proximaAcao = (e) => {
     if (!e.status || e.status === 'Aberto') return { label: 'Analisar', status: 'Em análise', classe: 'warn' }
-    if (e.status === 'Em análise') return { label: 'Marcar feito', status: 'Feito', classe: 'ok' }
-    if (e.status === 'Feito') return { label: 'Finalizar', status: 'Finalizado', classe: 'done' }
+    if (e.status === 'Em análise') return { label: 'Aprovar', status: 'Aprovado', classe: 'ok' }
+    if (e.status === 'Aprovado') return { label: 'Enviar p/ pagamento', status: 'Em pagamento', classe: 'warn' }
+    if (e.status === 'Em pagamento') return { label: 'Marcar pago', status: 'Pago', classe: 'ok' }
+    if (e.status === 'Pago') return { label: 'Finalizar', status: 'Finalizado', classe: 'done' }
     return null
   }
 
