@@ -12,7 +12,6 @@ const EMPTY = {
   motivo: '', sindicato: 'Não', prioridade: 'Normal', status: 'Aberto',
   chegadaData: '', chegadaHora: '', saidaData: '', saidaHora: '',
   alterarCalculo: false, tipoCalculo: 'Hora', franquia: '12', valorHora: '0,80', valorDiaria: '', qtdDias: '', valorNegociado: '',
-  chamado: '', valorAprovado: '', valorPago: '', dataPagamento: '',
   obs: '',
 }
 const TRANSPORTADORAS_BASE = ['Via Log', 'RDR', 'Transportes', 'Autônomo']
@@ -88,9 +87,7 @@ export default function EstadiaLancada({ formRef }) {
       nf: e.nf || e.numeroNf || '', cte: e.cte || '', motorista: e.motorista || '', telefoneMotorista: e.telefoneMotorista || '', transportadora: e.transportadora || '', placa: e.placa || '', peso: e.peso || '',
       plataforma: e.plataforma || 'G&O - GRÃOS E OLEAGINOSAS', regiaoAprovadora: e.regiaoAprovadora || '', localEstadia: e.localEstadia || 'Destino', motivo: e.motivo || '', sindicato: e.sindicato || 'Não', prioridade: e.prioridade || 'Normal', status: e.status || 'Aberto',
       chegadaData: e.chegadaData || '', chegadaHora: e.chegadaHora || '', saidaData: e.saidaData || '', saidaHora: e.saidaHora || '',
-      alterarCalculo: Boolean(e.alterarCalculo), tipoCalculo: e.tipoCalculo || 'Hora', franquia: e.franquia || '12', valorHora: e.valorHora || '0,80', valorDiaria: e.valorDiaria || '', qtdDias: e.qtdDias || '', valorNegociado: e.valorNegociado || '',
-      chamado: e.chamado || '', valorAprovado: e.valorAprovado || '', valorPago: e.valorPago || '', dataPagamento: e.dataPagamento || '',
-      obs: e.obs || '',
+      alterarCalculo: Boolean(e.alterarCalculo), tipoCalculo: e.tipoCalculo || 'Hora', franquia: e.franquia || '12', valorHora: e.valorHora || '0,80', valorDiaria: e.valorDiaria || '', qtdDias: e.qtdDias || '', valorNegociado: e.valorNegociado || '', obs: e.obs || '',
     })
     setExistingAnexos(e.anexos || [])
     setArquivos([])
@@ -104,9 +101,7 @@ export default function EstadiaLancada({ formRef }) {
       nf: itemParaLancar.nf || itemParaLancar.numeroNf || '', cte: itemParaLancar.cte || '', placa: itemParaLancar.placa || '', peso: itemParaLancar.peso || '', transportadora: itemParaLancar.transportadora || '', prioridade: itemParaLancar.prioridade || 'Normal',
       plataforma: itemParaLancar.plataforma || prev.plataforma, regiaoAprovadora: itemParaLancar.regiaoAprovadora || '', localEstadia: itemParaLancar.localEstadia || prev.localEstadia, motivo: itemParaLancar.motivo || '', sindicato: itemParaLancar.sindicato || 'Não',
       chegadaData: itemParaLancar.chegadaData || '', chegadaHora: itemParaLancar.chegadaHora || '', saidaData: itemParaLancar.saidaData || '', saidaHora: itemParaLancar.saidaHora || '',
-      alterarCalculo: Boolean(itemParaLancar.alterarCalculo), tipoCalculo: itemParaLancar.tipoCalculo || prev.tipoCalculo, franquia: itemParaLancar.franquia || prev.franquia, valorHora: itemParaLancar.valorHora || prev.valorHora, valorDiaria: itemParaLancar.valorDiaria || '', qtdDias: itemParaLancar.qtdDias || '', valorNegociado: itemParaLancar.valorNegociado || '',
-      chamado: itemParaLancar.chamado || '', valorAprovado: itemParaLancar.valorAprovado || '', valorPago: itemParaLancar.valorPago || '', dataPagamento: itemParaLancar.dataPagamento || '',
-      obs: itemParaLancar.obs || '',
+      alterarCalculo: Boolean(itemParaLancar.alterarCalculo), tipoCalculo: itemParaLancar.tipoCalculo || prev.tipoCalculo, franquia: itemParaLancar.franquia || prev.franquia, valorHora: itemParaLancar.valorHora || prev.valorHora, valorDiaria: itemParaLancar.valorDiaria || '', qtdDias: itemParaLancar.qtdDias || '', valorNegociado: itemParaLancar.valorNegociado || '', obs: itemParaLancar.obs || '',
     }))
     setExistingAnexos(itemParaLancar.anexos || [])
     setArquivos([])
@@ -246,7 +241,7 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field span-2"><label>Motivo da estadia</label><select value={form.motivo} onChange={e => set('motivo', e.target.value)}><option value="">Selecione</option>{motivos.map(m => <option key={m}>{m}</option>)}</select></div>
                 <div className="field"><label>Onde ocorreu</label><select value={form.localEstadia} onChange={e => set('localEstadia', e.target.value)}><option>Origem</option><option>Destino</option></select></div>
                 <div className="field"><label>Prioridade</label><select value={form.prioridade} onChange={e => set('prioridade', e.target.value)}><option>Normal</option><option>Alta</option><option>Urgente</option></select></div>
-                {editandoId && <div className="field"><label>Status</label><select value={form.status} onChange={e => set('status', e.target.value)}><option>Aberto</option><option>Em análise</option><option>Aprovado</option><option>Em pagamento</option><option>Pago</option><option>Finalizado</option><option>Recusado</option><option>Cancelado</option></select></div>}
+                {editandoId && <div className="field"><label>Status</label><select value={form.status} onChange={e => set('status', e.target.value)}><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select></div>}
               </div>
             </section>
 
@@ -268,16 +263,6 @@ export default function EstadiaLancada({ formRef }) {
                 <div className="field"><label>Hora chegada</label><input type="time" value={form.chegadaHora} onChange={e => set('chegadaHora', e.target.value)} /></div>
                 <div className="field"><label>Data saída/descarga</label><input type="date" value={form.saidaData} onChange={e => set('saidaData', e.target.value)} /></div>
                 <div className="field"><label>Hora saída/descarga</label><input type="time" value={form.saidaHora} onChange={e => set('saidaHora', e.target.value)} /></div>
-              </div>
-            </section>
-
-            <section className="estadia-card-clean">
-              <div className="estadia-card-title"><strong>Chamado e financeiro</strong><span>Previsto, aprovado e pago</span></div>
-              <div className="estadia-grid-clean cols-4">
-                <div className="field"><label>Número do chamado</label><input value={form.chamado} onChange={e => set('chamado', e.target.value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 30))} placeholder="Ex: 17658434" /></div>
-                <div className="field"><label>Valor aprovado</label><input value={form.valorAprovado} onChange={e => set('valorAprovado', e.target.value.replace(/[^0-9,.-]/g, ''))} placeholder="Ex: 2172,90" inputMode="decimal" /></div>
-                <div className="field"><label>Valor pago</label><input value={form.valorPago} onChange={e => set('valorPago', e.target.value.replace(/[^0-9,.-]/g, ''))} placeholder="Ex: 2172,90" inputMode="decimal" /></div>
-                <div className="field"><label>Data do pagamento</label><input type="date" value={form.dataPagamento} onChange={e => set('dataPagamento', e.target.value)} /></div>
               </div>
             </section>
 
