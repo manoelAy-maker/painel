@@ -28,25 +28,11 @@ function FastFallback() {
   return <div role="status" aria-live="polite" style={{ minHeight: 110, display: 'grid', placeItems: 'center', opacity: .72, fontSize: 13 }}>Carregando módulo…</div>
 }
 
-function valorNumero(v) {
-  const s = String(v || '').replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.')
-  return Number(s) || 0
-}
-
-function dinheiro(v) {
-  return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
 function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
   const { estadias = [], estadiasALancar = [], usuarioAtual, cloudStatus } = useApp()
   const emAndamento = estadias.filter(e => e.status !== 'Finalizado').length
   const finalizadas = estadias.filter(e => e.status === 'Finalizado').length
   const urgentes = estadiasALancar.filter(e => e.prioridade === 'Urgente').length
-  const aguardandoAprovacao = estadias.filter(e => e.status === 'Em análise').length
-  const aguardandoPagamento = estadias.filter(e => e.status === 'Aprovado' || e.status === 'Em pagamento').length
-  const previsto = estadias.reduce((s, e) => s + valorNumero(e.valor || e.valorCalculado), 0)
-  const aprovado = estadias.reduce((s, e) => s + valorNumero(e.valorAprovado), 0)
-  const pago = estadias.reduce((s, e) => s + valorNumero(e.valorPago), 0)
   const primeiroNome = (usuarioAtual?.nome || usuarioAtual?.usuario || 'Operador').split(' ')[0]
 
   return (
@@ -65,20 +51,19 @@ function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
           <h3>Resumo agora</h3>
           <div className="system-health">
             <div className="health-row"><span>Em andamento</span><strong>{emAndamento}</strong></div>
-            <div className="health-row"><span>Aguardando aprovação</span><strong>{aguardandoAprovacao}</strong></div>
-            <div className="health-row"><span>Aguardando pagamento</span><strong>{aguardandoPagamento}</strong></div>
             <div className="health-row"><span>Pendências</span><strong>{estadiasALancar.length}</strong></div>
             <div className="health-row"><span>Urgentes</span><strong>{urgentes}</strong></div>
+            <div className="health-row"><span>Finalizadas</span><strong>{finalizadas}</strong></div>
             <div className="health-row"><span>Nuvem</span><strong>{cloudStatus === 'online' ? 'Online' : 'Verificando'}</strong></div>
           </div>
         </div>
       </div>
 
       <div className="stats" style={{ marginBottom: 16 }}>
-        <div className="stat-card"><span>Valor previsto</span><strong>{dinheiro(previsto)}</strong><small>Total calculado</small></div>
-        <div className="stat-card"><span>Valor aprovado</span><strong>{dinheiro(aprovado)}</strong><small>Aprovado para pagamento</small></div>
-        <div className="stat-card"><span>Valor pago</span><strong>{dinheiro(pago)}</strong><small>Confirmado como pago</small></div>
-        <div className="stat-card"><span>Saldo a pagar</span><strong>{dinheiro(Math.max(0, aprovado - pago))}</strong><small>Aprovado ainda não pago</small></div>
+        <div className="stat-card"><span>Estadias registradas</span><strong>{estadias.length}</strong><small>Base operacional</small></div>
+        <div className="stat-card"><span>Em andamento</span><strong>{emAndamento}</strong><small>Aguardando conclusão</small></div>
+        <div className="stat-card"><span>Pendências</span><strong>{estadiasALancar.length}</strong><small>Aguardando lançamento</small></div>
+        <div className="stat-card"><span>Finalizadas</span><strong>{finalizadas}</strong><small>Registros encerrados</small></div>
       </div>
 
       <div className="dashboard-hero">
@@ -86,11 +71,9 @@ function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
           <h3>Fluxo de trabalho</h3>
           <div className="system-health">
             <div className="health-row"><span>1. Receber ocorrência</span><strong>Pendência</strong></div>
-            <div className="health-row"><span>2. Conferir</span><strong>Em análise</strong></div>
-            <div className="health-row"><span>3. Aprovar</span><strong>Aprovado</strong></div>
-            <div className="health-row"><span>4. Financeiro</span><strong>Em pagamento</strong></div>
-            <div className="health-row"><span>5. Confirmar</span><strong>Pago</strong></div>
-            <div className="health-row"><span>6. Encerrar</span><strong>Finalizado</strong></div>
+            <div className="health-row"><span>2. Conferir informações</span><strong>Tratamento</strong></div>
+            <div className="health-row"><span>3. Lançar estadia</span><strong>Registro</strong></div>
+            <div className="health-row"><span>4. Encerrar</span><strong>Finalizada</strong></div>
           </div>
         </div>
         <div className="hero-side-card">
