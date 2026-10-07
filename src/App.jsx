@@ -18,11 +18,12 @@ import './styles/db-command-center.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
+const EstadiasPlanilha = lazy(() => import('./pages/EstadiasPlanilha'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 const Relatorios = lazy(() => import('./pages/Relatorios'))
 const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
 
-const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'finalizadas', 'lancadas', 'alancar']
+const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'planilha', 'finalizadas', 'lancadas', 'alancar']
 
 function FastFallback() {
   return <div role="status" aria-live="polite" style={{ minHeight: 110, display: 'grid', placeItems: 'center', opacity: .72, fontSize: 13 }}>Carregando módulo…</div>
@@ -131,6 +132,7 @@ function PainelEstadias({ onVoltarPortal }) {
             <Suspense fallback={<FastFallback />}>
               {aba === 'inicio' && <EstadiasHome onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
               {aba === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
+              {aba === 'planilha' && <EstadiasPlanilha />}
               {aba === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
               {aba === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
               {aba === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
