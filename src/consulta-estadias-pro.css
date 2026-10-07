@@ -163,7 +163,7 @@
 
 .consulta-pro-kpis{
   display:grid;
-  grid-template-columns:repeat(8,minmax(0,1fr));
+  grid-template-columns:repeat(6,minmax(0,1fr));
   gap:0;
   overflow:hidden;
 }
@@ -454,29 +454,4 @@
   .consulta-pro-periods{display:grid;grid-template-columns:repeat(3,1fr)}
   .consulta-pro-card{padding:14px;border-radius:18px}
   .consulta-pro-data{grid-template-columns:1fr}
-}
-
-
-.status-cancelado{
-  background:rgba(239,68,68,.14)!important;
-  border-color:rgba(248,113,113,.28)!important;
-  color:#fecaca!important;
-}
-
-.consulta-pro-status-select{
-  min-height:32px;
-  border:1px solid rgba(148,163,184,.14);
-  background:rgba(2,6,23,.48);
-  color:#e5e7eb;
-  border-radius:10px;
-  padding:0 9px;
-  font-size:11px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.consulta-pro-status-select:focus{
-  outline:none;
-  border-color:rgba(96,165,250,.55);
-  box-shadow:0 0 0 3px rgba(37,99,235,.12);
 }
