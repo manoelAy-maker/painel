@@ -66,7 +66,7 @@ function resumoEstadia(e) {
   ].join('\n')
 }
 
-export default function ConsultaEstadiasLancadas() {
+export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' }) {
   const { estadias, editarLancada, excluirLancada, filiais, mudarAba, usuarioAtual, toast } = useApp()
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState('')
@@ -74,7 +74,7 @@ export default function ConsultaEstadiasLancadas() {
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
   const [detalhe, setDetalhe] = useState(null)
-  const [visao, setVisao] = useState('andamento')
+  const [visao, setVisao] = useState(visaoInicial)
 
   const listaFiltrada = useMemo(() => estadias.filter(e => {
     const txt = ((e.placa || '') + ' ' + (e.motorista || '') + ' ' + (e.chamado || '') + ' ' + (e.transportadora || '') + ' ' + (e.nf || e.numeroNf || '')).toUpperCase()

@@ -13,8 +13,14 @@ export const T = {
 
 export const limparTelefone = (v) => String(v || '').replace(/[^0-9]/g, '')
 
+const textoNormalizado = (valor) => String(valor || '')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .trim()
+
 export const statusV2 = (status) => {
-  const s = String(status || '').toLowerCase().trim()
+  const s = textoNormalizado(status)
   if (s === 'nao_carregou' || s === 'nao carregou' || s.includes('nao carreg')) return 'nao_carregou'
   if (s === 'carregou' || s === 'carregado') return 'carregou'
   if (s === 'ordem' || s.includes('ordem') || s.includes('programado') || s.includes('chegou')) return 'ordem'
@@ -24,7 +30,7 @@ export const statusV2 = (status) => {
 const quantidade = (v) => Math.max(1, Number(v || 1) || 1)
 
 export const impactoPontuacaoV2 = (valor) => {
-  const s = String(valor || '').toLowerCase().trim()
+  const s = textoNormalizado(valor)
   if (s.includes('falha') || s === 'impacta' || s === 'captacao') return 'falha_captacao'
   if (s.includes('analise')) return 'analise'
   return 'externo'

@@ -1,0 +1,353 @@
+/* AYRES · Estadias
+   Interface inspirada no layout corporativo do Power Apps da operação LDC.
+   Mantém identidade própria do AYRES, com estrutura clara, densa e operacional. */
+
+:root{
+  --ay-bg:#efefef;
+  --ay-canvas:#ffffff;
+  --ay-header:#315b72;
+  --ay-header-deep:#244d64;
+  --ay-nav:#073b4c;
+  --ay-nav-hover:#0c5065;
+  --ay-blue:#0878c9;
+  --ay-blue-hover:#0668af;
+  --ay-border:#d9dde1;
+  --ay-border-soft:#e7e9ec;
+  --ay-text:#1f2933;
+  --ay-muted:#6d7781;
+  --ay-green:#138a61;
+  --ay-yellow:#d18a00;
+  --ay-red:#c73c3c;
+  --ay-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+
+*{box-sizing:border-box}
+html,body,#root{min-height:100%;background:var(--ay-bg)}
+body{margin:0;color:var(--ay-text);font-family:"Segoe UI",Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+
+.est-only-shell{min-height:100vh;background:var(--ay-bg)}
+
+/* Barra superior, compacta como aplicativo corporativo */
+.est-only-topbar{
+  position:sticky;top:0;z-index:60;
+  height:42px;padding:0 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  background:var(--ay-header);
+  border:0;border-bottom:1px solid rgba(0,0,0,.18);
+  color:white;box-shadow:none;backdrop-filter:none;
+}
+.est-only-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.est-only-mark{
+  width:auto;height:auto;padding:0;
+  display:block;background:none;box-shadow:none;border-radius:0;
+  color:white;font-family:Georgia,serif;font-size:25px;font-weight:700;line-height:1;
+}
+.est-only-mark::after{content:".";color:#8fbd3e}
+.est-only-brand-copy{display:flex;align-items:center;gap:9px;border-left:1px solid rgba(255,255,255,.26);padding-left:12px}
+.est-only-brand-copy strong{font-size:13px;letter-spacing:0;color:#fff}
+.est-only-brand-copy span{font-size:12px;color:rgba(255,255,255,.9);font-weight:600}
+.est-only-top-actions,.est-only-user{display:flex;align-items:center;gap:9px}
+.est-system-status{display:none}
+.est-user-avatar{
+  width:27px;height:27px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.55);background:transparent;color:white;
+  font-size:11px;font-weight:700;
+}
+.est-user-copy{display:none}
+.est-only-logout{
+  border:1px solid rgba(255,255,255,.35);background:transparent;color:white;
+  border-radius:3px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;
+}
+.est-only-logout:hover{background:rgba(255,255,255,.10)}
+
+/* Área branca central, deixando margens cinza */
+.est-only-main{
+  width:min(1345px,calc(100% - 110px));
+  min-height:calc(100vh - 42px);
+  margin:0 auto;padding:26px 28px 36px;
+  background:var(--ay-canvas);
+  box-shadow:0 0 8px rgba(0,0,0,.08);
+}
+
+.est-only-page-head{
+  min-height:82px;margin:0 0 30px;padding:18px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  background:var(--ay-header);
+  color:#fff;border:1px solid #2a5268;border-radius:2px;
+  box-shadow:var(--ay-shadow);
+}
+.est-only-page-head>div{display:flex;align-items:center;gap:14px}
+.est-only-kicker{display:none}
+.est-only-page-head h1{
+  margin:0;font-family:Georgia,serif;font-size:31px;font-weight:600;
+  letter-spacing:-.02em;color:#fff;
+}
+.est-only-page-head h1::after{
+  content:" · Controle de Estadias";font-family:"Segoe UI",Arial,sans-serif;
+  font-size:13px;font-weight:600;letter-spacing:0;color:#dbe7ed;margin-left:14px;
+}
+.est-only-page-head p{display:none}
+
+/* Navegação fica dentro da faixa, visual de botões Power Apps */
+.est-only-nav{
+  position:absolute;
+  top:68px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  width:min(1290px,calc(100% - 140px));
+  height:82px;
+  display:flex;align-items:center;justify-content:flex-end;gap:6px;
+  padding:0 14px 0 300px;
+  margin:0;background:transparent;border:0;border-radius:0;box-shadow:none;
+  pointer-events:none;
+}
+.est-only-nav button{
+  pointer-events:auto;
+  min-width:150px;height:29px;padding:0 18px;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid rgba(255,255,255,.08);border-radius:6px;
+  background:var(--ay-nav);color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.14);
+  transition:background .12s ease;
+}
+.est-only-nav button svg{display:none}
+.est-only-nav button:hover{background:var(--ay-nav-hover)}
+.est-only-nav button.active{background:#062f3d;border-color:#0d6075;box-shadow:inset 0 -2px 0 #40a5c1}
+.est-only-nav button.accent,.est-only-nav button.accent.active{background:var(--ay-nav);border-color:rgba(255,255,255,.08);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.est-only-nav button.accent:hover{background:var(--ay-nav-hover)}
+
+.est-only-stage{min-height:590px}
+.est-only-footer{padding:24px 0 0;text-align:center;color:#a0a6ac;font-size:10px}
+.est-only-loading{min-height:250px;display:flex;align-items:center;justify-content:center;gap:8px;color:#6e7781;font-size:12px}
+.est-loading-dot{width:7px;height:7px;border-radius:50%;background:var(--ay-blue);animation:estPulse 1.2s infinite}
+@keyframes estPulse{50%{opacity:.35}}
+
+/* Reset visual escuro herdado */
+.est-only-stage .aba{background:transparent!important;color:var(--ay-text)!important}
+.est-only-stage .box,
+.est-only-stage .estadia-card-clean,
+.est-only-stage .estadia-summary-clean,
+.est-only-stage .pendencias-card,
+.est-only-stage .consulta-pro-card{
+  background:#fff!important;color:var(--ay-text)!important;
+  border:1px solid var(--ay-border)!important;
+  border-radius:3px!important;box-shadow:0 1px 3px rgba(0,0,0,.05)!important;
+}
+
+.est-only-stage label{color:#505962!important;font-size:11px!important;font-weight:600!important}
+.est-only-stage .field{gap:5px!important}
+.est-only-stage input,
+.est-only-stage select,
+.est-only-stage textarea{
+  min-height:34px!important;padding:6px 9px!important;
+  color:#303840!important;background:#f7f7f7!important;
+  border:1px solid #e1e3e5!important;border-radius:2px!important;
+  outline:none!important;box-shadow:none!important;
+}
+.est-only-stage input::placeholder,.est-only-stage textarea::placeholder{color:#9aa0a6!important}
+.est-only-stage input:focus,.est-only-stage select:focus,.est-only-stage textarea:focus{
+  background:#fff!important;border-color:#5da8d6!important;
+  box-shadow:0 0 0 1px rgba(8,120,201,.10)!important;
+}
+
+/* Cabeçalhos das telas */
+.consulta-pro-head,.estadia-head-clean{
+  padding:0 0 12px!important;margin:0!important;border:0!important;background:transparent!important;
+}
+.consulta-pro-head>div:first-child>span,.estadia-eyebrow{
+  color:#75808a!important;font-size:10px!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important;
+}
+.consulta-pro-head h2,.estadia-head-clean h2{
+  color:#26323b!important;font-size:18px!important;font-weight:600!important;margin:3px 0!important;letter-spacing:0!important;
+}
+.consulta-pro-head p,.estadia-head-clean p{color:#7b858e!important;font-size:11px!important;margin:0!important}
+
+/* Botões */
+.consulta-pro-primary,.btn-green,.btn-purple{
+  background:var(--ay-blue)!important;border:1px solid var(--ay-blue)!important;
+  color:#fff!important;border-radius:2px!important;box-shadow:none!important;font-weight:600!important;
+}
+.consulta-pro-primary:hover,.btn-green:hover,.btn-purple:hover{background:var(--ay-blue-hover)!important}
+.consulta-pro-light,.btn-light,.pendencia-refresh{
+  background:#f7f7f7!important;border:1px solid #d5d9dd!important;
+  color:#48525c!important;border-radius:2px!important;box-shadow:none!important;
+}
+.consulta-pro-danger,.btn-red{
+  background:#fff!important;border:1px solid #d6a4a4!important;color:#a93434!important;border-radius:2px!important;
+}
+
+/* KPIs mais discretos */
+.consulta-pro-kpis{
+  display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:8px!important;margin:0 0 12px!important;
+}
+.consulta-pro-kpis>div{
+  min-height:62px!important;padding:10px 12px!important;background:#fff!important;
+  border:1px solid var(--ay-border)!important;border-radius:2px!important;box-shadow:none!important;
+}
+.consulta-pro-kpis span{color:#737c84!important;font-size:10px!important;font-weight:500!important}
+.consulta-pro-kpis strong{color:#26323b!important;font-size:18px!important;font-weight:600!important;margin-top:3px!important}
+.consulta-pro-kpis .money strong{color:#146d9c!important;font-size:16px!important}
+
+/* Filtros imitando faixa do app */
+.consulta-pro-filters{
+  display:grid!important;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto!important;
+  gap:9px!important;padding:14px 16px!important;margin-bottom:14px!important;
+  background:#fff!important;border:1px solid var(--ay-border)!important;border-radius:3px!important;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)!important;
+}
+.consulta-pro-periods{display:flex!important;gap:5px!important}
+.consulta-pro-periods button,.consulta-pro-tabs button{
+  border:1px solid #d9dde1!important;background:#f6f6f6!important;color:#606970!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+.consulta-pro-tabs{gap:5px!important;background:transparent!important;border:0!important;margin-bottom:10px!important}
+.consulta-pro-tabs button.active{background:#e8f2f8!important;color:#245a75!important;border-color:#91b8cc!important}
+
+/* Lista como grade operacional */
+.consulta-pro-list{display:grid!important;gap:5px!important}
+.consulta-pro-card{
+  display:grid!important;
+  grid-template-columns:minmax(300px,1.35fr) minmax(340px,1fr) minmax(210px,.7fr)!important;
+  align-items:center!important;gap:12px!important;padding:10px 12px!important;
+  border-radius:2px!important;transition:background .1s ease!important;
+}
+.consulta-pro-card:hover{background:#f8fbfd!important;border-color:#b9cbd5!important;transform:none!important}
+.consulta-pro-plate{
+  color:#173d50!important;background:#eef5f8!important;border:1px solid #c9dce5!important;
+  border-radius:2px!important;padding:3px 7px!important;font-family:Consolas,monospace!important;
+  font-size:13px!important;font-weight:700!important;letter-spacing:.04em!important;
+}
+.consulta-pro-main h3{color:#303940!important;font-size:12px!important;margin:5px 0!important}
+.consulta-pro-meta{color:#7b858d!important;font-size:10px!important;gap:8px!important}
+.consulta-pro-meta b{color:#525d65!important}
+.consulta-pro-data{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px!important}
+.consulta-pro-data>div{padding:6px 8px!important;border-left:1px solid #e1e4e7!important}
+.consulta-pro-data span,.consulta-pro-owner span{color:#899199!important;font-size:9px!important;text-transform:none!important;letter-spacing:0!important}
+.consulta-pro-data strong,.consulta-pro-owner strong{color:#3d464e!important;font-size:10px!important}
+.consulta-pro-action,.consulta-pro-light.small,.consulta-pro-danger.small,.consulta-pro-whats{
+  min-height:28px!important;padding:5px 8px!important;border-radius:2px!important;font-size:10px!important;font-weight:600!important;
+}
+
+/* Lançamento de estadia */
+.estadia-shell{max-width:none!important}
+.estadia-body-clean{display:grid!important;grid-template-columns:minmax(0,1fr) 315px!important;gap:10px!important;align-items:start!important}
+.estadia-main-clean{display:grid!important;gap:8px!important}
+.estadia-card-clean{padding:12px 14px!important}
+.estadia-card-title{padding-bottom:8px!important;margin-bottom:9px!important;border-bottom:1px solid #e5e7e9!important}
+.estadia-card-title strong{color:#374149!important;font-size:12px!important;font-weight:600!important}
+.estadia-card-title span{color:#8a9299!important;font-size:10px!important}
+.estadia-grid-clean{gap:8px!important}
+.estadia-card-clean.muted-card{background:#fbfbfb!important}
+.estadia-summary-clean{
+  position:sticky!important;top:56px!important;padding:14px!important;
+  background:#f9fafb!important;border-top:4px solid var(--ay-header)!important;
+}
+.summary-topline{color:#5f6c74!important;font-size:10px!important;font-weight:600!important;text-transform:none!important;letter-spacing:0!important}
+.estadia-summary-clean h3{color:#1d4d64!important;font-size:25px!important;font-weight:600!important;margin:4px 0!important}
+.estadia-summary-clean>p{color:#7f888f!important;font-size:10px!important}
+.summary-metrics{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;margin:10px 0!important}
+.summary-metrics>div{padding:8px!important;background:#fff!important;border:1px solid #dfe3e6!important;border-radius:2px!important}
+.summary-metrics span{color:#8b9298!important;font-size:9px!important}
+.summary-metrics strong{color:#414a51!important;font-size:10px!important}
+.manual-toggle{padding:8px!important;background:#fff!important;border:1px solid #dde1e4!important;border-radius:2px!important}
+.summary-attachments{margin-top:9px!important;padding-top:9px!important;border-top:1px solid #dfe2e4!important}
+
+/* Pendências */
+.sla-alert{border-radius:2px!important;box-shadow:none!important;padding:9px 12px!important;margin-bottom:10px!important}
+.pendencias-hero{display:grid!important;grid-template-columns:1.3fr .7fr!important;gap:9px!important;margin-bottom:9px!important}
+.pendencias-card{padding:12px 14px!important}
+.pendencias-title h2{color:#303a42!important;font-size:14px!important;font-weight:600!important;margin:0 0 3px!important}
+.pendencias-title span,.pendencias-card p{color:#7f878e!important;font-size:10px!important}
+.cloud-pill{font-size:9px!important;border-radius:2px!important;padding:4px 6px!important}
+.pendencias-kpis{gap:6px!important;margin-top:9px!important}
+.pendencias-kpi{
+  min-height:54px!important;padding:8px 10px!important;background:#fafafa!important;
+  border:1px solid #dfe2e4!important;border-radius:2px!important;
+}
+.pendencias-kpi span{color:#838b92!important;font-size:9px!important}
+.pendencias-kpi strong{color:#303940!important;font-size:17px!important;font-weight:600!important}
+.pendencias-form{padding:13px 15px!important;margin-bottom:10px!important}
+.box-title{padding-bottom:8px!important;margin-bottom:9px!important;border-bottom:1px solid #e2e5e7!important}
+.box-title h2{color:#303940!important;font-size:14px!important;font-weight:600!important}
+.box-title span{color:#858d94!important;font-size:10px!important}
+.form-grid{gap:8px!important}
+.pendencias-list-head{margin:12px 0 7px!important}
+.pendencias-list-head h3{color:#374149!important;font-size:13px!important;font-weight:600!important;margin:0 0 2px!important}
+.pendencias-list-head p{color:#858d94!important;font-size:10px!important;margin:0!important}
+
+/* Tabela clara */
+.table-wrap.pendencias-table{
+  background:#fff!important;border:1px solid #d9dde1!important;border-radius:2px!important;overflow:hidden!important;
+}
+.pendencias-table table{width:100%!important;border-collapse:collapse!important}
+.pendencias-table th{
+  position:sticky!important;top:0!important;z-index:2!important;
+  padding:8px!important;background:#eef2f4!important;color:#58646c!important;
+  border-right:1px solid #dde1e4!important;border-bottom:1px solid #cfd5d9!important;
+  font-size:9px!important;font-weight:600!important;text-transform:none!important;letter-spacing:0!important;
+}
+.pendencias-table td{
+  padding:8px!important;background:#fff!important;color:#465058!important;
+  border-right:1px solid #eceeef!important;border-bottom:1px solid #e4e7e9!important;
+  font-size:10px!important;vertical-align:middle!important;
+}
+.pendencias-table tr:hover td{background:#f5f9fb!important}
+.badge,.status,.prio,.sla-badge{border-radius:2px!important;font-size:9px!important;font-weight:600!important;padding:3px 6px!important}
+.anexo-link{color:#0878c9!important}
+
+/* Modal */
+.consulta-modal-backdrop{background:rgba(0,0,0,.34)!important;backdrop-filter:none!important}
+.consulta-modal{background:#fff!important;color:#303940!important;border:1px solid #cfd4d8!important;border-radius:3px!important;box-shadow:0 12px 32px rgba(0,0,0,.24)!important}
+
+/* Scroll */
+.est-only-stage *{scrollbar-color:#b7bec4 #f2f2f2;scrollbar-width:thin}
+.est-only-stage *::-webkit-scrollbar{width:8px;height:8px}
+.est-only-stage *::-webkit-scrollbar-thumb{background:#b7bec4}
+.est-only-stage *::-webkit-scrollbar-track{background:#f2f2f2}
+
+@media(max-width:1120px){
+  .est-only-main{width:min(100% - 36px,1345px)}
+  .est-only-nav{width:calc(100% - 70px);padding-left:240px}
+  .est-only-nav button{min-width:125px;font-size:13px}
+  .consulta-pro-kpis{grid-template-columns:repeat(3,1fr)!important}
+  .consulta-pro-filters{grid-template-columns:2fr 1fr 1fr!important}
+  .consulta-pro-periods{grid-column:1/-1}
+  .consulta-pro-card{grid-template-columns:1fr!important}
+  .estadia-body-clean{grid-template-columns:1fr!important}
+  .estadia-summary-clean{position:relative!important;top:auto!important}
+}
+
+@media(max-width:760px){
+  .est-only-topbar{height:44px;padding:0 10px}
+  .est-only-brand-copy span{display:none}
+  .est-only-main{width:100%;min-height:calc(100vh - 44px);padding:12px 10px 28px;box-shadow:none}
+  .est-only-page-head{min-height:64px;margin-bottom:8px;padding:12px 14px;box-shadow:0 4px 10px rgba(0,0,0,.16)}
+  .est-only-page-head h1{font-size:23px}
+  .est-only-page-head h1::after{display:none}
+  .est-only-nav{
+    position:sticky;top:44px;left:auto;transform:none;
+    width:100%;height:auto;padding:6px;margin:0 0 10px;
+    overflow:auto;justify-content:flex-start;
+    background:#f7f7f7;border:1px solid #dde0e2;pointer-events:auto;
+  }
+  .est-only-nav button{min-width:max-content;height:34px;font-size:11px;padding:0 11px}
+  .est-only-nav button.active{background:var(--ay-header);border-color:var(--ay-header);box-shadow:none}
+  .consulta-pro-kpis{grid-template-columns:repeat(2,1fr)!important}
+  .consulta-pro-filters{grid-template-columns:1fr!important}
+  .consulta-pro-periods{grid-column:auto}
+  .consulta-pro-data{grid-template-columns:repeat(2,1fr)!important}
+  .pendencias-hero{grid-template-columns:1fr!important}
+  .pendencias-cloud-box{display:none!important}
+  .pendencias-table .table-scroll{overflow:auto!important}
+  .estadia-grid-clean.cols-5,.estadia-grid-clean.cols-4{grid-template-columns:1fr 1fr!important}
+  .estadia-grid-clean .span-2{grid-column:span 2!important}
+}
+
+@media(max-width:480px){
+  .estadia-grid-clean.cols-5,.estadia-grid-clean.cols-4{grid-template-columns:1fr!important}
+  .estadia-grid-clean .span-2{grid-column:auto!important}
+}

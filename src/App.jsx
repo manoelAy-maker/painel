@@ -1,130 +1,105 @@
-import { useRef, useState, useEffect, lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useApp } from './context/AppContext'
-import { podeAdministrar } from './utils/roles'
-import { Login, SelecaoPainel } from './modules/portal'
+import Login from './components/Login'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import LivePanel from './components/LivePanel'
+import EstadiaTicker from './components/EstadiaTicker'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
-import Dashboard from './pages/Dashboard'
 import './styles/app.css'
-import './cargo-options-runtime.js'
 import './login-dark-restore.css'
-import './styles/ayres-design-system.css'
 import './styles/ayres-estadia-form-clean.css'
-import './captacao-aggressive.css'
+import './estadia-contrast.css'
+import './styles/professional-system.css'
+import './styles/notification-rail.css'
+import './styles/estadia-ticker.css'
+import './styles/db-command-center.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
+const EstadiasPlanilha = lazy(() => import('./pages/EstadiasPlanilha'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
-const Captacao = lazy(() => import('./modules/captacao/pages/Captacao'))
-const CaptacaoAdmin = lazy(() => import('./modules/captacao/pages/CaptacaoAdmin'))
-const Historico = lazy(() => import('./modules/admin/pages/Historico'))
-const Relatorios = lazy(() => import('./modules/admin/pages/Relatorios'))
-const Backup = lazy(() => import('./modules/admin/pages/Backup'))
-const Admin = lazy(() => import('./modules/admin/pages/Admin'))
-const Lixeira = lazy(() => import('./modules/admin/pages/Lixeira'))
+const Relatorios = lazy(() => import('./pages/Relatorios'))
+const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
 
-const FastFallback = () => null
+const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'planilha', 'finalizadas', 'lancadas', 'alancar']
 
-function isApkMobileMode() {
-  try {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('app') === 'mobile') return true
-    if (window.Capacitor?.isNativePlatform?.()) return true
-    if (window.Capacitor) return true
-  } catch {}
-  return false
+function FastFallback() {
+  return <div role="status" aria-live="polite" style={{ minHeight: 110, display: 'grid', placeItems: 'center', opacity: .72, fontSize: 13 }}>Carregando módulo…</div>
 }
 
-function AppMobileOperacional() {
-  const { usuarioAtual, logout } = useApp()
-  const [aba, setAba] = useState('captacao')
-  const formALancarRef = useRef()
-
-  const sair = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    logout()
-  }
+function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
+  const { estadias = [], estadiasALancar = [], usuarioAtual, cloudStatus } = useApp()
+  const emAndamento = estadias.filter(e => e.status !== 'Finalizado').length
+  const finalizadas = estadias.filter(e => e.status === 'Finalizado').length
+  const urgentes = estadiasALancar.filter(e => e.prioridade === 'Urgente').length
+  const primeiroNome = (usuarioAtual?.nome || usuarioAtual?.usuario || 'Operador').split(' ')[0]
 
   return (
-    <div className="ayres-mobile-apk">
-      <header className="ayres-mobile-head">
-        <div className="ayres-mobile-head-row">
-          <div className="ayres-mobile-brand">
-            <div className="ayres-mobile-logo">A</div>
-            <div>
-              <strong>AYRES Mobile</strong>
-              <span>{aba === 'captacao' ? 'Captação rápida' : 'Lançar pendência'}</span>
-            </div>
-          </div>
-          <div className="ayres-mobile-user">
-            <span>{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
-            <button className="ayres-mobile-logout" onClick={sair}>Sair</button>
+    <section className="aba active">
+      <div className="dashboard-hero">
+        <div className="hero-pro-card">
+          <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '.14em', opacity: .82 }}>CENTRAL DE ESTADIAS</span>
+          <h2 style={{ marginTop: 8 }}>Olá, {primeiroNome}. Operação na mão.</h2>
+          <p>Acompanhe estadias abertas, finalize registros e lance pendências sem carregar o painel com módulos que não fazem parte desta operação.</p>
+          <div className="hero-actions">
+            <button onClick={onNovaLancada}>+ Lançar estadia</button>
+            <button onClick={onNovaPendencia}>+ Criar pendência</button>
           </div>
         </div>
-      </header>
+        <div className="hero-side-card">
+          <h3>Resumo agora</h3>
+          <div className="system-health">
+            <div className="health-row"><span>Em andamento</span><strong>{emAndamento}</strong></div>
+            <div className="health-row"><span>Pendências</span><strong>{estadiasALancar.length}</strong></div>
+            <div className="health-row"><span>Urgentes</span><strong>{urgentes}</strong></div>
+            <div className="health-row"><span>Finalizadas</span><strong>{finalizadas}</strong></div>
+            <div className="health-row"><span>Nuvem</span><strong>{cloudStatus === 'online' ? 'Online' : 'Verificando'}</strong></div>
+          </div>
+        </div>
+      </div>
 
-      <main className="ayres-mobile-content">
-        <Suspense fallback={<FastFallback />}>
-          {aba === 'captacao' && <section className="ayres-mobile-panel"><Captacao /></section>}
-          {aba === 'pendencia' && <section className="ayres-mobile-panel"><EstadiaALancar formRef={formALancarRef} /></section>}
-        </Suspense>
-      </main>
+      <div className="stats" style={{ marginBottom: 16 }}>
+        <div className="stat-card"><span>Estadias registradas</span><strong>{estadias.length}</strong><small>Base operacional</small></div>
+        <div className="stat-card"><span>Em andamento</span><strong>{emAndamento}</strong><small>Aguardando conclusão</small></div>
+        <div className="stat-card"><span>Pendências</span><strong>{estadiasALancar.length}</strong><small>Aguardando lançamento</small></div>
+        <div className="stat-card"><span>Finalizadas</span><strong>{finalizadas}</strong><small>Registros encerrados</small></div>
+      </div>
 
-      <nav className="ayres-mobile-bottom">
-        <button className={`ayres-mobile-tab ${aba === 'captacao' ? 'active' : ''}`} onClick={() => setAba('captacao')}><i>📞</i><span>Captação</span></button>
-        <button className={`ayres-mobile-tab ${aba === 'pendencia' ? 'active' : ''}`} onClick={() => setAba('pendencia')}><i>📝</i><span>Pendência</span></button>
-      </nav>
-    </div>
+      <div className="dashboard-hero">
+        <div className="hero-side-card">
+          <h3>Fluxo de trabalho</h3>
+          <div className="system-health">
+            <div className="health-row"><span>1. Receber ocorrência</span><strong>Pendência</strong></div>
+            <div className="health-row"><span>2. Conferir informações</span><strong>Tratamento</strong></div>
+            <div className="health-row"><span>3. Lançar estadia</span><strong>Registro</strong></div>
+            <div className="health-row"><span>4. Encerrar</span><strong>Finalizada</strong></div>
+          </div>
+        </div>
+        <div className="hero-side-card">
+          <h3>Acesso rápido</h3>
+          <div className="hero-actions">
+            <button className="btn-blue" onClick={onNovaLancada}>Nova estadia</button>
+            <button className="btn-orange" onClick={onNovaPendencia}>Nova pendência</button>
+          </div>
+          <p className="muted" style={{ marginTop: 14, lineHeight: 1.5 }}>O AYRES continua com a identidade visual completa, mas agora o menu fica dedicado ao que interessa: estadias e pendências.</p>
+        </div>
+      </div>
+    </section>
   )
 }
 
-function CaptacaoIsolada({ onPortal }) {
-  const { usuarioAtual, logout } = useApp()
-
-  const sair = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    logout()
-  }
-
-  const voltarAoPortal = () => {
-    localStorage.removeItem('moduloInicialViaLog')
-    onPortal?.()
-  }
-
-  return (
-    <div className="app capture-shell-pro" style={{ display: 'block' }}>
-      <main className="capture-main-pro">
-        <section className="capture-topbar-pro">
-          <div className="capture-title-pro">
-            <div className="capture-eyebrow-pro">Central operacional</div>
-            <h1>Painel de Captação</h1>
-            <p>Ambiente separado para registrar motoristas, acompanhar evolução de contato, ordem e carregamento confirmado.</p>
-          </div>
-          <div className="capture-actions-pro">
-            <span className="capture-user-chip-pro">{usuarioAtual?.nome || usuarioAtual?.usuario || 'Usuário'}</span>
-            <button className="capture-action-btn-pro" onClick={voltarAoPortal}>Voltar ao portal</button>
-            <button className="capture-action-btn-pro" onClick={sair}>Sair</button>
-          </div>
-        </section>
-
-        <section className="capture-panel-wrap-pro"><Suspense fallback={<FastFallback />}><Captacao /></Suspense></section>
-        <div className="capture-footer-pro">AYRES · Central de captação</div>
-      </main>
-    </div>
-  )
-}
-
-function PainelEstadia() {
-  const { abaAtiva, mudarAba, usuarioAtual } = useApp()
+function PainelEstadias({ onVoltarPortal }) {
+  const { abaAtiva, mudarAba } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const formLancadaRef = useRef()
   const formALancarRef = useRef()
-  const isAdmin = podeAdministrar(usuarioAtual)
-  const abaProtegida = ['historico', 'relatorios', 'backup', 'admin', 'captacaoAdmin', 'lixeira'].includes(abaAtiva)
-  const abaRender = !isAdmin && abaProtegida ? 'inicio' : abaAtiva
+  const aba = ABAS_VALIDAS.includes(abaAtiva) ? abaAtiva : 'inicio'
+
+  useEffect(() => {
+    if (!ABAS_VALIDAS.includes(abaAtiva)) mudarAba('inicio')
+  }, [abaAtiva, mudarAba])
 
   useEffect(() => {
     document.body.classList.toggle('sidebar-open', sidebarOpen)
@@ -133,17 +108,13 @@ function PainelEstadia() {
 
   const focarLancada = () => {
     mudarAba('lancadas')
-    setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+    setTimeout(() => formLancadaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
   }
 
   const focarALancar = () => {
     mudarAba('alancar')
-    setTimeout(() => formALancarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+    setTimeout(() => formALancarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
   }
-
-  useEffect(() => {
-    if (!isAdmin && abaProtegida) mudarAba('inicio')
-  }, [isAdmin, abaProtegida, mudarAba])
 
   return (
     <div className="app" style={{ display: 'block' }}>
@@ -153,21 +124,20 @@ function PainelEstadia() {
         <section className="main-pro">
           <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+              <button type="button" className="btn-light btn-small" onClick={onVoltarPortal}>← Voltar ao portal</button>
+            </div>
+            <EstadiaTicker />
             <LivePanel />
-            {abaRender === 'inicio' && <Dashboard onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
             <Suspense fallback={<FastFallback />}>
-              {abaRender === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
-              {abaRender === 'consultaLancadas' && <ConsultaEstadiasLancadas />}
-              {abaRender === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
-              {abaRender === 'captacao' && <Captacao />}
-              {isAdmin && abaRender === 'captacaoAdmin' && <CaptacaoAdmin />}
-              {isAdmin && abaRender === 'historico' && <Historico />}
-              {isAdmin && abaRender === 'relatorios' && <Relatorios />}
-              {isAdmin && abaRender === 'lixeira' && <Lixeira />}
-              {isAdmin && abaRender === 'backup' && <Backup />}
-              {isAdmin && abaRender === 'admin' && <Admin />}
+              {aba === 'inicio' && <EstadiasHome onNovaLancada={focarLancada} onNovaPendencia={focarALancar} />}
+              {aba === 'consultaLancadas' && <ConsultaEstadiasLancadas visaoInicial="andamento" />}
+              {aba === 'planilha' && <EstadiasPlanilha />}
+              {aba === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
+              {aba === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
+              {aba === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
             </Suspense>
-            <div className="footer">by Manoel</div>
+            <div className="footer">AYRES · Controle de Estadias · by Manoel</div>
           </main>
         </section>
       </div>
@@ -175,34 +145,51 @@ function PainelEstadia() {
   )
 }
 
+function PainelRelatorios({ onVoltarPortal }) {
+  return (
+    <div className="app" style={{ display: 'block' }}>
+      <section className="main-pro" style={{ marginLeft: 0 }}>
+        <main className="container" style={{ paddingTop: 18 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+            <button type="button" className="btn-light btn-small" onClick={onVoltarPortal}>← Voltar ao portal</button>
+          </div>
+          <Suspense fallback={<FastFallback />}><Relatorios /></Suspense>
+          <div className="footer">AYRES · Relatórios de Estadias · by Manoel</div>
+        </main>
+      </section>
+    </div>
+  )
+}
+
 export default function App() {
   const { usuarioAtual } = useApp()
-  const [moduloInicial, setModuloInicial] = useState(() => localStorage.getItem('moduloInicialViaLog'))
-  const mobileApk = isApkMobileMode()
+  const [moduloAberto, setModuloAberto] = useState(() => localStorage.getItem('moduloInicialViaLog') || '')
 
   useEffect(() => {
-    const syncModulo = () => setModuloInicial(localStorage.getItem('moduloInicialViaLog'))
-    window.addEventListener('storage', syncModulo)
-    window.addEventListener('ayres:modulo', syncModulo)
-    return () => {
-      window.removeEventListener('storage', syncModulo)
-      window.removeEventListener('ayres:modulo', syncModulo)
-    }
+    const sincronizarModulo = () => setModuloAberto(localStorage.getItem('moduloInicialViaLog') || '')
+    window.addEventListener('ayres:modulo', sincronizarModulo)
+    return () => window.removeEventListener('ayres:modulo', sincronizarModulo)
   }, [])
+
+  useEffect(() => {
+    if (!usuarioAtual) setModuloAberto('')
+  }, [usuarioAtual])
 
   const voltarAoPortal = () => {
     localStorage.removeItem('moduloInicialViaLog')
-    setModuloInicial(null)
+    setModuloAberto('')
   }
 
   return (
     <>
       <SoundManager />
-      {!usuarioAtual && <Login />}
-      {usuarioAtual && mobileApk && <AppMobileOperacional />}
-      {usuarioAtual && !mobileApk && !moduloInicial && <SelecaoPainel />}
-      {usuarioAtual && !mobileApk && moduloInicial === 'captacao' && <CaptacaoIsolada onPortal={voltarAoPortal} />}
-      {usuarioAtual && !mobileApk && moduloInicial && moduloInicial !== 'captacao' && <PainelEstadia />}
+      {!usuarioAtual
+        ? <Login />
+        : !moduloAberto
+          ? <Suspense fallback={<FastFallback />}><SelecaoPainel /></Suspense>
+          : moduloAberto === 'relatorios'
+            ? <PainelRelatorios onVoltarPortal={voltarAoPortal} />
+            : <PainelEstadias onVoltarPortal={voltarAoPortal} />}
       <Toast />
     </>
   )

@@ -10,13 +10,15 @@ async function inserirLixeira({ origemTipo, item, usuario, motivo }) {
   const registro = typeof item === 'object' ? item : {}
   const anexos = Array.isArray(registro?.anexos) ? registro.anexos : []
 
-  const { data: existe } = await sb
+  const { data: existe, error: readError } = await sb
     .from('vl_lixeira')
     .select('id')
     .eq('origem_tipo', origemTipo)
     .eq('origem_local_id', localId)
     .eq('restaurado', false)
     .maybeSingle()
+
+  if (readError) throw readError
 
   if (!existe?.id) {
     const { error } = await sb.from('vl_lixeira').insert({
@@ -31,6 +33,12 @@ async function inserirLixeira({ origemTipo, item, usuario, motivo }) {
   }
 }
 
+async function deletarLegado(localId) {
+  const sb = getClient()
+  const { error } = await sb.from(TABLE).delete().eq('local_id', localId)
+  if (error) throw error
+}
+
 export async function arquivarEstadiaLancada(itemOrId, usuario = '-', motivo = 'Estadia arquivada pelo painel AYRES') {
   const sb = getClient()
   const localId = localIdOf(itemOrId)
@@ -38,7 +46,7 @@ export async function arquivarEstadiaLancada(itemOrId, usuario = '-', motivo = '
   // Se veio o objeto da tela, arquiva no modelo atual do painel, que ainda usa ldc_estadias.
   if (typeof itemOrId === 'object') {
     await inserirLixeira({ origemTipo: 'estadia', item: itemOrId, usuario, motivo })
-    await sb.from(TABLE).delete().eq('local_id', localId)
+    await deletarLegado(localId)
     return true
   }
 
@@ -51,10 +59,10 @@ export async function arquivarEstadiaLancada(itemOrId, usuario = '-', motivo = '
     if (!error) return true
   } catch {}
 
-  const { data } = await sb.from(TABLE).select('*').eq('local_id', localId).maybeSingle()
+  const { data, error: readError } = await sb.from(TABLE).select('*').eq('local_id', localId).maybeSingle()
+  if (readError) throw readError
   if (data?.dados) await inserirLixeira({ origemTipo: 'estadia', item: data.dados, usuario, motivo })
-  const { error } = await sb.from(TABLE).delete().eq('local_id', localId)
-  if (error) throw error
+  await deletarLegado(localId)
   return true
 }
 
@@ -64,7 +72,7 @@ export async function arquivarEstadiaALancar(itemOrId, usuario = '-', motivo = '
 
   if (typeof itemOrId === 'object') {
     await inserirLixeira({ origemTipo: 'a_lancar', item: itemOrId, usuario, motivo })
-    await sb.from(TABLE).delete().eq('local_id', localId)
+    await deletarLegado(localId)
     return true
   }
 
@@ -77,10 +85,10 @@ export async function arquivarEstadiaALancar(itemOrId, usuario = '-', motivo = '
     if (!error) return true
   } catch {}
 
-  const { data } = await sb.from(TABLE).select('*').eq('local_id', localId).maybeSingle()
+  const { data, error: readError } = await sb.from(TABLE).select('*').eq('local_id', localId).maybeSingle()
+  if (readError) throw readError
   if (data?.dados) await inserirLixeira({ origemTipo: 'a_lancar', item: data.dados, usuario, motivo })
-  const { error } = await sb.from(TABLE).delete().eq('local_id', localId)
-  if (error) throw error
+  await deletarLegado(localId)
   return true
 }
 

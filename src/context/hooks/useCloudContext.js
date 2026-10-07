@@ -8,9 +8,8 @@ export function useCloudContext() {
     ultimoSave,
     usuariosOnline,
     activityFeed,
-    supabaseOnline,
     conectarSupabase,
-    sincronizarFila,
+    baixarNuvem,
     feed,
   } = useApp()
 
@@ -21,9 +20,9 @@ export function useCloudContext() {
     ultimoSave,
     usuariosOnline,
     activityFeed,
-    supabaseOnline,
+    supabaseOnline: cloudStatus === 'online',
     conectarSupabase,
-    sincronizarFila,
+    baixarNuvem,
     feed,
   }
 }

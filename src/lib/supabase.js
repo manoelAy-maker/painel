@@ -61,17 +61,28 @@ export const carregarUsuarios = async () => {
 
 export const salvarUsuario = async (usuario) => {
   const sb = getClient()
-  const { error } = await sb.from(USUARIOS_TABLE).upsert({
-    usuario: usuario.usuario,
+  const registro = {
+    usuario: String(usuario.usuario || '').trim().toLowerCase(),
     senha: usuario.senha,
     nome: usuario.nome || usuario.usuario,
     cargo: usuario.cargo || 'Operador',
     avatar: usuario.avatar || '',
     foto: usuario.foto || '',
     filial: usuario.filial || 'jatai-go',
+    ativo: usuario.ativo !== false,
     updated_at: new Date().toISOString(),
-  }, { onConflict: 'usuario' })
+    atualizado_em: new Date().toISOString(),
+  }
+
+  const { data, error } = await sb
+    .from(USUARIOS_TABLE)
+    .upsert(registro, { onConflict: 'usuario' })
+    .select('*')
+    .single()
+
   if (error) throw error
+  if (!data?.usuario) throw new Error('O Supabase não confirmou o cadastro do usuário.')
+  return data
 }
 
 export const deletarUsuario = async (usuario) => {
@@ -99,11 +110,41 @@ export const uploadAnexoLocal = (file) =>
     reader.readAsDataURL(file)
   })
 
+// Agrupa rajadas de eventos do Realtime e impede vários refreshes completos concorrentes.
+// Isso evita que uma sequência de saves de vários usuários deixe a UI ocupada reprocessando a mesma lista repetidamente.
 export const iniciarRealtime = (onMudanca) => {
   const sb = getClient()
+  let timer = null
+  let executando = false
+  let pendente = false
+
+  const processar = async () => {
+    if (executando) {
+      pendente = true
+      return
+    }
+
+    executando = true
+    try {
+      await onMudanca?.()
+    } finally {
+      executando = false
+      if (pendente) {
+        pendente = false
+        clearTimeout(timer)
+        timer = setTimeout(processar, 250)
+      }
+    }
+  }
+
+  const agendar = () => {
+    clearTimeout(timer)
+    timer = setTimeout(processar, 250)
+  }
+
   return sb
     .channel('ldc-estadias-realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, onMudanca)
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, agendar)
     .subscribe()
 }
 

@@ -3,7 +3,6 @@ import { useApp } from '../context/AppContext'
 import { salvar } from '../lib/supabase'
 import PortalScene from './PortalScene'
 import AyresLogo from './AyresLogo'
-import '../location-permission.css'
 
 const Svg = ({ children, ...p }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>{children}</svg>

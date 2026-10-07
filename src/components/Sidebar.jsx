@@ -1,5 +1,6 @@
 import { useAuthContext, useCloudContext, useEstadiaContext, useUiContext } from '../context/hooks'
 import { podeAdministrar } from '../utils/roles'
+import { ADMIN_NAV_GROUPS, OPERATOR_NAV_GROUPS } from '../config/navigation'
 import AyresLogo from './AyresLogo'
 
 const Ic = ({ d, d2, size = 18, ...p }) => (
@@ -13,6 +14,7 @@ const ICONS = {
   inicio:        <Ic d="M3 12l9-9 9 9" d2="M5 10v9a1 1 0 001 1h4v-4h4v4h4a1 1 0 001-1v-9" />,
   lancadas:      <Ic d="M12 5v14M5 12h14" />,
   consultaLancadas: <Ic d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6" />,
+  finalizadas: <Ic d="M9 12l2 2 4-4" d2="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
   alancar:       <Ic d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6M12 12h3M12 16h3M9 12h.01M9 16h.01" />,
   captacao:      <Ic d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" d2="M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />,
   captacaoAdmin: <Ic d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z" d2="M12 15a3 3 0 100-6 3 3 0 000 6z" />,
@@ -22,13 +24,6 @@ const ICONS = {
   lixeira:       <Ic d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />,
   admin:         <Ic d="M12 15a3 3 0 100-6 3 3 0 000 6z" d2="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />,
 }
-
-const OPERADOR_GRUPOS = [{ titulo: 'Operação', itens: [{ id: 'inicio', label: 'Dashboard' }, { id: 'lancadas', label: 'Lançar estadia' }, { id: 'consultaLancadas', label: 'Estadias lançadas' }, { id: 'alancar', label: 'Pendências' }] }]
-const ADMIN_GRUPOS = [
-  { titulo: 'Operação', itens: [{ id: 'inicio', label: 'Dashboard' }, { id: 'lancadas', label: 'Lançar estadia' }, { id: 'consultaLancadas', label: 'Estadias lançadas' }, { id: 'alancar', label: 'Pendências' }] },
-  { titulo: 'Comercial', itens: [{ id: 'captacaoAdmin', label: 'Captação geral' }, { id: 'captacao', label: 'Captação rápida' }] },
-  { titulo: 'Gestão', itens: [{ id: 'relatorios', label: 'Relatórios' }, { id: 'historico', label: 'Histórico' }, { id: 'lixeira', label: 'Lixeira' }, { id: 'backup', label: 'Backup' }, { id: 'admin', label: 'Usuários e cargos' }] },
-]
 
 const CloudIcon = ({ status }) => {
   if (status === 'online') return <Ic size={14} d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" style={{ color: '#22c55e' }} />
@@ -42,7 +37,7 @@ export default function Sidebar({ onFechar }) {
   const { cloudStatus, cloudText } = useCloudContext()
   const { abaAtiva, mudarAba } = useUiContext()
   const isAdmin = podeAdministrar(usuarioAtual)
-  const grupos = isAdmin ? ADMIN_GRUPOS : OPERADOR_GRUPOS
+  const grupos = isAdmin ? ADMIN_NAV_GROUPS : OPERATOR_NAV_GROUPS
 
   const handleTab = (id) => { mudarAba(id); onFechar?.() }
   const filialLabel = (usuarioAtual?.filial || 'jatai-go').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())
@@ -77,12 +72,12 @@ export default function Sidebar({ onFechar }) {
       </nav>
 
       <div className="ayres-sidebar-today">
-        <div className="sidebar-section-label">Hoje</div>
-        <div className="ayres-today-grid">
-          <div><strong>{lancadasHoje}</strong><span>Lançadas</span></div>
-          <div><strong>{pendentes}</strong><span>Pendentes</span></div>
-          <div><strong>{urgentes}</strong><span>Urgentes</span></div>
-        </div>
+          <div className="sidebar-section-label">Hoje</div>
+          <div className="ayres-today-grid">
+            <div><strong>{lancadasHoje}</strong><span>Lançadas</span></div>
+            <div><strong>{pendentes}</strong><span>Pendentes</span></div>
+            <div><strong>{urgentes}</strong><span>Urgentes</span></div>
+          </div>
       </div>
 
       <div className="sidebar-status ayres-side-status-v4">

@@ -1,0 +1,32 @@
+.planilha-page{display:grid;gap:14px}
+.planilha-head,.planilha-toolbar,.planilha-wrap{border:1px solid rgba(148,163,184,.12);background:linear-gradient(180deg,rgba(15,23,42,.86),rgba(5,10,20,.74));box-shadow:0 18px 55px rgba(0,0,0,.18)}
+.planilha-head{border-radius:22px;padding:22px 24px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.planilha-kicker{display:block;color:#60a5fa;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.planilha-head h2{margin:0;color:#f8fafc;font-size:27px;letter-spacing:-.03em}
+.planilha-head p{margin:6px 0 0;color:#94a3b8;font-size:13px}
+.planilha-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.planilha-toolbar{border-radius:18px;padding:12px;display:grid;grid-template-columns:minmax(260px,1.6fr) 170px 210px auto auto;gap:9px;align-items:center}
+.planilha-toolbar input,.planilha-toolbar select{height:40px;border:1px solid rgba(148,163,184,.14);background:rgba(2,6,23,.48);color:#e5e7eb;border-radius:11px;padding:0 12px;outline:none}
+.planilha-toolbar input:focus,.planilha-toolbar select:focus{border-color:rgba(96,165,250,.55);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.planilha-count{display:flex;align-items:baseline;gap:6px;justify-content:flex-end;color:#94a3b8;white-space:nowrap}
+.planilha-count strong{color:#f8fafc;font-size:20px}
+.planilha-count span{font-size:11px}
+.planilha-wrap{border-radius:18px;overflow:auto;max-height:calc(100vh - 300px)}
+.planilha-table{width:max(100%,1500px);border-collapse:separate;border-spacing:0;font-size:12px}
+.planilha-table thead th{position:sticky;top:0;z-index:3;background:#0b1220;color:#93a4ba;text-transform:uppercase;font-size:10px;letter-spacing:.06em;text-align:left;padding:11px 10px;border-bottom:1px solid rgba(148,163,184,.18);white-space:nowrap}
+.planilha-table tbody td{padding:10px;border-bottom:1px solid rgba(148,163,184,.08);color:#dbe3ee;white-space:nowrap;background:rgba(2,6,23,.18)}
+.planilha-table tbody tr:hover td{background:rgba(37,99,235,.08)}
+.planilha-table td.wide{min-width:180px;max-width:250px;overflow:hidden;text-overflow:ellipsis}
+.plan-plate{display:inline-flex;align-items:center;min-height:27px;padding:0 9px;border-radius:8px;background:rgba(37,99,235,.16);border:1px solid rgba(96,165,250,.22);color:#dbeafe;font-weight:950;letter-spacing:.05em}
+.plan-status{display:inline-flex;align-items:center;min-height:25px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:900}
+.plan-status.aberto{background:rgba(148,163,184,.12);color:#cbd5e1}
+.plan-status.analise{background:rgba(245,158,11,.14);color:#fde68a}
+.plan-status.feito{background:rgba(34,197,94,.14);color:#86efac}
+.plan-status.finalizado{background:rgba(59,130,246,.16);color:#bfdbfe}
+.plan-docs{display:flex;gap:4px}
+.plan-docs a{width:26px;height:26px;display:grid;place-items:center;text-decoration:none;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(148,163,184,.12)}
+.plan-muted{color:#64748b}
+.plan-edit{height:29px;border:1px solid rgba(96,165,250,.22);background:rgba(37,99,235,.13);color:#dbeafe;border-radius:8px;padding:0 10px;font-size:11px;font-weight:900;cursor:pointer}
+.planilha-empty{text-align:center!important;color:#94a3b8!important;padding:28px!important}
+@media(max-width:1000px){.planilha-toolbar{grid-template-columns:1fr 1fr}.planilha-count{justify-content:flex-start}.planilha-head{align-items:flex-start;flex-direction:column}}
+@media(max-width:640px){.planilha-toolbar{grid-template-columns:1fr}.planilha-wrap{max-height:none}.planilha-head{padding:18px}}

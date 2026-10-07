@@ -1,0 +1,515 @@
+/*
+ * AYRES UI — camada visual canônica.
+ *
+ * Os estilos antigos continuam cuidando de layouts específicos de cada
+ * módulo. Este arquivo, carregado por último, unifica tokens, superfícies,
+ * tipografia, formulários e estados sem alterar as regras operacionais.
+ */
+
+:root {
+  color-scheme: light;
+  --ay-app-bg: #eef3f9;
+  --ay-app-bg-accent: rgba(37, 99, 235, .10);
+  --ay-surface: rgba(255, 255, 255, .94);
+  --ay-surface-raised: #ffffff;
+  --ay-surface-muted: #f7f9fc;
+  --ay-surface-hover: #f1f6ff;
+  --ay-border: rgba(15, 23, 42, .10);
+  --ay-border-strong: rgba(37, 99, 235, .24);
+  --ay-ink: #111827;
+  --ay-ink-soft: #334155;
+  --ay-ink-muted: #64748b;
+  --ay-primary: #2563eb;
+  --ay-primary-strong: #1d4ed8;
+  --ay-primary-soft: rgba(37, 99, 235, .10);
+  --ay-accent: #38bdf8;
+  --ay-success: #16a34a;
+  --ay-warning: #d97706;
+  --ay-danger: #dc2626;
+  --ay-radius-xs: 8px;
+  --ay-radius-sm: 12px;
+  --ay-radius-md: 16px;
+  --ay-radius-lg: 22px;
+  --ay-shadow-xs: 0 1px 2px rgba(15, 23, 42, .05);
+  --ay-shadow-sm: 0 8px 24px rgba(15, 23, 42, .07);
+  --ay-shadow-md: 0 20px 56px rgba(15, 23, 42, .12);
+  --ay-focus: 0 0 0 3px rgba(37, 99, 235, .20);
+  --ay-transition: 160ms cubic-bezier(.2, .8, .2, 1);
+}
+
+html.dark {
+  color-scheme: dark;
+  --ay-app-bg: #060b14;
+  --ay-app-bg-accent: rgba(37, 99, 235, .16);
+  --ay-surface: rgba(14, 23, 39, .92);
+  --ay-surface-raised: #111c2f;
+  --ay-surface-muted: rgba(15, 27, 46, .82);
+  --ay-surface-hover: rgba(37, 99, 235, .10);
+  --ay-border: rgba(148, 163, 184, .14);
+  --ay-border-strong: rgba(96, 165, 250, .30);
+  --ay-ink: #f8fafc;
+  --ay-ink-soft: #dbe5f3;
+  --ay-ink-muted: #94a3b8;
+  --ay-primary: #3b82f6;
+  --ay-primary-strong: #60a5fa;
+  --ay-primary-soft: rgba(59, 130, 246, .14);
+  --ay-shadow-xs: 0 1px 2px rgba(0, 0, 0, .22);
+  --ay-shadow-sm: 0 12px 30px rgba(0, 0, 0, .24);
+  --ay-shadow-md: 0 24px 64px rgba(0, 0, 0, .36);
+  --ay-focus: 0 0 0 3px rgba(96, 165, 250, .24);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background:
+    radial-gradient(900px circle at 8% -10%, var(--ay-app-bg-accent), transparent 56%),
+    radial-gradient(720px circle at 100% 0%, rgba(14, 165, 233, .07), transparent 50%),
+    var(--ay-app-bg) !important;
+  color: var(--ay-ink) !important;
+}
+
+body {
+  font-family: Inter, "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  color: #fff;
+  background: rgba(37, 99, 235, .78);
+}
+
+* {
+  scrollbar-color: rgba(100, 116, 139, .45) transparent;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, .42);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none !important;
+  box-shadow: var(--ay-focus) !important;
+}
+
+:where(button, a, input, select, textarea) {
+  transition:
+    color var(--ay-transition),
+    border-color var(--ay-transition),
+    background-color var(--ay-transition),
+    box-shadow var(--ay-transition),
+    transform var(--ay-transition);
+}
+
+:where(button, input, select, textarea):disabled {
+  cursor: not-allowed !important;
+  opacity: .56;
+}
+
+/* Estrutura principal */
+.app,
+.app-layout {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-layout {
+  grid-template-columns: 264px minmax(0, 1fr) !important;
+  align-items: stretch;
+}
+
+.main-pro {
+  min-width: 0;
+  background: transparent !important;
+}
+
+.container {
+  width: min(100%, 1760px);
+  margin-inline: auto;
+  padding: 24px clamp(18px, 2vw, 34px) 40px !important;
+}
+
+.aba.active {
+  animation: ay-page-enter 240ms ease-out;
+}
+
+@keyframes ay-page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Navegação lateral */
+.sidebar-pro,
+.sidebar-pro.ayres-sidebar-v4 {
+  width: 264px;
+  height: 100vh;
+  height: 100dvh;
+  padding: 18px 14px !important;
+  background:
+    radial-gradient(360px circle at 40% -8%, rgba(59, 130, 246, .20), transparent 60%),
+    linear-gradient(180deg, #0a1220 0%, #070b14 100%) !important;
+  border-right: 1px solid rgba(148, 163, 184, .12) !important;
+  box-shadow: 18px 0 50px rgba(0, 0, 0, .20) !important;
+}
+
+.brand-pro {
+  min-height: 64px;
+  padding: 4px 8px 18px !important;
+  margin-bottom: 4px !important;
+}
+
+.sidebar-logo-mark {
+  border: 1px solid rgba(255, 255, 255, .11) !important;
+  background: linear-gradient(145deg, rgba(59, 130, 246, .28), rgba(37, 99, 235, .08)) !important;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, .24) !important;
+}
+
+.sidebar-section-label {
+  padding: 15px 10px 6px !important;
+  color: #64748b !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: .14em !important;
+}
+
+.sidebar-nav .tab {
+  min-height: 42px;
+  margin-block: 1px;
+  padding: 9px 11px !important;
+  color: #9eabc0 !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--ay-radius-sm) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sidebar-nav .tab:hover {
+  color: #e5edf8 !important;
+  border-color: rgba(148, 163, 184, .12) !important;
+  background: rgba(255, 255, 255, .045) !important;
+  transform: translateX(2px) !important;
+}
+
+.sidebar-nav .tab.active {
+  color: #fff !important;
+  border-color: rgba(96, 165, 250, .28) !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, .38), rgba(14, 165, 233, .11)) !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .16) !important;
+}
+
+.sidebar-nav .tab.active::before {
+  top: 10px !important;
+  bottom: 10px !important;
+  width: 3px !important;
+  background: #60a5fa !important;
+}
+
+.sidebar-card,
+.sidebar-user-card,
+.ayres-today-grid > div {
+  border-color: rgba(148, 163, 184, .12) !important;
+  border-radius: var(--ay-radius-sm) !important;
+  background: rgba(255, 255, 255, .035) !important;
+  box-shadow: none !important;
+}
+
+/* Barra superior */
+.topbar,
+.ayres-header-v4 {
+  min-height: 68px;
+  background: color-mix(in srgb, var(--ay-surface-raised) 82%, transparent) !important;
+  border-bottom: 1px solid var(--ay-border) !important;
+  box-shadow: var(--ay-shadow-xs) !important;
+  backdrop-filter: blur(18px) saturate(1.15) !important;
+}
+
+.topbar::after,
+[class*="ayres-topbar"]::after {
+  height: 1px !important;
+  opacity: .22 !important;
+}
+
+.ayres-header-title-v4 strong,
+.topbar-user-text strong {
+  color: var(--ay-ink) !important;
+}
+
+.ayres-header-title-v4 span,
+.topbar-user-text small {
+  color: var(--ay-ink-muted) !important;
+}
+
+.ayres-header-search-v4,
+.ayres-date-chip-v4,
+.settings-trigger-btn,
+.topbar-profile-btn {
+  border-color: var(--ay-border) !important;
+  background: var(--ay-surface-muted) !important;
+  color: var(--ay-ink-soft) !important;
+}
+
+/* Superfícies */
+.app :is(
+  .box,
+  .panel,
+  .command-panel,
+  .command-kpi,
+  .dash-chart-card,
+  .live-card,
+  .stat,
+  .admin-box,
+  .usuario-item,
+  .capture-panel-wrap-pro,
+  .operator-action-card,
+  .operator-mini-stat
+),
+.users-isolated-content,
+.capture-panel-wrap-pro {
+  color: var(--ay-ink);
+  border: 1px solid var(--ay-border) !important;
+  border-radius: var(--ay-radius-lg) !important;
+  background: var(--ay-surface) !important;
+  box-shadow: var(--ay-shadow-sm) !important;
+  backdrop-filter: blur(14px);
+}
+
+.app :is(.command-panel, .command-kpi, .operator-action-card, .dash-action-tile-pro):hover {
+  border-color: var(--ay-border-strong) !important;
+  box-shadow: var(--ay-shadow-md) !important;
+  transform: translateY(-2px);
+}
+
+.command-kpi::before,
+.operator-mini-stat::before {
+  height: 2px !important;
+  background: linear-gradient(90deg, var(--ay-primary), var(--ay-accent)) !important;
+}
+
+.command-kpi.primary {
+  color: #fff !important;
+  border-color: rgba(96, 165, 250, .42) !important;
+  background: linear-gradient(145deg, #1d4ed8, #2563eb 58%, #0ea5e9) !important;
+}
+
+.command-hero,
+.operator-hero,
+.dash-hero-pro,
+.capture-topbar-pro,
+.users-isolated-topbar {
+  border: 1px solid var(--ay-border) !important;
+  border-radius: var(--ay-radius-lg) !important;
+  background:
+    radial-gradient(520px circle at 8% 0%, rgba(59, 130, 246, .18), transparent 58%),
+    var(--ay-surface) !important;
+  box-shadow: var(--ay-shadow-sm) !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(h1, h2, h3, strong) {
+  color: var(--ay-ink) !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(p, small, .muted) {
+  color: var(--ay-ink-muted) !important;
+}
+
+/* Formulários */
+:where(.app, .capture-shell-pro, .users-isolated-shell) label {
+  color: var(--ay-ink-muted) !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .075em !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(input, select, textarea) {
+  min-height: 42px;
+  color: var(--ay-ink) !important;
+  border: 1px solid var(--ay-border) !important;
+  border-radius: var(--ay-radius-sm) !important;
+  background: var(--ay-surface-muted) !important;
+  box-shadow: var(--ay-shadow-xs) !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(input, select, textarea):hover {
+  border-color: var(--ay-border-strong) !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(input, select, textarea):focus {
+  border-color: var(--ay-primary) !important;
+  background: var(--ay-surface-raised) !important;
+  box-shadow: var(--ay-focus) !important;
+  transform: none !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(input, textarea)::placeholder {
+  color: color-mix(in srgb, var(--ay-ink-muted) 72%, transparent) !important;
+}
+
+/* Botões */
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(button, .btn) {
+  border-radius: var(--ay-radius-sm) !important;
+  font-weight: 750 !important;
+  letter-spacing: 0 !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(.btn-primary, .btn-blue, .btn-purple, button[type="submit"]) {
+  color: #fff !important;
+  border: 1px solid rgba(96, 165, 250, .36) !important;
+  background: linear-gradient(135deg, var(--ay-primary-strong), var(--ay-primary), #0ea5e9) !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .20) !important;
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(button, .btn):hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+:where(.app, .capture-shell-pro, .users-isolated-shell) :is(button, .btn):active:not(:disabled) {
+  transform: translateY(0) scale(.985) !important;
+}
+
+/* Tabelas */
+.table-wrap,
+.table-scroll {
+  overflow: auto !important;
+  border: 1px solid var(--ay-border) !important;
+  border-radius: var(--ay-radius-md) !important;
+  background: var(--ay-surface) !important;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+}
+
+table thead th {
+  top: 0;
+  z-index: 2;
+  color: var(--ay-ink-muted) !important;
+  border-bottom: 1px solid var(--ay-border) !important;
+  background: color-mix(in srgb, var(--ay-surface-raised) 94%, var(--ay-primary-soft)) !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .07em !important;
+}
+
+table tbody td {
+  color: var(--ay-ink-soft) !important;
+  border-bottom-color: var(--ay-border) !important;
+}
+
+table tbody tr:hover {
+  background: var(--ay-primary-soft) !important;
+}
+
+/* Portal de módulos */
+.portal-zero {
+  background:
+    radial-gradient(820px circle at 12% -8%, rgba(37, 99, 235, .18), transparent 58%),
+    radial-gradient(620px circle at 94% 8%, rgba(14, 165, 233, .09), transparent 54%),
+    #070c16 !important;
+}
+
+.portal-zero-header {
+  border-color: rgba(148, 163, 184, .13) !important;
+  background: rgba(8, 14, 25, .72) !important;
+  backdrop-filter: blur(18px);
+}
+
+.portal-zero-card {
+  border: 1px solid rgba(148, 163, 184, .15) !important;
+  border-radius: 20px !important;
+  background: linear-gradient(145deg, rgba(20, 31, 51, .92), rgba(11, 19, 33, .92)) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, .22) !important;
+}
+
+.portal-zero-card:hover {
+  border-color: rgba(96, 165, 250, .40) !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, .34), 0 0 0 1px rgba(59, 130, 246, .10) !important;
+  transform: translateY(-3px) !important;
+}
+
+.portal-zero-card h3,
+.portal-zero-card strong {
+  color: #f8fafc !important;
+}
+
+.portal-zero-card p,
+.portal-zero-footer {
+  color: #94a3b8 !important;
+}
+
+/* Login */
+.portal-screen {
+  background:
+    radial-gradient(900px circle at 50% -14%, rgba(37, 99, 235, .20), transparent 58%),
+    linear-gradient(180deg, #070b13 0%, #04070d 100%) !important;
+}
+
+.portal-screen form {
+  isolation: isolate;
+}
+
+.portal-screen form input {
+  min-height: 54px;
+}
+
+.login-hero-title {
+  text-wrap: balance;
+}
+
+/* Estados e detalhes */
+.empty,
+.dash-empty-pro,
+.notif-empty {
+  color: var(--ay-ink-muted) !important;
+}
+
+.footer,
+.capture-footer-pro {
+  color: var(--ay-ink-muted) !important;
+  opacity: .72;
+}
+
+@media (max-width: 1100px) {
+  .app-layout { grid-template-columns: minmax(0, 1fr) !important; }
+  .sidebar-pro,
+  .sidebar-pro.ayres-sidebar-v4 { width: min(86vw, 288px); }
+  .container { padding-inline: 18px !important; }
+}
+
+@media (max-width: 720px) {
+  .container { padding: 14px 12px 28px !important; }
+
+  .app :is(
+    .box,
+    .panel,
+    .command-panel,
+    .command-kpi,
+    .operator-action-card,
+    .operator-mini-stat
+  ) {
+    border-radius: var(--ay-radius-md) !important;
+  }
+
+  .portal-zero-card { border-radius: var(--ay-radius-md) !important; }
+  table thead th,
+  table tbody td { padding: 9px 10px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
