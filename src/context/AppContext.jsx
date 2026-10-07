@@ -4,6 +4,7 @@ import { FILIAIS } from '../data/filiais'
 import { gerarId, baixarArquivo, calcularEstadia } from '../utils/index'
 import { podeAdministrar } from '../utils/roles'
 import * as sb from '../lib/supabase'
+import { atualizarExcelAutomatico } from '../lib/autoExcel'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
 import { registrarLocalizacaoUsuario } from '../lib/locationAudit'
 
@@ -191,11 +192,19 @@ export function AppProvider({ children }) {
     const restante = []
     const client = sb.getClient()
 
+    let atualizouEstadiaLancada = false
     for (const item of filaAtual) {
       try {
-        if (item.acao === 'upsert') await client.from(sb.TABLE).upsert(item.payload, { onConflict: 'local_id' })
+        if (item.acao === 'upsert') {
+          await client.from(sb.TABLE).upsert(item.payload, { onConflict: 'local_id' })
+          if (item.payload?.tipo === 'lancada') atualizouEstadiaLancada = true
+        }
         if (item.acao === 'delete') await client.from(sb.TABLE).delete().eq('local_id', String(item.local_id))
       } catch { restante.push(item) }
+    }
+
+    if (atualizouEstadiaLancada) {
+      try { await atualizarExcelAutomatico() } catch {}
     }
 
     dispatch({ type: 'SET_FILA', payload: restante })
@@ -282,6 +291,9 @@ export function AppProvider({ children }) {
     try {
       setCloud('syncing', 'Salvando na nuvem...')
       await sb.salvar(item, tipo, filial)
+      if (tipo === 'lancada') {
+        try { await atualizarExcelAutomatico() } catch {}
+      }
       const agora = new Date().toLocaleString('pt-BR')
       localStorage.setItem('ultimoSaveSupabaseViaLog', agora)
       dispatch({ type: 'SET_ULTIMO_SAVE', payload: agora })
