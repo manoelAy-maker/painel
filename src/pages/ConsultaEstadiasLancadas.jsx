@@ -13,9 +13,8 @@ function classePrio(p) {
 }
 
 function classeStatus(s) {
-  if (s === 'Finalizado' || s === 'Pago') return 'status-finalizado'
-  if (s === 'Aprovado' || s === 'Em pagamento') return 'status-feito'
-  if (s === 'Recusado' || s === 'Cancelado') return 'status-cancelado'
+  if (s === 'Finalizado') return 'status-finalizado'
+  if (s === 'Feito') return 'status-feito'
   if (s === 'Em análise') return 'status-feito'
   return 'status-aberto'
 }
@@ -93,22 +92,15 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
   }), [listaFiltrada, visao])
 
   const stats = useMemo(() => {
-    const totalPrevisto = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valor || e.valorCalculado), 0)
-    const totalAprovado = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valorAprovado), 0)
-    const totalPago = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valorPago), 0)
+    const totalValor = listaFiltrada.reduce((acc, e) => acc + parseValor(e.valor), 0)
     return {
       total: listaFiltrada.length,
       abertas: listaFiltrada.filter(e => !e.status || e.status === 'Aberto').length,
       analise: listaFiltrada.filter(e => e.status === 'Em análise').length,
-      aprovadas: listaFiltrada.filter(e => e.status === 'Aprovado').length,
-      pagamento: listaFiltrada.filter(e => e.status === 'Em pagamento').length,
-      pagas: listaFiltrada.filter(e => e.status === 'Pago').length,
-      andamento: listaFiltrada.filter(e => !['Finalizado','Cancelado'].includes(e.status)).length,
+      feitas: listaFiltrada.filter(e => e.status === 'Feito').length,
+      andamento: listaFiltrada.filter(e => e.status !== 'Finalizado').length,
       finalizadas: listaFiltrada.filter(e => e.status === 'Finalizado').length,
-      previsto: totalPrevisto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-      aprovado: totalAprovado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-      pago: totalPago.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-      aPagar: Math.max(0, totalAprovado - totalPago).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      valor: totalValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
     }
   }, [listaFiltrada])
 
@@ -197,10 +189,8 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
 
   const proximaAcao = (e) => {
     if (!e.status || e.status === 'Aberto') return { label: 'Analisar', status: 'Em análise', classe: 'warn' }
-    if (e.status === 'Em análise') return { label: 'Aprovar', status: 'Aprovado', classe: 'ok' }
-    if (e.status === 'Aprovado') return { label: 'Enviar p/ pagamento', status: 'Em pagamento', classe: 'warn' }
-    if (e.status === 'Em pagamento') return { label: 'Marcar pago', status: 'Pago', classe: 'ok' }
-    if (e.status === 'Pago') return { label: 'Finalizar', status: 'Finalizado', classe: 'done' }
+    if (e.status === 'Em análise') return { label: 'Marcar feito', status: 'Feito', classe: 'ok' }
+    if (e.status === 'Feito') return { label: 'Finalizar', status: 'Finalizado', classe: 'done' }
     return null
   }
 
@@ -224,19 +214,17 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
       </div>
 
       <div className="consulta-pro-kpis">
-        <div><span>Total</span><strong>{stats.total}</strong></div>
+        <div><span>Total filtrado</span><strong>{stats.total}</strong></div>
+        <div><span>Abertas</span><strong>{stats.abertas}</strong></div>
         <div><span>Em análise</span><strong>{stats.analise}</strong></div>
-        <div><span>Aprovadas</span><strong>{stats.aprovadas}</strong></div>
-        <div><span>Em pagamento</span><strong>{stats.pagamento}</strong></div>
-        <div className="money"><span>Previsto</span><strong>{stats.previsto}</strong></div>
-        <div className="money"><span>Aprovado</span><strong>{stats.aprovado}</strong></div>
-        <div className="money"><span>Pago</span><strong>{stats.pago}</strong></div>
-        <div className="money"><span>A pagar</span><strong>{stats.aPagar}</strong></div>
+        <div><span>Feitas</span><strong>{stats.feitas}</strong></div>
+        <div><span>Finalizadas</span><strong>{stats.finalizadas}</strong></div>
+        <div className="money"><span>Valor total</span><strong>{stats.valor}</strong></div>
       </div>
 
       <div className="consulta-pro-filters">
         <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar placa, motorista, chamado ou NF..." />
-        <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="">Todos status</option><option>Aberto</option><option>Em análise</option><option>Aprovado</option><option>Em pagamento</option><option>Pago</option><option>Finalizado</option><option>Recusado</option><option>Cancelado</option></select>
+        <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}><option value="">Todos status</option><option>Aberto</option><option>Em análise</option><option>Feito</option><option>Finalizado</option></select>
         <select value={filtroFilial} onChange={e => setFiltroFilial(e.target.value)}><option value="">Todas as filiais</option>{filiais.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select>
         <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
         <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
@@ -269,12 +257,10 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
               </div>
 
               <div className="consulta-pro-data">
-                <div><span>Previsto</span><strong>{e.valor || e.valorCalculado || 'R$ 0,00'}</strong></div>
-                <div><span>Aprovado</span><strong>{e.valorAprovado ? 'R$ ' + e.valorAprovado : '-'}</strong></div>
-                <div><span>Pago</span><strong>{e.valorPago ? 'R$ ' + e.valorPago : '-'}</strong></div>
+                <div><span>Valor</span><strong>{e.valor || 'R$ 0,00'}</strong></div>
                 <div><span>Tempo parado</span><strong className={tempoParadoClasse(e)}>{tempoParadoTexto(e)}</strong></div>
                 <div><span>Filial</span><strong>{nomeFilial(e.filial)}</strong></div>
-                <div><span>Chamado</span><strong>{e.chamado || '-'}</strong></div>
+                <div><span>Lançada há</span><strong>{tempoDecorrido(e.dataLancamento)}</strong></div>
               </div>
 
               <div className="consulta-pro-side">
@@ -284,9 +270,6 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
                 </div>
                 <div className="consulta-pro-actions">
                   {acao && <button className={`consulta-pro-action ${acao.classe}`} onClick={() => atualizarStatus(e, acao.status)}>{acao.label}</button>}
-                  <select className="consulta-pro-status-select" value={e.status || 'Aberto'} onChange={ev => atualizarStatus(e, ev.target.value)}>
-                    <option>Aberto</option><option>Em análise</option><option>Aprovado</option><option>Em pagamento</option><option>Pago</option><option>Finalizado</option><option>Recusado</option><option>Cancelado</option>
-                  </select>
                   {e.status !== 'Aberto' && <button className="consulta-pro-light small" onClick={() => atualizarStatus(e, 'Aberto')}>Reabrir</button>}
                   <button className="consulta-pro-light small" onClick={() => setDetalhe(e)}>Detalhes</button>
                   <button className="consulta-pro-light small" onClick={() => editar(e)}>Editar</button>
@@ -316,10 +299,8 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
             <div><small>Filial</small><strong>{nomeFilial(detalhe.filial)}</strong></div>
             <div><small>Peso</small><strong>{detalhe.peso || '-'}</strong></div>
             <div><small>Horas</small><strong>{detalhe.horas || '0.00'} h</strong></div>
-            <div><small>Valor previsto</small><strong>{detalhe.valor || detalhe.valorCalculado || 'R$ 0,00'}</strong></div>
-            <div><small>Valor aprovado</small><strong>{detalhe.valorAprovado ? 'R$ ' + detalhe.valorAprovado : '-'}</strong></div>
-            <div><small>Valor pago</small><strong>{detalhe.valorPago ? 'R$ ' + detalhe.valorPago : '-'}</strong></div>
-            <div><small>Data pagamento</small><strong>{detalhe.dataPagamento || '-'}</strong></div>
+            <div><small>Valor</small><strong>{detalhe.valor || 'R$ 0,00'}</strong></div>
+            <div><small>Pago por</small><strong>{detalhe.pagoPor || 'Logística'}</strong></div>
           </div>
           <div className="consulta-modal-section">
             <h3>Histórico da estadia</h3>
