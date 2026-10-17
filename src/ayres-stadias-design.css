@@ -1,0 +1,119 @@
+/* AYRES Estadias — design operacional baseado em tempo, causa e evidência */
+.app .dashboard-hero {
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.app .hero-pro-card,
+.app .hero-side-card,
+.app .stat-card {
+  border: 1px solid rgba(148, 163, 184, .14) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .18) !important;
+}
+
+.app .hero-pro-card {
+  min-height: 205px;
+  border-radius: 26px !important;
+  padding: 26px !important;
+  background:
+    radial-gradient(circle at 86% 12%, rgba(244, 114, 182, .22), transparent 26%),
+    radial-gradient(circle at 12% 100%, rgba(125, 211, 252, .22), transparent 33%),
+    linear-gradient(135deg, #12264a 0%, #183b72 58%, #33215f 100%) !important;
+}
+
+.app .hero-pro-card::before {
+  content: 'CONTROLE DE ESTADIAS';
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(191, 219, 254, .20);
+  border-radius: 999px;
+  color: #dbeafe;
+  background: rgba(255, 255, 255, .08);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.app .hero-pro-card h2 {
+  font-size: clamp(24px, 3vw, 34px) !important;
+  letter-spacing: -.05em !important;
+}
+
+.app .hero-pro-card p {
+  max-width: 600px;
+  color: #dbeafe !important;
+}
+
+.app .hero-actions { gap: 9px; margin-top: 20px; }
+.app .hero-actions button {
+  min-height: 40px;
+  border-radius: 999px !important;
+  padding-inline: 15px !important;
+}
+.app .hero-actions button:first-child {
+  background: linear-gradient(135deg, #7dd3fc, #60a5fa) !important;
+  color: #082044 !important;
+}
+.app .hero-actions button:nth-child(2) {
+  background: rgba(255, 255, 255, .10) !important;
+  border: 1px solid rgba(255, 255, 255, .16) !important;
+}
+
+.app .hero-side-card {
+  border-radius: 26px !important;
+  padding: 22px !important;
+  background: linear-gradient(180deg, rgba(19, 37, 66, .88), rgba(8, 17, 34, .84)) !important;
+}
+
+.app .hero-side-card h3 {
+  color: #f8fafc;
+  letter-spacing: -.02em;
+}
+
+.app .system-health { gap: 7px; }
+.app .health-row {
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid rgba(148, 163, 184, .10);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .035);
+}
+.app .health-row span { color: #a8b8cd; }
+.app .health-row strong { color: #bfdbfe; }
+
+.app .stats {
+  gap: 12px !important;
+}
+.app .stat-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 112px;
+  border-radius: 20px !important;
+  padding: 18px !important;
+  background: linear-gradient(180deg, rgba(19, 37, 66, .82), rgba(8, 17, 34, .80)) !important;
+}
+.app .stat-card::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7dd3fc, #c4b5fd, #f9a8d4);
+}
+.app .stat-card span { color: #a8b8cd !important; font-weight: 800; }
+.app .stat-card strong { color: #f8fafc !important; font-size: 29px !important; letter-spacing: -.05em; }
+.app .stat-card small { color: #7183a2 !important; }
+
+@media (max-width: 760px) {
+  .app .hero-pro-card,
+  .app .hero-side-card { border-radius: 21px !important; padding: 19px !important; }
+  .app .hero-pro-card { min-height: 0; }
+  .app .hero-actions { display: grid; grid-template-columns: 1fr; }
+  .app .hero-actions button { width: 100%; }
+  .app .stat-card { min-height: 100px; padding: 15px !important; }
+  .app .stat-card strong { font-size: 25px !important; }
+}
