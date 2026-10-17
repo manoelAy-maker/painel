@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { salvar } from '../lib/supabase'
-import PortalScene from './PortalScene'
 import AyresLogo from './AyresLogo'
 
 const Svg = ({ children, ...p }) => (
@@ -121,37 +120,37 @@ function ForgotPasswordModal({ show, onClose, onDone, textos }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-md" onClick={onClose}>
-      <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0d1117] p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-start justify-between gap-4 mb-7">
+    <div className="ayres-forgot" onClick={onClose}>
+      <section className="ayres-forgot__dialog" role="dialog" aria-modal="true" aria-labelledby="ayres-forgot-title" onClick={e => e.stopPropagation()}>
+        <div className="ayres-forgot__header">
           <div>
-            <p className="text-[10px] uppercase tracking-[.22em] text-blue-400 font-black mb-2">{textos.recuperacao}</p>
-            <h3 className="text-2xl font-bold">{textos.esqueciTitulo}</h3>
-            <p className="text-sm text-slate-500 mt-2">{textos.esqueciTexto}</p>
+            <p className="ayres-overline">{textos.recuperacao}</p>
+            <h3 id="ayres-forgot-title">{textos.esqueciTitulo}</h3>
+            <p className="ayres-forgot__description">{textos.esqueciTexto}</p>
           </div>
-          <button className="bg-white/5 border border-white/10 rounded-xl w-9 h-9 text-white" onClick={onClose}>×</button>
+          <button type="button" className="ayres-icon-button" onClick={onClose} aria-label="Fechar">×</button>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">{textos.usuario}</label>
-            <input value={form.usuario} onChange={e => setForm(p => ({ ...p, usuario: e.target.value }))} placeholder="Ex: jamis" className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5" />
+        <div className="ayres-form-fields">
+          <div className="ayres-form-field">
+            <label htmlFor="ayres-recovery-user">{textos.usuario}</label>
+            <input id="ayres-recovery-user" value={form.usuario} onChange={e => setForm(p => ({ ...p, usuario: e.target.value }))} placeholder="Ex: jamis" autoComplete="username" />
           </div>
-          <div>
-            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">{textos.nome}</label>
-            <input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder={textos.nomePlaceholder} className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5" />
+          <div className="ayres-form-field">
+            <label htmlFor="ayres-recovery-name">{textos.nome}</label>
+            <input id="ayres-recovery-name" value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder={textos.nomePlaceholder} autoComplete="name" />
           </div>
-          <div>
-            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">{textos.motivo}</label>
-            <textarea value={form.motivo} onChange={e => setForm(p => ({ ...p, motivo: e.target.value }))} placeholder={textos.motivoPlaceholder} className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5 min-h-[88px] resize-none" />
+          <div className="ayres-form-field">
+            <label htmlFor="ayres-recovery-reason">{textos.motivo}</label>
+            <textarea id="ayres-recovery-reason" value={form.motivo} onChange={e => setForm(p => ({ ...p, motivo: e.target.value }))} placeholder={textos.motivoPlaceholder} />
           </div>
         </div>
 
-        {msg && <p className="text-sm text-center text-blue-300 mt-4">{msg}</p>}
-        <button disabled={enviando} onClick={solicitar} className="w-full py-4 rounded-2xl font-bold text-base mt-6 bg-gradient-to-r from-blue-600 to-blue-500 disabled:opacity-60">
+        {msg && <p className="ayres-feedback" role="status">{msg}</p>}
+        <button type="button" disabled={enviando} onClick={solicitar} className="ayres-button ayres-button--primary ayres-forgot__submit">
           {enviando ? textos.enviando : textos.enviarPedido}
         </button>
-      </div>
+      </section>
     </div>
   )
 }
@@ -197,72 +196,70 @@ export default function Login() {
   ]
 
   return (
-    <div className="portal-screen min-h-screen flex flex-col bg-[#05070a] text-white font-sans relative overflow-hidden" style={{ fontFamily: "'Inter','Plus Jakarta Sans',Arial,sans-serif" }}>
-      <PortalScene />
-      <div className="fixed inset-0 -z-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(59,130,246,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,.05) 1px, transparent 1px)', backgroundSize: '50px 50px', maskImage: 'radial-gradient(circle at center, black, transparent 80%)', WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 80%)' }} />
-
-      <header className="px-6 sm:px-10 py-8 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-4">
-          <div className="login-logo-mark"><AyresLogo size={54} /></div>
+    <div className="ayres-login">
+      <header className="ayres-login__header">
+        <div className="ayres-login__brand">
+          <div className="ayres-login__logo-mark"><AyresLogo size={54} /></div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AYRES</h1>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-blue-400 font-bold">{textos.marca}</p>
+            <h1>AYRES</h1>
+            <p>{textos.marca}</p>
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-full px-2 py-2 text-xs font-bold flex items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all">
-          <span className="text-slate-300">{ICONES.globe}</span>
-          <button type="button" onClick={() => setIdioma('pt')} className={`px-2.5 py-1 rounded-full transition-all ${idioma === 'pt' ? 'bg-blue-500/30 text-blue-100' : 'text-slate-500 hover:text-slate-200'}`}>PT</button>
-          <button type="button" onClick={() => setIdioma('en')} className={`px-2.5 py-1 rounded-full transition-all ${idioma === 'en' ? 'bg-blue-500/30 text-blue-100' : 'text-slate-500 hover:text-slate-200'}`}>EN</button>
+        <div className="ayres-language" aria-label="Idioma">
+          <span className="ayres-language__icon">{ICONES.globe}</span>
+          <button type="button" onClick={() => setIdioma('pt')} className={idioma === 'pt' ? 'is-active' : ''} aria-pressed={idioma === 'pt'}>PT</button>
+          <button type="button" onClick={() => setIdioma('en')} className={idioma === 'en' ? 'is-active' : ''} aria-pressed={idioma === 'en'}>EN</button>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
-        <div className={`text-center mb-10 max-w-3xl transition-all duration-1000 ease-out ${heroVisivel ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="login-hero-title text-4xl sm:text-6xl font-bold mb-6 tracking-tight">
+      <main className={`ayres-login__main ${heroVisivel ? 'is-visible' : ''}`}>
+        <section className="ayres-login__intro" aria-labelledby="ayres-login-title">
+          <p className="ayres-overline">{textos.marca}</p>
+          <h2 id="ayres-login-title" className="ayres-login__title">
             <span>{textos.titulo}</span>
-            <span className="login-ayres-word"><span className="login-ayres-a"><AyresLogo size={78} /></span><span className="login-ayres-yres">YRES</span></span>
+            <span className="ayres-login__word"><span className="ayres-login__word-mark"><AyresLogo size={78} /></span><span>YRES</span></span>
           </h2>
-          <p className="text-slate-400 text-base sm:text-lg leading-relaxed font-light">{textos.descricao}</p>
-        </div>
+          <p className="ayres-login__description">{textos.descricao}</p>
+        </section>
 
-        <div className={`w-full max-w-md bg-[#0d1117] border border-white/10 rounded-[2.5rem] p-8 sm:p-12 shadow-2xl transition-all duration-1000 ease-out ${heroVisivel ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 border bg-blue-500/10 border-blue-500/20 text-blue-500">{ICONES.lock}</div>
-            <h4 className="text-2xl font-bold mb-2">{textos.cardTitulo}</h4>
-            <p className="text-slate-500 text-sm">{textos.cardSub}</p>
+        <section className="ayres-login__card" aria-labelledby="ayres-login-card-title">
+          <div className="ayres-login__card-header">
+            <div className="ayres-login__lock">{ICONES.lock}</div>
+            <h3 id="ayres-login-card-title">{textos.cardTitulo}</h3>
+            <p>{textos.cardSub}</p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
-            <div>
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">{textos.usuario}</label>
-              <input id="portal-user" type="text" placeholder={textos.usuarioPlaceholder} autoComplete="username" value={form.usuario} onChange={(e) => set('usuario', e.target.value)} onKeyDown={(e) => e.key === 'Enter' && document.getElementById('portal-pass')?.focus()} className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5 transition-all focus:border-blue-500 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] focus:bg-white/5" />
+          <form className="ayres-login__form" onSubmit={handleLogin}>
+            <div className="ayres-form-field">
+              <label htmlFor="portal-user">{textos.usuario}</label>
+              <input id="portal-user" type="text" placeholder={textos.usuarioPlaceholder} autoComplete="username" value={form.usuario} onChange={(e) => set('usuario', e.target.value)} onKeyDown={(e) => e.key === 'Enter' && document.getElementById('portal-pass')?.focus()} />
             </div>
-            <div>
-              <div className="flex items-center justify-between gap-3 mb-2 ml-1">
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">{textos.senha}</label>
-                <button type="button" onClick={() => setForgot(true)} className="text-[11px] text-blue-400 font-bold hover:text-blue-300">{textos.esqueci}</button>
+            <div className="ayres-form-field">
+              <div className="ayres-form-field__label-row">
+                <label htmlFor="portal-pass">{textos.senha}</label>
+                <button type="button" onClick={() => setForgot(true)} className="ayres-link-button">{textos.esqueci}</button>
               </div>
-              <input id="portal-pass" type="password" placeholder={textos.senhaPlaceholder} autoComplete="current-password" value={form.senha} onChange={(e) => set('senha', e.target.value)} className="w-full px-5 py-4 rounded-2xl outline-none text-white bg-white/[.03] border border-white/5 transition-all focus:border-blue-500 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] focus:bg-white/5" />
+              <input id="portal-pass" type="password" placeholder={textos.senhaPlaceholder} autoComplete="current-password" value={form.senha} onChange={(e) => set('senha', e.target.value)} />
             </div>
 
-            {erro && <p className="text-red-400 text-sm text-center -mt-2">{erro}</p>}
+            {erro && <p className="ayres-feedback ayres-feedback--error" role="alert">{erro}</p>}
 
-            <button type="submit" disabled={carregando} className="w-full py-4 sm:py-5 rounded-2xl font-bold text-base sm:text-lg shadow-xl mt-2 flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-wait bg-gradient-to-r from-blue-600 to-blue-500 hover:shadow-[0_10px_24px_rgba(37,99,235,0.35)]">
+            <button type="submit" disabled={carregando} className="ayres-button ayres-button--primary ayres-login__submit">
               {carregando ? textos.validando : <>{textos.entrar} {ICONES.chevronRight}</>}
             </button>
           </form>
-        </div>
+        </section>
       </main>
 
-      <footer className="px-6 py-12 sm:py-16 text-center">
-        <div className="flex flex-wrap justify-center gap-6 sm:gap-12 mb-8">
-          {beneficios.map((b) => <div key={b.texto} className="flex items-center gap-3 text-slate-500"><span className="text-blue-500">{ICONES[b.icon]}</span><span className="text-[10px] uppercase tracking-widest font-bold">{b.texto}</span></div>)}
+      <footer className="ayres-login__footer">
+        <div className="ayres-login__benefits">
+          {beneficios.map((b) => <div key={b.texto} className="ayres-login__benefit"><span>{ICONES[b.icon]}</span><span>{b.texto}</span></div>)}
         </div>
-        <p className="text-[10px] text-slate-700 uppercase tracking-[0.4em]">{textos.direitos}</p>
+        <p>{textos.direitos}</p>
       </footer>
 
-      <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-7 flex items-center gap-2 text-slate-600 text-[10px] uppercase tracking-widest font-bold opacity-70 hover:opacity-100 transition-opacity">
-        {ICONES.lock}<span className="text-right leading-tight normal-case tracking-normal">{textos.acesso}</span>
+      <div className="ayres-login__location" aria-label={typeof textos.acesso === 'string' ? textos.acesso : undefined}>
+        {ICONES.lock}<span>{textos.acesso}</span>
       </div>
 
       <ForgotPasswordModal show={forgot} onClose={() => setForgot(false)} textos={textos} />

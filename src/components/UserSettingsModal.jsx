@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext'
-import '../styles/user-settings-modal.css'
+import { aplicarPreferenciasAyres, lerPreferenciasAyres as lerPreferencias } from '../lib/visualPreferences'
+
+export { aplicarPreferenciasAyres } from '../lib/visualPreferences'
 
 const IDIOMAS = [
   { id: 'pt', label: 'Português', detalhe: 'Interface padrão do AYRES' },
@@ -8,11 +10,12 @@ const IDIOMAS = [
 ]
 
 const TEMAS = [
-  { id: 'dark', label: 'Escuro AYRES', detalhe: 'Visual original, fundo preto e cartões premium' },
-  { id: 'light', label: 'Branco AYRES', detalhe: 'Tela clara para uso de dia, leitura rápida e menos cansaço' },
+  { id: 'light', label: 'Claro AYRES', detalhe: 'Superfícies claras e detalhes amarelos para leitura rápida' },
+  { id: 'dark', label: 'Grafite AYRES', detalhe: 'Fundo grafite com a mesma identidade amarela' },
 ]
 
 const CORES = [
+  { id: 'yellow', label: 'Amarelo AYRES', hex: '#EAB308' },
   { id: 'blue', label: 'Azul AYRES', hex: '#60a5fa' },
   { id: 'purple', label: 'Roxo premium', hex: '#a78bfa' },
   { id: 'green', label: 'Verde operação', hex: '#34d399' },
@@ -21,32 +24,8 @@ const CORES = [
 
 const STORAGE_KEY = 'ayresPreferenciasUsuario'
 
-function lerPreferencias() {
-  try {
-    const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
-    return {
-      idioma: salvo.idioma || localStorage.getItem('idiomaAyres') || 'pt',
-      tema: salvo.tema || localStorage.getItem('ayresTheme') || 'dark',
-      cor: salvo.cor || localStorage.getItem('ayresAccentColor') || 'blue',
-    }
-  } catch {
-    return { idioma: 'pt', tema: 'dark', cor: 'blue' }
-  }
-}
-
-export function aplicarPreferenciasAyres() {
-  const pref = lerPreferencias()
-  document.documentElement.dataset.ayresAccent = pref.cor
-  document.documentElement.dataset.ayresTheme = pref.tema
-  document.documentElement.lang = pref.idioma === 'en' ? 'en' : 'pt-BR'
-  localStorage.setItem('idiomaAyres', pref.idioma)
-  localStorage.setItem('ayresAccentColor', pref.cor)
-  localStorage.setItem('ayresTheme', pref.tema)
-  return pref
-}
-
 export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
-  const { usuarioAtual, toast } = useApp()
+  const { usuarioAtual, toast, setTema } = useApp()
   const [form, setForm] = useState(() => lerPreferencias())
 
   useEffect(() => {
@@ -72,11 +51,12 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
 
   const salvar = () => {
     const antes = lerPreferencias()
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(form))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...form, visualVersion: 2 }))
     localStorage.setItem('idiomaAyres', form.idioma)
     localStorage.setItem('ayresAccentColor', form.cor)
     localStorage.setItem('ayresTheme', form.tema)
     aplicarPreferenciasAyres()
+    setTema?.(form.tema)
     window.dispatchEvent(new Event('ayres:settings'))
     toast?.('Configurações salvas.', 'ok')
     onClose?.()

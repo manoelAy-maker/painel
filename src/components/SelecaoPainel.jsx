@@ -1,8 +1,6 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import AyresLogo from './AyresLogo'
-import '../styles/portal-zero.css'
-import '../styles/portal-admin.css'
 
 const PerfilUsuarioModal = lazy(() => import('./modals/PerfilUsuarioModal'))
 const UserSettingsModal = lazy(() => import('./UserSettingsModal'))
@@ -40,8 +38,8 @@ const TRADUCOES = {
     notaComum: 'Acesso separado por módulo para manter a operação limpa e rápida.',
     notaAdmin: 'Portal administrativo liberado: usuários, relatórios e dashboard ficam em cartões próprios.',
     modulos: [
-      { id: 'estadia', nome: 'Estadias', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', cor: 'blue', aba: 'consultaLancadas', etiqueta: 'Operação', bullets: ['Em andamento', 'Pendências', 'Finalizadas'] },
-      { id: 'relatorios', nome: 'Relatórios', subtitulo: 'Filtre a operação e gere os arquivos que você precisa.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Exportação', bullets: ['Excel', 'PDF', 'Filtros'] },
+      { id: 'estadia', nome: 'Estadias', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', aba: 'consultaLancadas', etiqueta: 'Operação', bullets: ['Em andamento', 'Pendências', 'Finalizadas'] },
+      { id: 'relatorios', nome: 'Relatórios', subtitulo: 'Filtre a operação e gere os arquivos que você precisa.', icon: 'report', aba: 'relatorios', etiqueta: 'Exportação', bullets: ['Excel', 'PDF', 'Filtros'] },
     ],
     adminModulos: [],
   },
@@ -59,8 +57,8 @@ const TRADUCOES = {
     notaComum: 'Separate access by module keeps the operation clean and fast.',
     notaAdmin: 'Admin portal enabled: users, reports and dashboard have their own cards.',
     modulos: [
-      { id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', cor: 'blue', aba: 'consultaLancadas', etiqueta: 'Operations', bullets: ['In progress', 'Pending', 'Finished'] },
-      { id: 'relatorios', nome: 'Reports', subtitulo: 'Filter the operation and generate the files you need.', icon: 'report', cor: 'rose', aba: 'relatorios', etiqueta: 'Export', bullets: ['Excel', 'PDF', 'Filters'] },
+      { id: 'estadia', nome: 'Stay Control', subtitulo: 'Pending items, records, attachments and completions in one place.', icon: 'grid', aba: 'consultaLancadas', etiqueta: 'Operations', bullets: ['In progress', 'Pending', 'Finished'] },
+      { id: 'relatorios', nome: 'Reports', subtitulo: 'Filter the operation and generate the files you need.', icon: 'report', aba: 'relatorios', etiqueta: 'Export', bullets: ['Excel', 'PDF', 'Filters'] },
     ],
     adminModulos: [],
   },
@@ -101,57 +99,57 @@ export default function SelecaoPainel() {
   }
 
   return (
-    <div className={`portal-zero ${isAdmin ? 'admin-access' : ''}`}>
-      <div className="portal-zero-shell">
-        <header className="portal-zero-header">
-          <div className="portal-zero-brand">
-            <div className="portal-zero-logo"><AyresLogo size={44} /></div>
+    <div className={`ayres-portal ${isAdmin ? 'ayres-portal--admin' : ''}`}>
+      <div className="ayres-portal__shell">
+        <header className="ayres-portal__header">
+          <div className="ayres-portal__brand">
+            <div className="ayres-portal__logo"><AyresLogo size={44} /></div>
             <div>
               <h1>AYRES</h1>
               <p>{isAdmin ? 'Administração' : t.marca}</p>
             </div>
           </div>
 
-          <div className="portal-zero-userbar">
-            <div className="portal-zero-userpill">{ICONES.user}<span>{usuarioAtual?.nome || usuarioAtual?.usuario}</span></div>
-            <button type="button" className="settings-trigger-btn portal-config-btn" onClick={() => setShowConfig(true)} title="Configurações">{ICONES.settings}<span>{t.config}</span></button>
-            <button type="button" className="portal-zero-exit" onClick={sair}>{ICONES.logout}<span>{t.logout}</span></button>
+            <div className="ayres-portal__userbar">
+              <div className="ayres-portal__userpill">{ICONES.user}<span>{usuarioAtual?.nome || usuarioAtual?.usuario}</span></div>
+              <button type="button" className="ayres-portal__settings" onClick={() => setShowConfig(true)} title="Configurações">{ICONES.settings}<span>{t.config}</span></button>
+              <button type="button" className="ayres-portal__exit" onClick={sair}>{ICONES.logout}<span>{t.logout}</span></button>
           </div>
         </header>
 
-        <main className="portal-zero-main">
-          <section className={`portal-zero-hero ${isAdmin ? 'admin-access' : ''} ${pronto ? 'ready' : ''}`}>
-            <div className="portal-zero-copy">
-              <div className="portal-zero-chip">{ICONES.shield}<span>{isAdmin ? 'Acesso Admin' : filialLabel}</span></div>
+        <main className="ayres-portal__main">
+          <section className={`ayres-portal__hero ${isAdmin ? 'ayres-portal__hero--admin' : ''} ${pronto ? 'is-ready' : ''}`}>
+            <div className="ayres-portal__copy">
+              <div className="ayres-portal__chip">{ICONES.shield}<span>{isAdmin ? 'Acesso Admin' : filialLabel}</span></div>
               <h2>{t.saudacao}, <span>{primeiroNome}</span></h2>
               <p>{isAdmin ? t.adminEscolher : t.escolher}</p>
-              <div className={`portal-zero-note ${isAdmin ? 'admin-note' : ''}`}><strong>↳</strong><span>{isAdmin ? t.notaAdmin : t.notaComum}</span></div>
+              <div className={`ayres-portal__note ${isAdmin ? 'ayres-portal__note--admin' : ''}`}><strong>↳</strong><span>{isAdmin ? t.notaAdmin : t.notaComum}</span></div>
             </div>
 
-            <div className={`portal-zero-modules ${isAdmin ? 'admin-list' : ''}`} aria-label="Módulos do sistema">
+            <div className={`ayres-portal__modules ${isAdmin ? 'ayres-portal__modules--admin' : ''}`} aria-label="Módulos do sistema">
               {modulosPortal.map((modulo) => (
                 <button
                   key={modulo.id}
                   type="button"
-                  className={`portal-zero-card ${modulo.cor} ${modulo.admin ? 'admin-card' : ''}`}
+                  className={`ayres-portal__module ayres-portal__module--${modulo.id} ${modulo.admin ? 'ayres-portal__module--admin' : ''}`}
                   onClick={() => acessar(modulo)}
                   onMouseMove={moverGlow}
                 >
-                  <span className="portal-zero-icon">{ICONES[modulo.icon]}</span>
-                  <span className="portal-zero-card-text">
-                    <span className="portal-zero-card-top"><span className="portal-zero-tag">{modulo.etiqueta}</span></span>
-                    <h3>{t.painel} <span>{modulo.nome}</span></h3>
-                    <p>{modulo.subtitulo}</p>
-                    <span className="portal-zero-bullets">{modulo.bullets.map((bullet) => <span key={bullet}>{bullet}</span>)}</span>
+                  <span className="ayres-portal__module-icon">{ICONES[modulo.icon]}</span>
+                  <span className="ayres-portal__module-copy">
+                    <span className="ayres-portal__module-top"><span className="ayres-portal__tag">{modulo.etiqueta}</span></span>
+                    <span className="ayres-portal__module-title">{t.painel} <strong>{modulo.nome}</strong></span>
+                    <span className="ayres-portal__module-description">{modulo.subtitulo}</span>
+                    <span className="ayres-portal__bullets">{modulo.bullets.map((bullet) => <span key={bullet}>{bullet}</span>)}</span>
                   </span>
-                  <span className="portal-zero-action" aria-hidden="true">{ICONES.arrowRight}</span>
+                  <span className="ayres-portal__module-action" aria-hidden="true">{ICONES.arrowRight}</span>
                 </button>
               ))}
             </div>
           </section>
         </main>
 
-        <footer className="portal-zero-footer">{t.sessao} <span>{t.sair}</span>.</footer>
+        <footer className="ayres-portal__footer">{t.sessao} <span>{t.sair}</span>.</footer>
       </div>
       {showPerfil && <Suspense fallback={null}><PerfilUsuarioModal show onClose={() => setShowPerfil(false)} /></Suspense>}
       {showConfig && <Suspense fallback={null}><UserSettingsModal show onClose={() => setShowConfig(false)} onOpenPerfil={() => { setShowConfig(false); setShowPerfil(true) }} /></Suspense>}

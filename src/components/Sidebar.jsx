@@ -27,7 +27,7 @@ const ICONS = {
 
 const CloudIcon = ({ status }) => {
   if (status === 'online') return <Ic size={14} d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" style={{ color: '#22c55e' }} />
-  if (status === 'syncing') return <Ic size={14} d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.2" style={{ color: '#60a5fa' }} />
+  if (status === 'syncing') return <Ic size={14} d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.2" style={{ color: 'var(--ay-primary)' }} />
   return <Ic size={14} d="M17 17H17.01M3 3l18 18M13.73 13.73A6 6 0 0118 18H5.5A4.5 4.5 0 018 9.27M9.63 5.64A8 8 0 0120 15.4" style={{ color: '#f87171' }} />
 }
 
@@ -56,12 +56,12 @@ export default function Sidebar({ onFechar }) {
         </div>
       </div>
 
-      <nav className="sidebar-nav ayres-side-nav-v4">
+      <nav className="sidebar-nav ayres-side-nav-v4" aria-label="Navegação de estadias">
         {grupos.map(grupo => (
           <div key={grupo.titulo} className="ayres-side-group-v4">
             <div className="sidebar-section-label">{grupo.titulo}</div>
             {grupo.itens.map(a => (
-              <button key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)}>
+              <button type="button" key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)} title={a.label} aria-label={a.label} aria-current={abaAtiva === a.id ? 'page' : undefined}>
                 <span className="tab-icon">{ICONS[a.id]}</span>
                 <span className="tab-label">{a.label}</span>
                 {a.id === 'alancar' && pendentes > 0 && <span className="pending-badge">{pendentes}</span>}

@@ -15,8 +15,6 @@ import './styles/professional-system.css'
 import './styles/notification-rail.css'
 import './styles/estadia-ticker.css'
 import './styles/db-command-center.css'
-import './styles/ayres-dashboard-finish.css'
-import './styles/ayres-strada-palette.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
@@ -48,38 +46,39 @@ function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
   const primeiroNome = (usuarioAtual?.nome || usuarioAtual?.usuario || 'Operador').split(' ')[0]
 
   return (
-    <section className="aba active">
+    <section className="aba active estadia-home">
       <div className="dashboard-hero">
         <div className="hero-pro-card">
-          <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '.14em', opacity: .82 }}>CENTRAL DE ESTADIAS</span>
-          <h2 style={{ marginTop: 8 }}>Olá, {primeiroNome}. Operação na mão.</h2>
-          <p>Acompanhe estadias abertas, finalize registros e lance pendências sem carregar o painel com módulos que não fazem parte desta operação.</p>
+          <span className="home-eyebrow"><i aria-hidden="true" />CENTRAL DE ESTADIAS</span>
+          <h2>Olá, <span>{primeiroNome}.</span><br />Operação na mão.</h2>
+          <p>Acompanhe suas estadias, resolva pendências e mantenha cada etapa da operação sob controle.</p>
           <div className="hero-actions">
-            <button onClick={onNovaLancada}>+ Lançar estadia</button>
-            <button onClick={onNovaPendencia}>+ Criar pendência</button>
+            <button className="ay-primary-action" onClick={onNovaLancada}>+ Lançar estadia</button>
+            <button className="ay-secondary-action" onClick={onNovaPendencia}>+ Criar pendência</button>
           </div>
+          <span className="home-hero-note">Do primeiro registro à finalização. Tudo no mesmo lugar.</span>
         </div>
         <div className="hero-side-card">
-          <h3>Resumo agora</h3>
+          <div className="home-panel-heading"><h3>Resumo agora</h3><span className="home-live-label">Operação</span></div>
           <div className="system-health">
             <div className="health-row"><span>Em andamento</span><strong>{emAndamento}</strong></div>
             <div className="health-row"><span>Pendências</span><strong>{estadiasALancar.length}</strong></div>
             <div className="health-row"><span>Urgentes</span><strong>{urgentes}</strong></div>
             <div className="health-row"><span>Finalizadas</span><strong>{finalizadas}</strong></div>
-            <div className="health-row"><span>Nuvem</span><strong>{cloudStatus === 'online' ? 'Online' : 'Verificando'}</strong></div>
+            <div className="health-row"><span>Nuvem</span><strong className={`home-cloud ${cloudStatus === 'online' ? 'online' : ''}`}>{cloudStatus === 'online' ? 'Online' : cloudStatus === 'syncing' ? 'Sincronizando' : 'Offline'}</strong></div>
           </div>
         </div>
       </div>
 
-      <div className="stats" style={{ marginBottom: 16 }}>
+      <div className="stats home-stats">
         <div className="stat-card"><span>Estadias registradas</span><strong>{estadias.length}</strong><small>Base operacional</small></div>
         <div className="stat-card"><span>Em andamento</span><strong>{emAndamento}</strong><small>Aguardando conclusão</small></div>
         <div className="stat-card"><span>Pendências</span><strong>{estadiasALancar.length}</strong><small>Aguardando lançamento</small></div>
         <div className="stat-card"><span>Finalizadas</span><strong>{finalizadas}</strong><small>Registros encerrados</small></div>
       </div>
 
-      <div className="dashboard-hero">
-        <div className="hero-side-card">
+      <div className="dashboard-hero home-bottom">
+        <div className="hero-side-card home-workflow">
           <h3>Fluxo de trabalho</h3>
           <div className="system-health">
             <div className="health-row"><span>1. Receber ocorrência</span><strong>Pendência</strong></div>
@@ -91,10 +90,10 @@ function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
         <div className="hero-side-card">
           <h3>Acesso rápido</h3>
           <div className="hero-actions">
-            <button className="btn-blue" onClick={onNovaLancada}>Nova estadia</button>
-            <button className="btn-orange" onClick={onNovaPendencia}>Nova pendência</button>
+            <button className="ay-primary-action" onClick={onNovaLancada}>Nova estadia <span aria-hidden="true">↗</span></button>
+            <button className="ay-secondary-action" onClick={onNovaPendencia}>Nova pendência <span aria-hidden="true">↗</span></button>
           </div>
-          <p className="muted" style={{ marginTop: 14, lineHeight: 1.5 }}>O AYRES continua com a identidade visual completa, mas agora o menu fica dedicado ao que interessa: estadias e pendências.</p>
+          <p className="muted">Escolha uma ação e continue de onde sua operação precisa.</p>
         </div>
       </div>
     </section>
@@ -107,6 +106,12 @@ function PainelEstadias({ onVoltarPortal }) {
   const formLancadaRef = useRef()
   const formALancarRef = useRef()
   const aba = ABAS_VALIDAS.includes(abaAtiva) ? abaAtiva : 'inicio'
+
+  useEffect(() => {
+    const fecharComEscape = (event) => { if (event.key === 'Escape') setSidebarOpen(false) }
+    window.addEventListener('keydown', fecharComEscape)
+    return () => window.removeEventListener('keydown', fecharComEscape)
+  }, [])
 
   useEffect(() => {
     if (!ABAS_VALIDAS.includes(abaAtiva)) mudarAba('inicio')
@@ -128,14 +133,15 @@ function PainelEstadias({ onVoltarPortal }) {
   }
 
   return (
-    <div className="app" style={{ display: 'block' }}>
+    <div className="app ayres-app" style={{ display: 'block' }}>
       {sidebarOpen && <button className="sidebar-backdrop" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
       <div className="app-layout">
         <Sidebar onFechar={() => setSidebarOpen(false)} />
         <section className="main-pro">
-          <Header onMenuMobile={() => setSidebarOpen(v => !v)} />
+          <Header menuAberto={sidebarOpen} onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+            <div className="workspace-toolbar">
+              <span>Operação / <strong>Estadias</strong></span>
               <button type="button" className="btn-light btn-small" onClick={onVoltarPortal}>← Voltar ao portal</button>
             </div>
             <EstadiaTicker />
@@ -158,10 +164,12 @@ function PainelEstadias({ onVoltarPortal }) {
 
 function PainelRelatorios({ onVoltarPortal }) {
   return (
-    <div className="app" style={{ display: 'block' }}>
+    <div className="app ayres-app ayres-reports-app" style={{ display: 'block' }}>
       <section className="main-pro" style={{ marginLeft: 0 }}>
+        <Header />
         <main className="container" style={{ paddingTop: 18 }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+          <div className="workspace-toolbar">
+            <span>Operação / <strong>Relatórios</strong></span>
             <button type="button" className="btn-light btn-small" onClick={onVoltarPortal}>← Voltar ao portal</button>
           </div>
           <Suspense fallback={<FastFallback />}><Relatorios /></Suspense>
