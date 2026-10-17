@@ -15,6 +15,8 @@ import './styles/professional-system.css'
 import './styles/notification-rail.css'
 import './styles/estadia-ticker.css'
 import './styles/db-command-center.css'
+import './styles/ayres-dashboard-finish.css'
+import './styles/ayres-strada-palette.css'
 
 const EstadiaLancada = lazy(() => import('./modules/estadia/pages/EstadiaLancada'))
 const ConsultaEstadiasLancadas = lazy(() => import('./pages/ConsultaEstadiasLancadas'))
