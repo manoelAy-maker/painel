@@ -1,0 +1,32 @@
+/* AYRES | Identidade operacional inspirada no Strada Log.
+   Somente a interface de estadias; não interfere em dados ou autenticação. */
+.app-layout{background:#f3f5f7!important}
+.app-layout .main-pro{background:#f3f5f7!important;color:#29313b!important}
+.app-layout .main-pro .container{background:#f3f5f7!important}
+.app-layout .sidebar-pro,.app-layout .sidebar-pro.ayres-sidebar-v4{background:#343a42!important;border-right:1px solid #252b31!important;box-shadow:none!important}
+.app-layout .sidebar-pro .brand-pro h1,.app-layout .sidebar-pro .sidebar-user-name{color:#fff!important}
+.app-layout .sidebar-pro .sidebar-nav .tab{color:#d3d8df!important}
+.app-layout .sidebar-pro .sidebar-nav .tab.active{background:#f3f5f7!important;color:#303942!important;border:1px solid #f3f5f7!important;box-shadow:none!important}
+.app-layout .sidebar-pro .sidebar-nav .tab.active::before{background:#ec742c!important}
+.app-layout .sidebar-pro .sidebar-nav .tab:hover:not(.active){background:#4a525c!important;color:#fff!important}
+.app-layout .sidebar-pro .sidebar-card,.app-layout .sidebar-pro .sidebar-user-card,.app-layout .sidebar-pro .ayres-today-grid>div{background:#414952!important;border:1px solid #59616a!important}
+.app-layout .main-pro .topbar,.app-layout .main-pro .ayres-header-v4{background:#fff!important;border-bottom:1px solid #dfe3e7!important;box-shadow:none!important}
+.app-layout .main-pro .dashboard-hero{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)!important;gap:12px!important}
+.app-layout .main-pro .hero-pro-card{background:#fff!important;border:1px solid #dfe3e7!important;border-left:4px solid #e66b29!important;border-radius:9px!important;color:#29313b!important;box-shadow:none!important}
+.app-layout .main-pro .hero-pro-card h2,.app-layout .main-pro .hero-pro-card span{color:#29313b!important}
+.app-layout .main-pro .hero-pro-card p{color:#67717c!important}
+.app-layout .main-pro .hero-side-card{background:#fff!important;border:1px solid #dfe3e7!important;border-radius:9px!important;color:#29313b!important;box-shadow:none!important}
+.app-layout .main-pro .hero-side-card h3{color:#29313b!important}
+.app-layout .main-pro .hero-side-card p{color:#67717c!important}
+.app-layout .main-pro .health-row{background:#f8f9fa!important;border:1px solid #e8ebee!important;border-radius:6px!important}
+.app-layout .main-pro .health-row span{color:#626c77!important}
+.app-layout .main-pro .health-row strong{color:#29313b!important}
+.app-layout .main-pro .stats{gap:12px!important}
+.app-layout .main-pro .stats .stat-card{background:#fff!important;color:#29313b!important;border:1px solid #dfe3e7!important;border-top:3px solid #e66b29!important;border-radius:8px!important;min-height:106px!important;box-shadow:none!important}
+.app-layout .main-pro .stats .stat-card strong{color:#29313b!important;font-size:29px!important}
+.app-layout .main-pro .stats .stat-card span{color:#4c5965!important}
+.app-layout .main-pro .stats .stat-card small{color:#78828d!important}
+.app-layout .main-pro .hero-actions button,.app-layout .main-pro .btn-orange,.app-layout .main-pro .btn-blue{background:#e66b29!important;border:1px solid #d35d20!important;color:#fff!important;border-radius:6px!important;box-shadow:none!important}
+.app-layout .main-pro .hero-actions button:hover{background:#cf591e!important}
+.app-layout .main-pro .footer{color:#7a8490!important}
+@media(max-width:1150px){.app-layout .main-pro .dashboard-hero{grid-template-columns:1fr!important}}
