@@ -30,3 +30,23 @@
 .app-layout .main-pro .hero-actions button:hover{background:#cf591e!important}
 .app-layout .main-pro .footer{color:#7a8490!important}
 @media(max-width:1150px){.app-layout .main-pro .dashboard-hero{grid-template-columns:1fr!important}}
+
+/* Acabamento: cartões claros uniformes e notificação sem cobrir conteúdo. */
+.app-layout .main-pro .container .hero-pro-card,.app-layout .main-pro .container .hero-side-card{background:#fff!important;background-image:none!important;color:#29313b!important;border-color:#dfe3e7!important;box-shadow:0 1px 3px rgba(25,35,45,.05)!important}
+.app-layout .main-pro .container .hero-pro-card{border-left:4px solid #e66b29!important}
+.app-layout .main-pro .container .hero-pro-card h2,.app-layout .main-pro .container .hero-pro-card span,.app-layout .main-pro .container .hero-side-card h3{color:#29313b!important;text-shadow:none!important}
+.app-layout .main-pro .container .hero-pro-card p,.app-layout .main-pro .container .hero-side-card p{color:#65717e!important}
+.app-layout .main-pro .container .health-row{background:#f7f8fa!important;border:1px solid #e6e9ed!important}
+.app-layout .main-pro .container .health-row span{color:#5b6874!important}
+.app-layout .main-pro .container .health-row strong{color:#27313a!important}
+.app-layout .main-pro .container .stats .stat-card{background:#fff!important;background-image:none!important;border:1px solid #dfe3e7!important;border-top:3px solid #e66b29!important;color:#29313b!important;box-shadow:0 1px 3px rgba(25,35,45,.05)!important}
+.app-layout .main-pro .container .stats .stat-card strong{color:#29313b!important;text-shadow:none!important}
+.app-layout .main-pro .container .stats .stat-card span{color:#52606d!important}
+.app-layout .main-pro .container .stats .stat-card small{color:#7b8793!important}
+.app-layout .main-pro .container{padding-bottom:70px!important}
+.app-layout .estadia-ticker-shell{position:sticky!important;left:auto!important;bottom:auto!important;transform:none!important;animation:none!important;filter:none!important;width:100%!important;max-width:100%!important;min-height:38px!important;margin:8px 0 14px!important;z-index:1!important;border-radius:7px!important}
+.app-layout .estadia-ticker-card{border-radius:7px!important;background:#fff!important;background-image:none!important;border:1px solid #dfe3e7!important;box-shadow:none!important;color:#303942!important;backdrop-filter:none!important}
+.app-layout .estadia-ticker-copy strong{color:#d66525!important}
+.app-layout .estadia-ticker-copy span,.app-layout .estadia-ticker-meta b,.app-layout .estadia-ticker-meta small{color:#52606d!important}
+.app-layout .estadia-ticker-meta b{background:#f4f6f8!important;border-color:#dfe3e7!important}
+.app-layout .estadia-ticker-rail{background:#e66b29!important;box-shadow:none!important;animation:none!important}
