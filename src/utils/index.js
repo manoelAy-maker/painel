@@ -123,10 +123,12 @@ export const resumirSLA = (pendencias = []) => {
 
 export const linkWhatsapp = (e) => {
   if (!e.telefoneMotorista) return ''
-  let n = String(e.telefoneMotorista).replace(/[^0-9]/g, '')
-  if (!n.startsWith('55')) n = '55' + n
+  let n = String(e.telefoneMotorista).replace(/[^0-9]/g, '').replace(/^0+/, '')
+  if (n.startsWith('55')) n = n.slice(2)
+  if (n.length === 10) n = n.slice(0, 2) + '9' + n.slice(2)
+  n = '55' + n
   const msg = `Olá ${e.motorista || ''}, sua estadia da placa ${e.placa || ''}${e.chamado ? ' do chamado ' + e.chamado : ''} já foi lançada. Valor: ${e.valor || ''}.`
-  return `https://wa.me/${n}?text=${encodeURIComponent(msg)}`
+  return `https://api.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(msg)}`
 }
 
 // Compatibilidade: chamadas antigas continuam funcionando, mas agora usam o motor oficial do módulo Estadia.
