@@ -577,3 +577,54 @@
   .portal-zero-userbar .portal-config-btn { width: 40px; padding: 0 !important; }
   .portal-zero-userbar .portal-config-btn span { display: none; }
 }
+
+/* Variação acolhedora: mais suave, arredondada e amigável */
+.portal-zero {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(96, 165, 250, .26), transparent 27%),
+    radial-gradient(circle at 88% 18%, rgba(244, 114, 182, .16), transparent 27%),
+    radial-gradient(circle at 60% 100%, rgba(167, 139, 250, .13), transparent 32%),
+    linear-gradient(145deg, #071329 0%, #091b35 52%, #0a1023 100%);
+}
+
+.portal-zero-logo {
+  border-radius: 19px;
+  background: linear-gradient(145deg, rgba(125, 211, 252, .28), rgba(192, 132, 252, .22));
+  border-color: rgba(186, 230, 253, .28);
+}
+
+.portal-zero-copy h2 {
+  letter-spacing: -.055em;
+  background: linear-gradient(105deg, #ffffff 12%, #bfdbfe 48%, #fbcfe8 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.portal-zero-copy h2 span { color: #c4b5fd; }
+.portal-zero-chip { background: rgba(125, 211, 252, .12); border-color: rgba(125, 211, 252, .28); }
+
+.portal-zero-card {
+  min-height: 158px;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at var(--x, 20%) var(--y, 20%), var(--portal-glow, rgba(125, 211, 252, .18)), transparent 32%),
+    linear-gradient(145deg, rgba(19, 37, 66, .94), rgba(10, 18, 36, .96)) !important;
+  box-shadow: 0 18px 52px rgba(2, 8, 23, .24), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.portal-zero-card.blue {
+  --portal-glow: rgba(125, 211, 252, .22);
+  --portal-border: rgba(125, 211, 252, .46);
+  --portal-accent: #7dd3fc;
+}
+
+.portal-zero-card.rose {
+  --portal-glow: rgba(244, 114, 182, .20);
+  --portal-border: rgba(249, 168, 212, .44);
+  --portal-accent: #f9a8d4;
+}
+
+.portal-zero-icon { border-radius: 19px; background: rgba(255,255,255,.08); }
+.portal-zero-action { border-radius: 15px; background: rgba(255,255,255,.07); }
+.portal-zero-bullets span { border-radius: 999px; background: rgba(255,255,255,.065); }
+.portal-zero-footer { color: #7183a2; }
