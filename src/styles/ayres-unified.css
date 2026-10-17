@@ -6,22 +6,22 @@
 
 :root {
   color-scheme: light;
-  --ay-app-bg: #f5f6f2;
+  --ay-app-bg: #F3F5F7;
   --ay-surface: #fff;
   --ay-surface-raised: #fff;
-  --ay-surface-muted: #f6f7f3;
-  --ay-surface-hover: #faf9f1;
-  --ay-border: #e3e5dc;
-  --ay-border-strong: #d5c678;
-  --ay-ink: #24261f;
-  --ay-ink-soft: #494d43;
-  --ay-ink-muted: #6b7065;
-  --ay-primary: #eab308;
-  --ay-primary-strong: #ca8a04;
-  --ay-primary-soft: #fef3c7;
-  --ay-primary-ink: #744f06;
+  --ay-surface-muted: #F7F8FA;
+  --ay-surface-hover: #FFF8F0;
+  --ay-border: #DFE3E7;
+  --ay-border-strong: #E7B386;
+  --ay-ink: #29313B;
+  --ay-ink-soft: #4C5965;
+  --ay-ink-muted: #67717C;
+  --ay-primary: #F28C28;
+  --ay-primary-strong: #D97820;
+  --ay-primary-soft: #FFF1DF;
+  --ay-primary-ink: #8D4614;
   --ay-on-primary: #242016;
-  --ay-accent: #eab308;
+  --ay-accent: #F28C28;
   --ay-success: #15803d;
   --ay-warning: #a16207;
   --ay-danger: #b91c1c;
@@ -33,9 +33,9 @@
   --ay-shadow-xs: 0 1px 2px rgb(36 38 31 / 4%);
   --ay-shadow-sm: 0 4px 16px rgb(36 38 31 / 4%);
   --ay-shadow-md: 0 14px 44px rgb(36 38 31 / 12%);
-  --ay-focus: 0 0 0 3px rgb(234 179 8 / 25%);
+  --ay-focus: 0 0 0 3px rgb(242 140 40 / 25%);
   --ay-transition: 160ms ease;
-  --ay-sidebar-bg: #22251f;
+  --ay-sidebar-bg: #343A42;
   /* Compatibilidade com componentes históricos. */
   --ay-bg: var(--ay-app-bg);
   --ay-bg-soft: var(--ay-surface-muted);
@@ -71,12 +71,12 @@ html.dark,
   --ay-surface-muted: #1c201a;
   --ay-surface-hover: #303327;
   --ay-border: #373d30;
-  --ay-border-strong: #806c24;
+  --ay-border-strong: #966338;
   --ay-ink: #f3f4ec;
   --ay-ink-soft: #d7dccd;
   --ay-ink-muted: #a2ab98;
-  --ay-primary-soft: #3b341a;
-  --ay-primary-ink: #f4d26a;
+  --ay-primary-soft: #462F1C;
+  --ay-primary-ink: #FFBE7F;
   --ay-success: #86d5a0;
   --ay-warning: #f2cf6e;
   --ay-danger: #fca5a5;
@@ -106,7 +106,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 *, *::before, *::after { box-sizing: border-box; }
-::selection { color: #242016; background: #f4d46a; }
+::selection { color: #242016; background: #FFC17F; }
 * { scrollbar-width: thin; scrollbar-color: #adb3a4 transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-thumb { background: #adb3a4; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
@@ -179,7 +179,7 @@ body.sidebar-open .ayres-app .app-layout {
 .ayres-app .sidebar-pro .sidebar-nav .tab.active { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab::before { display: none !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab-icon { color: inherit !important; display: inline-flex !important; }
-.ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: absolute; top: -2px; right: -3px; padding: 2px 5px !important; min-width: 16px; font-size: 9px !important; background: #f6d660 !important; color: #3d3006 !important; border: 1px solid #22251f !important; animation: none !important; }
+.ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: absolute; top: -2px; right: -3px; padding: 2px 5px !important; min-width: 16px; font-size: 9px !important; background: #FFC17F !important; color: #3d3006 !important; border: 1px solid #343A42 !important; animation: none !important; }
 body.sidebar-open .ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 { position: fixed !important; left: 0; width: 256px !important; max-width: 256px !important; padding: 18px 16px !important; transform: none !important; opacity: 1 !important; pointer-events: auto !important; box-shadow: 12px 0 36px rgb(0 0 0 / 18%) !important; }
 body.sidebar-open .ayres-app .sidebar-pro .brand-pro { justify-content: flex-start !important; gap: 12px !important; }
 body.sidebar-open .ayres-app .sidebar-pro .brand-pro > div:last-child,
@@ -430,8 +430,8 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   --ay-login-ink: var(--ay-ink, #1f2937);
   --ay-login-ink-soft: var(--ay-ink-soft, #475569);
   --ay-login-ink-muted: var(--ay-ink-muted, #64748b);
-  --ay-login-primary: var(--ay-primary, #EAB308);
-  --ay-login-primary-strong: var(--ay-primary-strong, #CA8A04);
+  --ay-login-primary: var(--ay-primary, #F28C28);
+  --ay-login-primary-strong: var(--ay-primary-strong, #D97820);
   --ay-login-shadow: 0 18px 48px rgba(31, 41, 55, .10);
   box-sizing: border-box;
   color: var(--ay-login-ink) !important;
@@ -1019,8 +1019,8 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 
 .ayres-portal__settings:hover {
   color: var(--ay-ink, #1f2937) !important;
-  border-color: color-mix(in srgb, var(--ay-primary, #EAB308) 42%, var(--ay-border, #d1d5db)) !important;
-  background: color-mix(in srgb, var(--ay-primary, #EAB308) 10%, var(--ay-surface, #fff)) !important;
+  border-color: color-mix(in srgb, var(--ay-primary, #F28C28) 42%, var(--ay-border, #d1d5db)) !important;
+  background: color-mix(in srgb, var(--ay-primary, #F28C28) 10%, var(--ay-surface, #fff)) !important;
   transform: none !important;
 }
 
@@ -1069,10 +1069,10 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   align-items: center;
   gap: 8px;
   padding: 0 11px;
-  border: 1px solid color-mix(in srgb, var(--ay-primary, #EAB308) 40%, var(--ay-border, #d1d5db));
+  border: 1px solid color-mix(in srgb, var(--ay-primary, #F28C28) 40%, var(--ay-border, #d1d5db));
   border-radius: 999px;
-  color: var(--ay-primary-ink, #744f06);
-  background: color-mix(in srgb, var(--ay-primary, #EAB308) 10%, var(--ay-surface, #fff));
+  color: var(--ay-primary-ink, #8D4614);
+  background: color-mix(in srgb, var(--ay-primary, #F28C28) 10%, var(--ay-surface, #fff));
   font-size: .66rem;
   font-weight: 900;
   letter-spacing: .1em;
@@ -1089,7 +1089,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 }
 
 .ayres-portal__copy h2 span {
-  color: var(--ay-primary-ink, #744f06) !important;
+  color: var(--ay-primary-ink, #8D4614) !important;
 }
 
 .ayres-portal__copy > p {
@@ -1112,7 +1112,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 }
 
 .ayres-portal__note strong {
-  color: var(--ay-primary-ink, #744f06) !important;
+  color: var(--ay-primary-ink, #8D4614) !important;
   font-size: 1rem;
   line-height: 1.2;
 }
@@ -1123,7 +1123,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 }
 
 .ayres-portal__module {
-  --ay-module-accent: var(--ay-primary, #EAB308);
+  --ay-module-accent: var(--ay-primary, #F28C28);
   all: unset;
   box-sizing: border-box;
   width: 100%;
@@ -1151,7 +1151,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 }
 
 .ayres-portal__module:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--ay-primary, #EAB308) 34%, transparent) !important;
+  outline: 3px solid color-mix(in srgb, var(--ay-primary, #F28C28) 34%, transparent) !important;
   outline-offset: 3px;
 }
 
@@ -1162,7 +1162,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--ay-module-accent) 38%, var(--ay-border, #d1d5db));
   border-radius: 15px;
-  color: var(--ay-primary-ink, #744f06);
+  color: var(--ay-primary-ink, #8D4614);
   background: color-mix(in srgb, var(--ay-module-accent) 12%, var(--ay-surface, #fff));
 }
 
@@ -1237,7 +1237,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   flex: 0 0 auto;
   border: 1px solid var(--ay-border, rgba(31, 41, 55, .13));
   border-radius: 12px;
-  color: var(--ay-primary-ink, #744f06);
+  color: var(--ay-primary-ink, #8D4614);
   background: var(--ay-surface-muted, #f6f7f8);
 }
 

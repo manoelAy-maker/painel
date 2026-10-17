@@ -14,6 +14,7 @@ const ICONS = {
   inicio:        <Ic d="M3 12l9-9 9 9" d2="M5 10v9a1 1 0 001 1h4v-4h4v4h4a1 1 0 001-1v-9" />,
   lancadas:      <Ic d="M12 5v14M5 12h14" />,
   consultaLancadas: <Ic d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6" />,
+  planilha:      <Ic d="M4 3h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" d2="M3 9h18M3 15h18M9 3v18M15 3v18" />,
   finalizadas: <Ic d="M9 12l2 2 4-4" d2="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
   alancar:       <Ic d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6M12 12h3M12 16h3M9 12h.01M9 16h.01" />,
   captacao:      <Ic d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" d2="M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />,

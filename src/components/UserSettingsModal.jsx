@@ -15,7 +15,7 @@ const TEMAS = [
 ]
 
 const CORES = [
-  { id: 'yellow', label: 'Amarelo AYRES', hex: '#EAB308' },
+  { id: 'yellow', label: 'Amarelo Strada', hex: '#F28C28' },
   { id: 'blue', label: 'Azul AYRES', hex: '#60a5fa' },
   { id: 'purple', label: 'Roxo premium', hex: '#a78bfa' },
   { id: 'green', label: 'Verde operação', hex: '#34d399' },

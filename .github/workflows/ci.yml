@@ -24,10 +24,10 @@ jobs:
           node-version: 20
           cache: npm
 
-      # O package-lock legado ainda não contém todas as dependências Capacitor do package.json.
-      # Até ele ser regenerado de forma confiável, validamos o código pelo package.json sem sobrescrever o lock no repositório.
+      # O lockfile inclui as dependências existentes do package.json.
+      # Instalação reprodutível, sem o caminho --package-lock=false que falhava no npm 10.
       - name: Install dependencies
-        run: npm install --package-lock=false --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run tests
         run: npm test

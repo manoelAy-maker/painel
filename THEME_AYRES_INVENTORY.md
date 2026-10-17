@@ -16,7 +16,7 @@ design e deixam a ordem da cascata imprevisível.
 
 ## Identidade amarela
 
-O tema padrão utiliza amarelo ouro `#EAB308`, texto grafite e fundo claro quente.
+O tema padrão utiliza âmbar alaranjado Strada `#F28C28`, texto grafite e fundo claro quente.
 Botões amarelos sempre têm texto escuro. Verde, âmbar e vermelho continuam
 reservados aos estados operacionais. O modo grafite mantém os mesmos componentes
 e a identidade amarela. Preferências antigas de cor migram para amarelo nesta

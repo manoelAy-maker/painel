@@ -12,7 +12,7 @@ Manter React/Vite e os componentes existentes. Substituir a camada visual canôn
 
 **Movimento:** design utilitário editorial para sistemas de operação, seguindo a estrutura clara da referência Strada e a central aprovada.
 
-**Princípios:** leitura imediata, hierarquia objetiva, ações inequívocas e consistência entre telas. Fundo claro levemente quente, cartões brancos, bordas discretas e grafite para texto e navegação. Amarelo ouro `#EAB308` nas ações e indicadores de seleção, sempre com texto escuro. Verde indica sucesso e vermelho indica risco; não confundir status com a cor de marca.
+**Princípios:** leitura imediata, hierarquia objetiva, ações inequívocas e consistência entre telas. Fundo claro levemente quente, cartões brancos, bordas discretas e grafite para texto e navegação. Amarelo ouro `#F28C28` nas ações e indicadores de seleção, sempre com texto escuro. Verde indica sucesso e vermelho indica risco; não confundir status com a cor de marca.
 
 **Layout:** barra lateral compacta, cabeçalho limpo e área operacional ampla. A central mantém saudação e botões à esquerda, resumo à direita e indicadores abaixo. Listas e formulários conservam a estrutura funcional atual, com densidade e alinhamento mais consistentes.
 
