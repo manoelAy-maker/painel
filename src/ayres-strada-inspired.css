@@ -1,0 +1,125 @@
+/* AYRES — referência visual inspirada na Strada: claro, direto e orientado à operação */
+:root {
+  --ay-strada-orange: #f15a24;
+  --ay-strada-orange-dark: #d94718;
+  --ay-strada-ink: #20313b;
+  --ay-strada-muted: #71808a;
+  --ay-strada-line: #e6eaed;
+  --ay-strada-bg: #f5f7f8;
+}
+
+.app {
+  background: var(--ay-strada-bg) !important;
+  color: var(--ay-strada-ink) !important;
+}
+
+.app .sidebar-pro {
+  background: #fff !important;
+  border-right: 1px solid var(--ay-strada-line) !important;
+  box-shadow: 10px 0 30px rgba(32, 49, 59, .04);
+}
+.app .brand-pro { border-bottom-color: var(--ay-strada-line) !important; }
+.app .brand-pro h1 { color: var(--ay-strada-ink) !important; }
+.app .brand-pro p,
+.app .sidebar-section-label { color: #9aa5ab !important; }
+.app .sidebar-logo-mark {
+  background: var(--ay-strada-orange) !important;
+  box-shadow: 0 10px 22px rgba(241, 90, 36, .22) !important;
+}
+.app .sidebar-pro .tab {
+  color: #65747d !important;
+  border-radius: 12px !important;
+  margin: 2px 0;
+}
+.app .sidebar-pro .tab:hover {
+  color: var(--ay-strada-orange) !important;
+  background: #fff3ed !important;
+}
+.app .sidebar-pro .tab.active {
+  color: #fff !important;
+  background: var(--ay-strada-orange) !important;
+  box-shadow: 0 8px 18px rgba(241, 90, 36, .18) !important;
+}
+.app .sidebar-pro .tab.active .tab-icon { color: #fff !important; }
+.app .pending-badge { background: var(--ay-strada-orange) !important; }
+.app .sidebar-card,
+.app .sidebar-user-card {
+  background: #f8fafb !important;
+  border-color: var(--ay-strada-line) !important;
+}
+.app .sidebar-user-name { color: var(--ay-strada-ink) !important; }
+.app .sidebar-user-role { color: var(--ay-strada-muted) !important; }
+.app .avatar { background: var(--ay-strada-orange) !important; }
+
+.app .topbar { padding-top: 16px; }
+.app .topbar-inner,
+.app .ayres-topbar-inner-pro {
+  background: #fff !important;
+  border-color: var(--ay-strada-line) !important;
+  box-shadow: 0 4px 18px rgba(32, 49, 59, .05) !important;
+}
+.app .topbar h1,
+.app .topbar-user-text strong { color: var(--ay-strada-ink) !important; }
+.app .topbar p,
+.app .topbar-user-text small { color: var(--ay-strada-muted) !important; }
+.app .topbar-profile-btn,
+.app .topbar-link-btn,
+.app .topbar-exit-btn,
+.app .ayres-topbar-btn-pro,
+.app .notif-button {
+  color: var(--ay-strada-ink) !important;
+  background: #fff !important;
+  border-color: var(--ay-strada-line) !important;
+}
+.app .topbar-user-photo { background: var(--ay-strada-orange) !important; }
+
+.app .container { background: transparent !important; }
+.app .hero-pro-card {
+  background: linear-gradient(135deg, #f15a24 0%, #ef6c32 48%, #d94718 100%) !important;
+  box-shadow: 0 18px 38px rgba(241, 90, 36, .19) !important;
+}
+.app .hero-pro-card::before { content: 'OPERAÇÃO LOGÍSTICA'; }
+.app .hero-pro-card h2 { color: #fff !important; }
+.app .hero-pro-card p { color: rgba(255,255,255,.86) !important; }
+.app .hero-actions button:first-child { color: var(--ay-strada-orange-dark) !important; }
+.app .hero-side-card,
+.app .stat-card,
+.app .command-panel,
+.app .command-kpi,
+.app .dash-chart-card {
+  background: #fff !important;
+  border-color: var(--ay-strada-line) !important;
+  box-shadow: 0 8px 26px rgba(32, 49, 59, .06) !important;
+}
+.app .hero-side-card h3,
+.app .command-panel-head h3 { color: var(--ay-strada-ink) !important; }
+.app .stat-card span,
+.app .command-panel-head span,
+.app .kpi-label { color: var(--ay-strada-muted) !important; }
+.app .stat-card strong,
+.app .kpi-value { color: var(--ay-strada-ink) !important; }
+.app .stat-card::after { background: var(--ay-strada-orange) !important; }
+.app .command-kpi.primary { background: var(--ay-strada-orange) !important; }
+.app .command-kpi.primary .kpi-label,
+.app .command-kpi.primary .kpi-value { color: #fff !important; }
+.app input,
+.app select,
+.app textarea,
+.app .command-search input {
+  background: #fff !important;
+  color: var(--ay-strada-ink) !important;
+  border-color: var(--ay-strada-line) !important;
+}
+.app input:focus,
+.app select:focus,
+.app textarea:focus { border-color: rgba(241, 90, 36, .58) !important; box-shadow: 0 0 0 3px rgba(241, 90, 36, .12) !important; }
+.app button.btn-blue,
+.app button.btn-primary,
+.app .btn-hero-primary { background: var(--ay-strada-orange) !important; border-color: var(--ay-strada-orange) !important; }
+.app button.btn-blue:hover,
+.app button.btn-primary:hover { background: var(--ay-strada-orange-dark) !important; }
+
+@media (max-width: 760px) {
+  .app .sidebar-pro { box-shadow: 14px 0 34px rgba(32, 49, 59, .16); }
+  .app .hero-pro-card { background: linear-gradient(145deg, #f15a24, #d94718) !important; }
+}
