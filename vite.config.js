@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/painel/',
+  base: '/',
   resolve: {
     alias: {
       recharts: fileURLToPath(new URL('./src/vendor/recharts-lite.jsx', import.meta.url)),
