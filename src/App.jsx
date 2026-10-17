@@ -24,6 +24,15 @@ const Relatorios = lazy(() => import('./pages/Relatorios'))
 const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
 
 const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'planilha', 'finalizadas', 'lancadas', 'alancar']
+const MODULOS_VALIDOS = ['estadia', 'relatorios']
+const moduloSalvo = () => {
+  const modulo = localStorage.getItem('moduloInicialViaLog') || ''
+  if (modulo && !MODULOS_VALIDOS.includes(modulo)) {
+    localStorage.removeItem('moduloInicialViaLog')
+    return ''
+  }
+  return modulo
+}
 
 function FastFallback() {
   return <div role="status" aria-live="polite" style={{ minHeight: 110, display: 'grid', placeItems: 'center', opacity: .72, fontSize: 13 }}>Carregando módulo…</div>
@@ -163,10 +172,10 @@ function PainelRelatorios({ onVoltarPortal }) {
 
 export default function App() {
   const { usuarioAtual } = useApp()
-  const [moduloAberto, setModuloAberto] = useState(() => localStorage.getItem('moduloInicialViaLog') || '')
+  const [moduloAberto, setModuloAberto] = useState(moduloSalvo)
 
   useEffect(() => {
-    const sincronizarModulo = () => setModuloAberto(localStorage.getItem('moduloInicialViaLog') || '')
+    const sincronizarModulo = () => setModuloAberto(moduloSalvo())
     window.addEventListener('ayres:modulo', sincronizarModulo)
     return () => window.removeEventListener('ayres:modulo', sincronizarModulo)
   }, [])
