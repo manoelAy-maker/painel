@@ -77,3 +77,15 @@
 .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .ayres-sidebar-today,.app-layout>.sidebar-pro.ayres-sidebar-v4:focus-within .ayres-sidebar-today{display:block!important}
 .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .sidebar-status,.app-layout>.sidebar-pro.ayres-sidebar-v4:focus-within .sidebar-status{display:block!important}
 }
+
+/* Correção do menu gigante observado: barra fixa de 68px, sem expansão automática. */
+@media(min-width:901px){
+body .app .app-layout,body .app .app-layout:has(>.sidebar-pro.ayres-sidebar-v4:hover),body .app .app-layout:has(>.sidebar-pro.ayres-sidebar-v4:focus-within){display:grid!important;grid-template-columns:68px minmax(0,1fr)!important;gap:0!important}
+body .app .app-layout>.sidebar-pro.ayres-sidebar-v4,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:focus-within{position:sticky!important;top:0!important;left:auto!important;right:auto!important;grid-column:1!important;width:68px!important;min-width:68px!important;max-width:68px!important;height:100dvh!important;max-height:100dvh!important;padding:10px 6px!important;margin:0!important;transform:none!important;box-sizing:border-box!important;overflow-x:hidden!important;overflow-y:auto!important;z-index:20!important}
+body .app .app-layout>.main-pro{grid-column:2!important;min-width:0!important;width:100%!important;margin:0!important}
+body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .brand-pro,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .brand-pro{justify-content:center!important;gap:0!important}
+body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .brand-pro>div:last-child,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .brand-pro>div:last-child,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .sidebar-section-label,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .sidebar-section-label{display:none!important}
+body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .sidebar-nav .tab{width:100%!important;min-width:0!important;max-width:100%!important;min-height:48px!important;justify-content:center!important;gap:0!important;padding:10px 0!important}
+body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab .tab-label,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .sidebar-nav .tab .tab-label{display:none!important}
+body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .ayres-sidebar-today,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .ayres-sidebar-today,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4 .sidebar-status,body .app .app-layout>.sidebar-pro.ayres-sidebar-v4:hover .sidebar-status{display:none!important}
+}
