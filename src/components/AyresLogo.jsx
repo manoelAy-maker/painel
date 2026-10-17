@@ -13,32 +13,32 @@ export default function AyresLogo({ size = 42, showWord = false, className = '' 
     >
       <defs>
         <linearGradient id="ayresIconMain" x1="17" y1="10" x2="55" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#35C4FF" />
-          <stop offset="0.48" stopColor="#2563EB" />
-          <stop offset="1" stopColor="#7C3AED" />
+          <stop offset="0" stopColor="#FFD3A7" />
+          <stop offset="0.48" stopColor="#F28C28" />
+          <stop offset="1" stopColor="#A64F12" />
         </linearGradient>
         <linearGradient id="ayresIconDeep" x1="16" y1="56" x2="48" y2="14" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#061B5C" />
-          <stop offset="0.55" stopColor="#1647D9" />
-          <stop offset="1" stopColor="#3B82F6" />
+          <stop offset="0" stopColor="#422006" />
+          <stop offset="0.55" stopColor="#92400E" />
+          <stop offset="1" stopColor="#D97820" />
         </linearGradient>
-        <linearGradient id="ayresIconPurple" x1="43" y1="32" x2="61" y2="61" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#2563EB" />
-          <stop offset="1" stopColor="#8B5CF6" />
+        <linearGradient id="ayresIconGold" x1="43" y1="32" x2="61" y2="61" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#D97820" />
+          <stop offset="1" stopColor="#F28C28" />
         </linearGradient>
         <linearGradient id="ayresArrow" x1="16" y1="47" x2="60" y2="28" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset="0.58" stopColor="#EAF6FF" />
-          <stop offset="1" stopColor="#A7F3FF" />
+          <stop offset="0.58" stopColor="#FFF8F0" />
+          <stop offset="1" stopColor="#FFF1DF" />
         </linearGradient>
         <linearGradient id="ayresWord" x1="83" y1="22" x2="204" y2="55" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#F8FAFC" />
-          <stop offset="0.58" stopColor="#3B82F6" />
-          <stop offset="1" stopColor="#A78BFA" />
+          <stop offset="0" stopColor="#111827" />
+          <stop offset="0.58" stopColor="#A64F12" />
+          <stop offset="1" stopColor="#F28C28" />
         </linearGradient>
         <filter id="ayresSoftGlow" x="-20" y="-20" width="112" height="112" filterUnits="userSpaceOnUse">
           <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.16 0 0 0 0 0.42 0 0 0 0 1 0 0 0 .42 0" />
+          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.85 0 0 0 0 0.52 0 0 0 0 0.02 0 0 0 .28 0" />
           <feBlend in="SourceGraphic" />
         </filter>
       </defs>
@@ -46,10 +46,10 @@ export default function AyresLogo({ size = 42, showWord = false, className = '' 
       <g filter="url(#ayresSoftGlow)">
         <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconMain)" />
         <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l7.66 15.65-8.3 5.22-3.08-6.5L15.7 65.38h-4.56c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconDeep)" opacity=".96" />
-        <path d="M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z" fill="url(#ayresIconPurple)" />
+        <path d="M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z" fill="url(#ayresIconGold)" />
         <path d="M15.4 50.55c10.82-10.8 24.9-18.46 42.22-22.98l-3.76 5.8C40.2 36.95 28.03 43.15 17.34 52.05l-1.94-1.5z" fill="url(#ayresArrow)" />
         <path d="M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z" fill="#FFFFFF" />
-        <path d="M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25" stroke="#0B3EA8" strokeWidth="2.4" strokeLinecap="round" opacity=".72" />
+        <path d="M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25" stroke="#743B16" strokeWidth="2.4" strokeLinecap="round" opacity=".72" />
       </g>
 
       {showWord && (

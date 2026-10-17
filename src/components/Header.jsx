@@ -14,7 +14,6 @@ const Ic = ({ d, d2, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} />{d2 && <path d={d2} />}</svg>
 )
 const MenuIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
-const SearchIcon = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
 const ChevronIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
 const GearIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 .6l-.1.1a2 2 0 01-3.8-1v-.1a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-.6-1l-.1-.1a2 2 0 011-3.8h.1a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6c.39-.16.72-.42 1-.76l.1-.1a2 2 0 013.8 1v.1a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.16.39.42.72.76 1l.1.1a2 2 0 01-1 3.8h-.1a1.65 1.65 0 00-1.51 1z" /></svg>
 const cargoVisivel = (cargo) => cargo === 'Operador' || !cargo ? 'Analista Júnior' : cargo
@@ -27,19 +26,18 @@ function formatarDataPainel() {
   }).format(new Date()).replace('.', '')
 }
 
-export default function Header({ onMenuMobile }) {
+export default function Header({ onMenuMobile, menuAberto = false }) {
   const { usuarioAtual, logout } = useAuthContext()
   const { estadiasALancar } = useEstadiaContext()
   const { abaAtiva } = useUiContext()
   const [showPerfil, setShowPerfil] = useState(false)
   const [showConfig, setShowConfig] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [titulo, subtitulo] = PAGE_META[abaAtiva] || ['AYRES', 'Central logística']
+  const [titulo, subtitulo] = onMenuMobile ? (PAGE_META[abaAtiva] || ['AYRES', 'Central logística']) : ['Relatórios', 'Análise da operação']
   const dataPainel = useMemo(() => formatarDataPainel(), [])
 
   const voltarAoPortal = () => { localStorage.removeItem('moduloInicialViaLog'); window.dispatchEvent(new Event('ayres:modulo')) }
   const sair = () => { setMenuOpen(false); logout() }
-  const alternarMenuLateral = () => { try { if (window.matchMedia('(min-width: 1101px)').matches) { document.body.classList.toggle('sidebar-open'); return } } catch {} onMenuMobile?.() }
   const abrirConfiguracoes = () => { setMenuOpen(false); setShowConfig(true) }
 
   return (
@@ -47,17 +45,17 @@ export default function Header({ onMenuMobile }) {
       <header className="topbar ayres-topbar-pro clean-topbar ayres-header-v4">
         <div className="topbar-inner ayres-topbar-inner-pro ayres-header-inner-v4">
           <div className="ayres-header-left-v4">
-            <button className="topbar-menu-btn" onClick={alternarMenuLateral} title="Abrir ou fechar menu"><MenuIcon /></button>
+            {onMenuMobile && <button type="button" className="ay-menu-toggle" onClick={onMenuMobile} title="Abrir ou fechar menu" aria-label={menuAberto ? 'Fechar menu de navegação' : 'Abrir menu de navegação'} aria-expanded={menuAberto} aria-controls="sidebarPro"><MenuIcon /></button>}
             <div className="ayres-topbar-logo-pro"><AyresLogo size={34} /></div>
             <div className="ayres-header-title-v4"><strong>{titulo}</strong><span>{subtitulo}</span></div>
           </div>
-          <div className="ayres-header-search-v4"><SearchIcon /><span>Buscar placa, motorista ou NF…</span><kbd>⌘K</kbd></div>
+          <div className="ayres-header-brand">AYRES <span>LOGÍSTICA INTELIGENTE</span></div>
           <div className="top-actions ayres-topbar-actions-pro ayres-header-actions-v4">
             <div className="ayres-date-chip-v4" title="Data de hoje"><strong>{dataPainel}</strong><span>Hoje</span></div>
             <NotificationBell />
             <button type="button" className="settings-trigger-btn" onClick={abrirConfiguracoes} title="Configurações"><GearIcon /><span>Config</span></button>
             <div className="ayres-user-menu-wrap-v4">
-              <button className="topbar-profile-btn ayres-user-menu-btn-v4" onClick={() => setMenuOpen(v => !v)} title="Menu do usuário">
+              <button type="button" className="topbar-profile-btn ayres-user-menu-btn-v4" onClick={() => setMenuOpen(v => !v)} title="Menu do usuário" aria-expanded={menuOpen}>
                 <div className="topbar-user-photo">{usuarioAtual?.foto ? <img src={usuarioAtual.foto} alt="Perfil" /> : (usuarioAtual?.avatar || '?')}</div>
                 <span className="topbar-user-text"><strong>{usuarioAtual?.nome?.split(' ')[0] || 'Usuário'}</strong><small>{cargoVisivel(usuarioAtual?.cargo)}</small></span>
                 {estadiasALancar.length > 0 && <span className="pending-badge">{estadiasALancar.length}</span>}

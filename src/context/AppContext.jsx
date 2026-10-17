@@ -7,6 +7,7 @@ import * as sb from '../lib/supabase'
 import { atualizarExcelAutomatico } from '../lib/autoExcel'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
 import { registrarLocalizacaoUsuario } from '../lib/locationAudit'
+import { lerPreferenciasAyres } from '../lib/visualPreferences'
 
 const hashSenha = async (senha) => {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha + 'ldc2025'))
@@ -52,7 +53,7 @@ const initialState = {
   historico: load('historicoEstadias', []),
   abaAtiva: 'inicio',
   itemParaLancar: null,
-  tema: load('temaPainelViaLog', 'dark'),
+  tema: lerPreferenciasAyres().tema,
   somAtivo: load('somPainelViaLog', 'off') === 'on',
   cloudStatus: 'offline',
   cloudText: 'Faça login para conectar.',
@@ -125,8 +126,9 @@ export function AppProvider({ children }) {
   useEffect(() => { localStorage.setItem('historicoEstadias', JSON.stringify(state.historico)) }, [state.historico])
 
   useEffect(() => {
-    localStorage.setItem('temaPainelViaLog', state.tema)
+    localStorage.setItem('temaPainelViaLog', JSON.stringify(state.tema))
     document.documentElement.classList.toggle('dark', state.tema === 'dark')
+    document.documentElement.dataset.ayresTheme = state.tema
   }, [state.tema])
 
   useEffect(() => {
