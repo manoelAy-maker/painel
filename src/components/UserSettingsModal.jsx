@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { aplicarPreferenciasAyres, lerPreferenciasAyres as lerPreferencias } from '../lib/visualPreferences'
+import { aplicarPreferenciasAyres, lerPreferenciasAyres as lerPreferencias, PRESETS_VISUAIS_AYRES, selecionarPresetAyres } from '../lib/visualPreferences'
 
 export { aplicarPreferenciasAyres } from '../lib/visualPreferences'
 
@@ -10,14 +10,14 @@ const IDIOMAS = [
 ]
 
 const TEMAS = [
-  { id: 'light', label: 'Claro AYRES', detalhe: 'Superfícies claras e detalhes amarelos para leitura rápida' },
-  { id: 'dark', label: 'Grafite AYRES', detalhe: 'Fundo grafite com a mesma identidade amarela' },
+  { id: 'light', label: 'Claro AYRES', detalhe: 'Superfícies claras com a identidade visual escolhida' },
+  { id: 'dark', label: 'Grafite AYRES', detalhe: 'Superfícies escuras com a identidade visual escolhida' },
 ]
 
 const CORES = [
   { id: 'yellow', label: 'Amarelo Strada', hex: '#F28C28' },
   { id: 'blue', label: 'Azul AYRES', hex: '#60a5fa' },
-  { id: 'purple', label: 'Roxo premium', hex: '#a78bfa' },
+  { id: 'purple', label: 'Violeta AYRES', hex: '#7C3AED' },
   { id: 'green', label: 'Verde operação', hex: '#34d399' },
   { id: 'orange', label: 'Âmbar logística', hex: '#fb923c' },
 ]
@@ -46,6 +46,7 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
   const corAtual = useMemo(() => CORES.find(c => c.id === form.cor) || CORES[0], [form.cor])
   const idiomaAtual = useMemo(() => IDIOMAS.find(i => i.id === form.idioma) || IDIOMAS[0], [form.idioma])
   const temaAtual = useMemo(() => TEMAS.find(t => t.id === form.tema) || TEMAS[0], [form.tema])
+  const presetAtivo = form.cor === 'purple' ? 'purple-classic' : form.cor === 'yellow' ? 'strada' : null
 
   if (!show) return null
 
@@ -108,7 +109,27 @@ export default function UserSettingsModal({ show, onClose, onOpenPerfil }) {
 
           <div className="settings-section">
             <div className="settings-section-title">
-              <strong>Tema do AYRES</strong>
+              <strong>Tema visual</strong>
+              <span>Strada ou Roxo clássico</span>
+            </div>
+            <div className="settings-theme-presets">
+              {PRESETS_VISUAIS_AYRES.map(item => (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`settings-theme-preset ${presetAtivo === item.id ? 'active' : ''}`}
+                  data-visual-preset={item.id}
+                  aria-pressed={presetAtivo === item.id}
+                  onClick={() => setForm(pref => selecionarPresetAyres(pref, item.id))}
+                >
+                  <i className={`settings-preset-swatch ${item.id}`} aria-hidden="true"><span /><span /><span /></i>
+                  <strong>{item.label}</strong>
+                  <span>{item.detalhe}</span>
+                </button>
+              ))}
+            </div>
+            <div className="settings-section-title">
+              <strong>Aparência</strong>
               <span>Atual: {temaAtual.label}</span>
             </div>
             <div className="settings-option-grid two">

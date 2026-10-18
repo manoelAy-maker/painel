@@ -8,6 +8,7 @@ import { atualizarExcelAutomatico } from '../lib/autoExcel'
 import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
 import { registrarLocalizacaoUsuario } from '../lib/locationAudit'
 import { lerPreferenciasAyres } from '../lib/visualPreferences'
+import { adicionarItemFila, aplicarAtualizacaoEstadia, removerItensFilaConfirmados, gravarItemFila } from './operationalUpdates'
 
 const hashSenha = async (senha) => {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha + 'ldc2025'))
@@ -70,6 +71,7 @@ function reducer(state, action) {
     case 'SET_USUARIOS': return { ...state, usuarios: action.payload }
     case 'SET_FILIAIS': return { ...state, filiais: action.payload }
     case 'SET_ESTADIAS': return { ...state, estadias: action.payload }
+    case 'PATCH_ESTADIA': return { ...state, estadias: aplicarAtualizacaoEstadia(state.estadias, action.payload.id, action.payload.changes) }
     case 'SET_A_LANCAR': return { ...state, estadiasALancar: action.payload }
     case 'SET_HISTORICO': return { ...state, historico: action.payload }
     case 'SET_ABA': return { ...state, abaAtiva: action.payload }
@@ -78,6 +80,11 @@ function reducer(state, action) {
     case 'SET_SOM': return { ...state, somAtivo: action.payload }
     case 'SET_CLOUD': return { ...state, cloudStatus: action.status, cloudText: action.text }
     case 'SET_FILA': return { ...state, filaNuvem: action.payload }
+    case 'ADD_FILA': return { ...state, filaNuvem: adicionarItemFila(state.filaNuvem, action.payload) }
+    case 'REMOVE_FILA_CONFIRMADA': {
+      const filaNuvem = removerItensFilaConfirmados(state.filaNuvem, action.payload)
+      return { ...state, filaNuvem, cloudStatus: filaNuvem.length ? 'offline' : 'online', cloudText: filaNuvem.length ? 'Ainda há pendências.' : 'Tudo sincronizado.' }
+    }
     case 'SET_ULTIMO_SAVE': return { ...state, ultimoSave: action.payload }
     case 'SET_ONLINE': return { ...state, usuariosOnline: action.payload }
     case 'ADD_FEED': return { ...state, activityFeed: [action.payload, ...state.activityFeed].slice(0, 8) }
@@ -192,16 +199,15 @@ export function AppProvider({ children }) {
 
     setCloud('syncing', `Subindo ${filaAtual.length} item(s) offline...`)
     const restante = []
+    const concluidos = []
     const client = sb.getClient()
 
     let atualizouEstadiaLancada = false
     for (const item of filaAtual) {
       try {
-        if (item.acao === 'upsert') {
-          await client.from(sb.TABLE).upsert(item.payload, { onConflict: 'local_id' })
-          if (item.payload?.tipo === 'lancada') atualizouEstadiaLancada = true
-        }
-        if (item.acao === 'delete') await client.from(sb.TABLE).delete().eq('local_id', String(item.local_id))
+        await gravarItemFila(client, sb.TABLE, item)
+        concluidos.push(item)
+        if (item.acao === 'upsert' && item.payload?.tipo === 'lancada') atualizouEstadiaLancada = true
       } catch { restante.push(item) }
     }
 
@@ -209,11 +215,12 @@ export function AppProvider({ children }) {
       try { await atualizarExcelAutomatico() } catch {}
     }
 
-    dispatch({ type: 'SET_FILA', payload: restante })
-    const agora = new Date().toLocaleString('pt-BR')
-    localStorage.setItem('ultimoSaveSupabaseViaLog', agora)
-    dispatch({ type: 'SET_ULTIMO_SAVE', payload: agora })
-    setCloud(restante.length ? 'offline' : 'online', restante.length ? 'Ainda há pendências.' : 'Tudo sincronizado.')
+    dispatch({ type: 'REMOVE_FILA_CONFIRMADA', payload: concluidos })
+    if (concluidos.length) {
+      const agora = new Date().toLocaleString('pt-BR')
+      localStorage.setItem('ultimoSaveSupabaseViaLog', agora)
+      dispatch({ type: 'SET_ULTIMO_SAVE', payload: agora })
+    }
     return restante.length === 0
   }, [setCloud])
 
@@ -236,13 +243,14 @@ export function AppProvider({ children }) {
           if (recebendoNuvem.current) return
           await baixarNuvem(false)
           feed('Atualização em tempo real', 'Painel recebeu mudança da nuvem.', '☁️')
-          setCloud('online', 'Atualizado em tempo real.')
+          const pendente = stateRef.current.filaNuvem.length > 0
+          setCloud(pendente ? 'offline' : 'online', pendente ? 'Atualizado; ainda há sincronizações pendentes.' : 'Atualizado em tempo real.')
         })
       }
       const tinhaFila = stateRef.current.filaNuvem.length > 0
       await sincronizarFila()
       if (tinhaFila) await baixarNuvem(false)
-      setCloud('online', 'Conectado. Salvamento automático ativo.')
+      if (!tinhaFila) setCloud('online', 'Conectado. Salvamento automático ativo.')
       toast('Nuvem conectada.', 'ok')
       return true
     } catch {
@@ -283,11 +291,10 @@ export function AppProvider({ children }) {
 
   const salvarNuvem = useCallback(async (item, tipo) => {
     const filial = item?.filial || usuarioRef.current?.filial || 'jatai-go'
-    const filaAtual = stateRef.current.filaNuvem
 
     if (!supabaseOnline.current || !navigator.onLine) {
-      dispatch({ type: 'SET_FILA', payload: [...filaAtual, { acao: 'upsert', payload: sb.payload(item, tipo, filial) }] })
-      return
+      dispatch({ type: 'ADD_FILA', payload: { acao: 'upsert', payload: sb.payload(item, tipo, filial) } })
+      return { sincronizado: false }
     }
 
     try {
@@ -300,21 +307,22 @@ export function AppProvider({ children }) {
       localStorage.setItem('ultimoSaveSupabaseViaLog', agora)
       dispatch({ type: 'SET_ULTIMO_SAVE', payload: agora })
       setCloud('online', 'Salvo automaticamente.')
+      return { sincronizado: true }
     } catch {
       supabaseOnline.current = false
-      dispatch({ type: 'SET_FILA', payload: [...filaAtual, { acao: 'upsert', payload: sb.payload(item, tipo, filial) }] })
+      dispatch({ type: 'ADD_FILA', payload: { acao: 'upsert', payload: sb.payload(item, tipo, filial) } })
       setCloud('offline', 'Falhou. Guardado na fila offline.')
+      return { sincronizado: false }
     }
   }, [setCloud])
 
   const deletarNuvem = useCallback(async (id) => {
-    const filaAtual = stateRef.current.filaNuvem
     if (!supabaseOnline.current || !navigator.onLine) {
-      dispatch({ type: 'SET_FILA', payload: [...filaAtual, { acao: 'delete', local_id: String(id) }] })
+      dispatch({ type: 'ADD_FILA', payload: { acao: 'delete', local_id: String(id) } })
       return
     }
     try { await sb.deletar(id) } catch {
-      dispatch({ type: 'SET_FILA', payload: [...filaAtual, { acao: 'delete', local_id: String(id) }] })
+      dispatch({ type: 'ADD_FILA', payload: { acao: 'delete', local_id: String(id) } })
     }
   }, [])
 
@@ -437,10 +445,12 @@ export function AppProvider({ children }) {
   }, [salvarNuvem, toast, feed])
 
   const atualizarLancada = useCallback(async (id, changes) => {
-    const lista = stateRef.current.estadias.map(e => String(e.id) === String(id) ? { ...e, ...changes } : e)
-    dispatch({ type: 'SET_ESTADIAS', payload: lista })
-    const item = lista.find(e => String(e.id) === String(id))
-    if (item) await salvarNuvem(item, 'lancada')
+    const existente = stateRef.current.estadias.find(e => String(e.id) === String(id))
+    if (!existente) throw new Error('Estadia não encontrada para atualização.')
+    const item = { ...existente, ...changes }
+    const resultado = await salvarNuvem(item, 'lancada')
+    dispatch({ type: 'PATCH_ESTADIA', payload: { id, changes } })
+    return resultado
   }, [salvarNuvem])
 
   const marcarFeito = useCallback(async (id) => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { aplicarPreferenciasAyres, lerPreferenciasAyres } from '../visualPreferences'
+import { aplicarPreferenciasAyres, lerPreferenciasAyres, selecionarPresetAyres } from '../visualPreferences'
 
 function storage(initial = {}) {
   const values = new Map(Object.entries(initial))
@@ -46,5 +46,31 @@ describe('Preferências visuais AYRES', () => {
     expect(root.lang).toBe('en')
     expect(classes.has('dark')).toBe(true)
     expect(JSON.parse(s.getItem('temaPainelViaLog'))).toBe('dark')
+  })
+
+  it('seleciona Roxo clássico em escuro sem mudar o idioma ou o objeto original', () => {
+    const anterior = { idioma: 'en', tema: 'light', cor: 'yellow' }
+    expect(selecionarPresetAyres(anterior, 'purple-classic')).toEqual({ idioma: 'en', tema: 'dark', cor: 'purple' })
+    expect(anterior).toEqual({ idioma: 'en', tema: 'light', cor: 'yellow' })
+  })
+
+  it('retorna ao Strada claro em um clique', () => {
+    expect(selecionarPresetAyres({ idioma: 'pt', tema: 'dark', cor: 'purple' }, 'strada')).toEqual({ idioma: 'pt', tema: 'light', cor: 'yellow' })
+  })
+
+  it('ignora um preset desconhecido sem apagar preferências', () => {
+    const pref = { idioma: 'pt', tema: 'dark', cor: 'green' }
+    expect(selecionarPresetAyres(pref, 'inexistente')).toEqual(pref)
+  })
+
+  it('reaplica Roxo clássico salvo antes de renderizar a página', () => {
+    const pref = selecionarPresetAyres({ idioma: 'pt', tema: 'light', cor: 'yellow' }, 'purple-classic')
+    const s = storage({ ayresPreferenciasUsuario: JSON.stringify({ ...pref, visualVersion: 2 }) })
+    const classes = new Set()
+    const root = { dataset: {}, classList: { toggle: (name, active) => active ? classes.add(name) : classes.delete(name) } }
+    expect(aplicarPreferenciasAyres(s, root)).toEqual(pref)
+    expect(root.dataset).toEqual({ ayresAccent: 'purple', ayresTheme: 'dark' })
+    expect(classes.has('dark')).toBe(true)
+    expect(s.getItem('ayresAccentColor')).toBe('purple')
   })
 })

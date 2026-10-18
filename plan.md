@@ -42,3 +42,11 @@ Branch `feat/visual-amarelo-ayres` e pull request para revisão. Não fazer merg
 ## Continuação: navegação e contraste
 
 Após a publicação da reforma solicitada pelo usuário, melhorar a identificação dos botões compactos com tooltips imediatos em hover/foco. Renderizar os nomes fora da região de scroll da barra para evitar recorte; Escape, blur, clique, scroll e resize dispensam o tooltip. O menu permanece compacto e não desloca a operação. Reforçar os tokens de texto secundário, os ícones e as bordas dos controles, sem remover estados de desabilitado ou mexer nas funções. Manter a identidade âmbar Strada `#F28C28`, o tema grafite e a navegação por botão no celular. Implementar em `feat/sidebar-tooltips-contraste`, mantendo a integração GitHub–Vercel existente.
+
+## Continuação: Roxo clássico opcional
+
+Adicionar um preset de tema Roxo clássico nas configurações, semelhante à identidade roxa anterior: fundo violeta escuro, cartões em tons de ameixa, botões roxos com gradiente discreto e marca harmonizada. Manter o Strada claro como padrão e oferecer retorno a ele em um clique. O usuário pode usar aparência clara/grafite sem perder persistência da escolha. Reusar as preferências de cor/modo já existentes, sem novos dados de operação ou mudanças de autenticação. Os tooltips, a legibilidade melhorada e o comportamento do menu permanecem. Integrar os tokens e a pele roxa à camada canônica, sem reativar arquivos legados conflitantes. Implementar em `feat/tema-roxo-classico` e conservar a integração GitHub–Vercel existente.
+
+## Continuação: ação Pago e cartões mais simples
+
+O usuário autorizou uma mudança funcional pontual na consulta: **Pago** finaliza imediatamente a estadia, sem passar por Analisar/Marcar feito. Usar o fluxo existente de edição, salvar responsável/data de finalização e histórico da ação, bloquear cliques duplicados enquanto salva e só apresentar sucesso após a gravação. Não executar qualquer transferência ou testar com registros reais. Deixar no cartão apenas Pago, Detalhes e Mais opções; mover Editar, Copiar, WhatsApp, Arquivar e Reabrir para o menu de opções, sem remover essas funções. Registros finalizados não oferecem Pago novamente. Preservar a lixeira, confirmação de arquivamento e os filtros/exportações existentes. Incluir essa melhoria no mesmo pull request do tema roxo para uma publicação conjunta.
