@@ -15,6 +15,11 @@ export function registroUsuario(usuario) {
 }
 
 export async function inserirUsuarioConfirmado(client, tabela, usuario) {
+  const nome = String(usuario.usuario).trim().toLowerCase()
+  const literal = nome.replace(/[\\%_]/g, '\\$&')
+  const existentes = await client.from(tabela).select('usuario').ilike('usuario', literal).limit(1)
+  if (existentes.error) throw existentes.error
+  if (existentes.data?.length) throw { code: '23505', message: 'Usuário já existe.' }
   const { data, error } = await client.from(tabela).insert(registroUsuario(usuario)).select('usuario').single()
   if (error) throw error
   if (!data?.usuario || data.usuario !== String(usuario.usuario).trim().toLowerCase()) {

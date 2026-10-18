@@ -4,15 +4,21 @@ export function statusEstadiaTexto(estadia) {
   return estadia.status || 'Aberto'
 }
 
+function horasConhecidas(estadia) {
+  if (estadia.horasInformadas === false || estadia.horas == null || String(estadia.horas).trim() === '') return null
+  const horas = Number(String(estadia.horas).replace(',', '.'))
+  return Number.isFinite(horas) ? horas : null
+}
+
 export function tempoParadoTexto(estadia) {
-  if (estadia.horasInformadas === false) return 'Não informado'
-  const horas = Number(String(estadia.horas || '0').replace(',', '.')) || 0
+  const horas = horasConhecidas(estadia)
+  if (horas == null) return 'Não informado'
   return `${horas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}h`
 }
 
 export function tempoParadoClasse(estadia) {
-  if (estadia.horasInformadas === false) return ''
-  const horas = Number(String(estadia.horas || '0').replace(',', '.')) || 0
+  const horas = horasConhecidas(estadia)
+  if (horas == null) return ''
   if (horas > 24) return 'danger'
   if (horas > 12) return 'warn'
   return 'ok'

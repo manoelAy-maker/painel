@@ -10,6 +10,7 @@ import { registrarLocalizacaoUsuario } from '../lib/locationAudit'
 import { lerPreferenciasAyres } from '../lib/visualPreferences'
 import { adicionarItemFila, aplicarAtualizacaoEstadia, removerItensFilaConfirmados, gravarItemFila } from './operationalUpdates'
 import { validarNovoUsuario } from '../modules/admin/services/usuarioValidation'
+import { mesclarUsuariosDuranteLeitura } from './userHydration'
 
 const hashSenha = async (senha) => {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha + 'ldc2025'))
@@ -111,6 +112,7 @@ export function AppProvider({ children }) {
   const usuarioRef = useRef(initialState.usuarioAtual)
   const stateRef = useRef(initialState)
   const criandoUsuariosRef = useRef(new Set())
+  const usuariosConfirmadosRef = useRef({ versao: 0, itens: new Map() })
 
   useEffect(() => { stateRef.current = state }, [state])
   useEffect(() => { usuarioRef.current = state.usuarioAtual }, [state.usuarioAtual])
@@ -272,8 +274,10 @@ export function AppProvider({ children }) {
     if (!navigator.onLine) return
     const init = async () => {
       try {
+        const versaoInicio = usuariosConfirmadosRef.current.versao
         const remotos = await sb.carregarUsuarios()
-        if (remotos.length > 0) dispatch({ type: 'SET_USUARIOS', payload: remotos })
+        const usuariosLidos = mesclarUsuariosDuranteLeitura(remotos, [...usuariosConfirmadosRef.current.itens.values()], versaoInicio)
+        if (usuariosLidos.length > 0) dispatch({ type: 'SET_USUARIOS', payload: usuariosLidos })
         else for (const u of initialState.usuarios) await sb.salvarUsuario(u).catch(() => {})
       } catch {}
 
@@ -391,6 +395,9 @@ export function AppProvider({ children }) {
       const senhaH = await hashSenha(validacao.dados.senha)
       const novoUser = { ...validacao.dados, senha: senhaH }
       await sb.criarUsuario(novoUser)
+      const confirmacao = usuariosConfirmadosRef.current
+      confirmacao.versao += 1
+      confirmacao.itens.set(login, { versao: confirmacao.versao, usuario: novoUser })
       dispatch({ type: 'ADD_USUARIO', payload: novoUser })
       toast('Usuário criado e salvo na nuvem.', 'ok')
       return true

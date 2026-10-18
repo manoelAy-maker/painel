@@ -273,7 +273,7 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
             <div><small>Transportadora</small><strong>{detalhe.transportadora || '-'}</strong></div>
             <div><small>Filial</small><strong>{nomeFilial(detalhe.filial)}</strong></div>
             <div><small>Peso</small><strong>{detalhe.peso || '-'}</strong></div>
-            <div><small>Horas</small><strong>{detalhe.horas || '0.00'} h</strong></div>
+            <div><small>Horas</small><strong>{tempoParadoTexto(detalhe)}</strong></div>
             <div><small>Valor</small><strong>{detalhe.valor || 'R$ 0,00'}</strong></div>
             <div><small>Pago por</small><strong>{detalhe.pagoPor || 'Logística'}</strong></div>
           </div>

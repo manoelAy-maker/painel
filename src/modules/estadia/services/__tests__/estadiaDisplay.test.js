@@ -16,6 +16,10 @@ describe('exibição das estadias importadas', () => {
     expect(tempoParadoTexto({ horas: '', horasInformadas: false })).toBe('Não informado')
     expect(tempoParadoClasse({ horas: '', horasInformadas: false })).toBe('')
   })
+  it.each([undefined, null, '', 'não informado'])('não inventa zero para horas ausentes ou inválidas', horas => {
+    expect(tempoParadoTexto({ horas })).toBe('Não informado')
+    expect(tempoParadoClasse({ horas })).toBe('')
+  })
   it('apresenta as horas totais quando conhecidas', () => {
     expect(tempoParadoTexto({ horas: '27,35', horasInformadas: true })).toBe('27,35h')
     expect(tempoParadoClasse({ horas: '27,35', horasInformadas: true })).toBe('danger')
