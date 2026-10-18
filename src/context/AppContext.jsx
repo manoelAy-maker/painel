@@ -9,6 +9,7 @@ import { deletarFilialV2, deletarProfileV2 } from '../lib/supabaseV2'
 import { registrarLocalizacaoUsuario } from '../lib/locationAudit'
 import { lerPreferenciasAyres } from '../lib/visualPreferences'
 import { adicionarItemFila, aplicarAtualizacaoEstadia, removerItensFilaConfirmados, gravarItemFila } from './operationalUpdates'
+import { validarNovoUsuario } from '../modules/admin/services/usuarioValidation'
 
 const hashSenha = async (senha) => {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha + 'ldc2025'))
@@ -69,6 +70,7 @@ function reducer(state, action) {
   switch (action.type) {
     case 'SET_USUARIO': return { ...state, usuarioAtual: action.payload }
     case 'SET_USUARIOS': return { ...state, usuarios: action.payload }
+    case 'ADD_USUARIO': return { ...state, usuarios: [...state.usuarios, action.payload] }
     case 'SET_FILIAIS': return { ...state, filiais: action.payload }
     case 'SET_ESTADIAS': return { ...state, estadias: action.payload }
     case 'PATCH_ESTADIA': return { ...state, estadias: aplicarAtualizacaoEstadia(state.estadias, action.payload.id, action.payload.changes) }
@@ -108,6 +110,7 @@ export function AppProvider({ children }) {
   const conectarRef = useRef(null)
   const usuarioRef = useRef(initialState.usuarioAtual)
   const stateRef = useRef(initialState)
+  const criandoUsuariosRef = useRef(new Set())
 
   useEffect(() => { stateRef.current = state }, [state])
   useEffect(() => { usuarioRef.current = state.usuarioAtual }, [state.usuarioAtual])
@@ -379,25 +382,35 @@ export function AppProvider({ children }) {
   }, [])
 
   const criarUsuario = useCallback(async (dados) => {
-    const usuarios = stateRef.current.usuarios
-    if (usuarios.some(u => u.usuario === dados.usuario)) { toast('Usuário já existe.', 'err'); return false }
-    const avatar = dados.nome.split(' ').filter(Boolean).map(x => x[0]).slice(0, 2).join('').toUpperCase() || dados.usuario.slice(0, 2).toUpperCase()
-    const senhaH = await hashSenha(dados.senha)
-    const novoUser = { ...dados, senha: senhaH, avatar }
-    try { await sb.salvarUsuario(novoUser) } catch { toast('Erro ao salvar usuário na nuvem.', 'warn') }
-    dispatch({ type: 'SET_USUARIOS', payload: [...usuarios, novoUser] })
-    toast('Usuário criado.', 'ok')
-    return true
+    const validacao = validarNovoUsuario(dados, usuarioRef.current, stateRef.current.usuarios, stateRef.current.filiais)
+    if (validacao.erro) { toast(validacao.erro, 'err'); return false }
+    const login = validacao.dados.usuario
+    if (criandoUsuariosRef.current.has(login)) return false
+    criandoUsuariosRef.current.add(login)
+    try {
+      const senhaH = await hashSenha(validacao.dados.senha)
+      const novoUser = { ...validacao.dados, senha: senhaH }
+      await sb.criarUsuario(novoUser)
+      dispatch({ type: 'ADD_USUARIO', payload: novoUser })
+      toast('Usuário criado e salvo na nuvem.', 'ok')
+      return true
+    } catch (error) {
+      toast(error?.code === '23505' ? 'Usuário já existe.' : 'Não consegui criar o usuário na nuvem. Verifique a conexão e tente novamente.', 'err')
+      return false
+    } finally {
+      criandoUsuariosRef.current.delete(login)
+    }
   }, [toast])
 
   const editarUsuario = useCallback(async (usuario, dados) => {
+    if (!podeAdministrar(usuarioRef.current)) { toast('Somente administradores podem editar usuários.', 'err'); return false }
     const usuarios = stateRef.current.usuarios
     const atual = usuarios.find(u => u.usuario === usuario)
     if (!atual) { toast('Usuário não encontrado.', 'err'); return false }
     const avatar = dados.nome.split(' ').filter(Boolean).map(x => x[0]).slice(0, 2).join('').toUpperCase() || atual.avatar || usuario.slice(0, 2).toUpperCase()
     const senhaFinal = dados.senha?.trim() ? await hashSenha(dados.senha) : atual.senha
     const atualizado = { ...atual, nome: dados.nome, cargo: dados.cargo, filial: dados.filial, avatar, senha: senhaFinal }
-    try { await sb.salvarUsuario(atualizado) } catch { toast('Erro ao salvar funcionário na nuvem.', 'warn') }
+    try { await sb.salvarUsuario(atualizado) } catch { toast('Não consegui salvar o usuário na nuvem.', 'err'); return false }
     dispatch({ type: 'SET_USUARIOS', payload: usuarios.map(u => u.usuario === usuario ? atualizado : u) })
     if (usuarioRef.current?.usuario === usuario) {
       dispatch({ type: 'SET_USUARIO', payload: atualizado })
@@ -408,11 +421,14 @@ export function AppProvider({ children }) {
   }, [toast])
 
   const excluirUsuario = useCallback(async (login) => {
+    if (!podeAdministrar(usuarioRef.current)) { toast('Somente administradores podem excluir usuários.', 'err'); return false }
+    if (login === usuarioRef.current?.usuario) { toast('Não é permitido excluir seu próprio acesso.', 'err'); return false }
     if (login === ADMIN_USERNAME) return
+    try { await sb.deletarUsuario(login) } catch { toast('Não consegui excluir o usuário na nuvem.', 'err'); return false }
     dispatch({ type: 'SET_USUARIOS', payload: stateRef.current.usuarios.filter(u => u.usuario !== login) })
-    try { await sb.deletarUsuario(login) } catch {}
     try { await deletarProfileV2(login) } catch {}
     toast('Usuário excluído.', 'ok')
+    return true
   }, [toast])
 
   const criarFilial = useCallback((dados) => {

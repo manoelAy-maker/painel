@@ -5,6 +5,7 @@ export const PAGE_META = {
   planilha: ['Visão planilha', 'Conferência rápida em linhas'],
   finalizadas: ['Finalizadas', 'Registros encerrados e conferidos'],
   alancar: ['Pendências', 'Itens aguardando lançamento'],
+  admin: ['Painel admin', 'Criar e gerenciar usuários'],
 }
 
 const OPERACAO = [
@@ -22,6 +23,7 @@ export const OPERATOR_NAV_GROUPS = [
 
 export const ADMIN_NAV_GROUPS = [
   { titulo: 'Estadias', itens: OPERACAO },
+  { titulo: 'Administração', itens: [{ id: 'admin', label: 'Painel admin' }] },
 ]
 
-export const ADMIN_ONLY_TABS = Object.freeze([])
+export const ADMIN_ONLY_TABS = Object.freeze(['admin'])

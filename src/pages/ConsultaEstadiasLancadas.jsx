@@ -5,6 +5,7 @@ import { nomeFilial } from '../data/filiais'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
 import EstadiaActionMenu from '../components/EstadiaActionMenu'
 import { prepararEstadiaPaga, prepararReaberturaEstadia, estadiaPagamentoConfirmado } from '../modules/estadia/services/estadiaPagamento'
+import { statusEstadiaTexto, tempoParadoTexto, tempoParadoClasse } from '../modules/estadia/services/estadiaDisplay'
 import '../estadia-desktop-pro.css'
 import '../consulta-estadias-pro.css'
 
@@ -21,25 +22,9 @@ function classeStatus(s) {
   return 'status-aberto'
 }
 
-function statusLabel(s) {
-  return s || 'Aberto'
-}
-
 function parseValor(valor) {
   const n = String(valor || '').replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.')
   return Number(n) || 0
-}
-
-function tempoParadoTexto(e) {
-  const horas = Number(String(e.horas || '0').replace(',', '.')) || 0
-  return `${horas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}h`
-}
-
-function tempoParadoClasse(e) {
-  const horas = Number(String(e.horas || '0').replace(',', '.')) || 0
-  if (horas > 24) return 'danger'
-  if (horas > 12) return 'warn'
-  return 'ok'
 }
 
 function dataLocalISO(date = new Date()) {
@@ -55,7 +40,7 @@ function resumoEstadia(e) {
     `NF: ${e.nf || e.numeroNf || '-'}`,
     `Chamado: ${e.chamado || '-'}`,
     `Transportadora: ${e.transportadora || '-'}`,
-    `Status: ${statusLabel(e.status)}`,
+    `Status: ${statusEstadiaTexto(e)}`,
     `Valor: ${e.valor || 'R$ 0,00'}`,
   ].join('\n')
 }
@@ -233,7 +218,7 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
               <div className="consulta-pro-main">
                 <div className="consulta-pro-topline">
                   <span className="consulta-pro-plate">{e.placa || '-'}</span>
-                  <span className={`status ${classeStatus(e.status)}`}>{estadiaPagamentoConfirmado(e) ? 'Pago' : statusLabel(e.status)}</span>
+                  <span className={`status ${classeStatus(e.status)}`}>{estadiaPagamentoConfirmado(e) ? 'Pago' : statusEstadiaTexto(e)}</span>
                   <span className={`prio ${classePrio(e.prioridade)}`}>{e.prioridade || 'Normal'}</span>
                 </div>
                 <h3>{e.motorista || 'Motorista não informado'}</h3>
@@ -278,7 +263,7 @@ export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' })
           <div className="box-title">
             <div>
               <h2>{detalhe.placa || 'Estadia'}</h2>
-              <span>{detalhe.motorista || '-'} · {estadiaPagamentoConfirmado(detalhe) ? 'Pago · Finalizado' : statusLabel(detalhe.status)}</span>
+              <span>{detalhe.motorista || '-'} · {estadiaPagamentoConfirmado(detalhe) ? 'Pago · Finalizado' : statusEstadiaTexto(detalhe)}</span>
             </div>
             <button className="btn-light btn-small" onClick={() => setDetalhe(null)}>Fechar</button>
           </div>

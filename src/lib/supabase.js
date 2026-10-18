@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { inserirUsuarioConfirmado, registroUsuario } from './userPersistence'
 
 const URL = import.meta.env.VITE_SUPABASE_URL || 'https://dwyaedcrfgtnzkkflmge.supabase.co'
 const KEY = import.meta.env.VITE_SUPABASE_KEY || 'sb_publishable_ko9HUoztqY26AIzw4rxAHA_jGH005Md'
@@ -59,20 +60,11 @@ export const carregarUsuarios = async () => {
   return data || []
 }
 
+export const criarUsuario = async (usuario) => inserirUsuarioConfirmado(getClient(), USUARIOS_TABLE, usuario)
+
 export const salvarUsuario = async (usuario) => {
   const sb = getClient()
-  const registro = {
-    usuario: String(usuario.usuario || '').trim().toLowerCase(),
-    senha: usuario.senha,
-    nome: usuario.nome || usuario.usuario,
-    cargo: usuario.cargo || 'Operador',
-    avatar: usuario.avatar || '',
-    foto: usuario.foto || '',
-    filial: usuario.filial || 'jatai-go',
-    ativo: usuario.ativo !== false,
-    updated_at: new Date().toISOString(),
-    atualizado_em: new Date().toISOString(),
-  }
+  const registro = registroUsuario(usuario)
 
   const { data, error } = await sb
     .from(USUARIOS_TABLE)
