@@ -24,6 +24,7 @@
   --ay-on-primary: #242016;
   --ay-accent: #F28C28;
   --ay-success: #15803d;
+  --ay-on-success: #fff;
   --ay-warning: #a16207;
   --ay-danger: #b91c1c;
   --ay-radius-xs: 6px;
@@ -90,6 +91,7 @@ html.dark,
   --ay-primary-soft: #462F1C;
   --ay-primary-ink: #FFBE7F;
   --ay-success: #86d5a0;
+  --ay-on-success: #153B26;
   --ay-warning: #f2cf6e;
   --ay-danger: #fca5a5;
   --ay-shadow-md: 0 14px 44px rgb(0 0 0 / 25%);
@@ -156,6 +158,7 @@ html.dark[data-ayres-accent="purple"],
   --ay-ink-soft: #DDD6EF;
   --ay-ink-muted: #BAAECD;
   --ay-primary-soft: #302047;
+  --ay-primary-strong: #C4B5FD;
   --ay-primary-ink: #D8B4FE;
   --ay-hero-fill: radial-gradient(circle at 95% 0%, rgb(124 58 237 / 20%), transparent 50%), linear-gradient(125deg, #241B3A, #1C1730);
   --ay-success: #86d5a0;
@@ -1725,7 +1728,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   border: 1px solid var(--ay-primary-strong) !important;
   border-radius: 9px !important;
   background: var(--ay-primary-fill) !important;
-  color: #1F2933 !important;
+  color: var(--ay-on-primary) !important;
   box-shadow: 0 5px 14px rgba(202, 138, 4, .18) !important;
   font-weight: 800 !important;
 }
@@ -1735,7 +1738,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .app .pendencias-pro .btn-purple:hover,
 .app .report-pro-hero .report-export-btn:not(.secondary):not(.dark):hover {
   background: var(--ay-primary-fill-hover) !important;
-  color: #1F2933 !important;
+  color: var(--ay-on-primary) !important;
 }
 
 .app .consulta-pro .consulta-pro-light,
@@ -2153,6 +2156,19 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .app .consulta-pro .consulta-pro-owner { text-align: right; }
 
 .app .consulta-pro .consulta-pro-actions { justify-content: flex-end; }
+
+.app .consulta-pro .consulta-pro-card { position: relative; overflow: visible !important; }
+.app .consulta-pro .consulta-pro-card:has(.consulta-pro-more-panel) { z-index: 5; }
+.app .consulta-pro .consulta-pro-actions > .consulta-pro-action.pago { background: var(--ay-success) !important; color: var(--ay-on-success) !important; border: 1px solid var(--ay-success) !important; font-weight: 750; }
+.app .consulta-pro .consulta-pro-actions > .consulta-pro-action.pago:hover:not(:disabled) { background: var(--ay-success) !important; color: var(--ay-on-success) !important; filter: brightness(.94) !important; }
+.app .consulta-pro .consulta-pro-more { position: relative; display: inline-flex; }
+.app .consulta-pro .consulta-pro-more > button { white-space: nowrap; width: 100%; }
+.app .consulta-pro .consulta-pro-more-panel { position: absolute; top: calc(100% + 6px); right: 0; z-index: 30; display: grid; min-width: 166px; padding: 6px; border: 1px solid var(--ay-control-border); border-radius: 10px; background: var(--ay-surface-raised); box-shadow: var(--ay-shadow-md); }
+.app .consulta-pro .consulta-pro-more .consulta-pro-more-panel :is(button, a) { display: block; min-height: 38px; width: 100%; padding: 9px 12px; text-align: left; border: 0 !important; border-radius: 6px; background: transparent !important; color: var(--ay-ink) !important; box-shadow: none !important; font-size: 12px; font-weight: 600; text-decoration: none; transform: none !important; cursor: pointer; }
+.app .consulta-pro .consulta-pro-more .consulta-pro-more-panel :is(button, a):hover { background: var(--ay-surface-hover) !important; color: var(--ay-ink) !important; }
+.app .consulta-pro .consulta-pro-more .consulta-pro-more-panel :is(button, a):focus-visible { outline: 2px solid var(--ay-primary-ink) !important; outline-offset: -2px; }
+.app .consulta-pro .consulta-pro-more .consulta-pro-more-panel button.danger { color: var(--ay-danger) !important; }
+.app .consulta-pro .consulta-pagamento-info { padding: 12px; border-radius: 8px; background: var(--ay-surface-muted); color: var(--ay-success); font-size: 13px; line-height: 1.6; }
 
 .app .consulta-pro .consulta-pro-empty {
   padding: 30px 18px !important;
@@ -3371,6 +3387,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   .app .consulta-pro .consulta-pro-card { padding: 14px !important; }
   .app .consulta-pro .consulta-pro-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .app .consulta-pro .consulta-pro-actions > * { width: 100%; }
+  .app .consulta-pro .consulta-pro-actions:has(.pago) .consulta-pro-more-panel { left: 0; right: auto; }
   .app .consulta-pro .consulta-pro-periods { grid-template-columns: 1fr; }
 
   .app #abaLancadas#abaLancadas .estadia-grid-clean.cols-4,
