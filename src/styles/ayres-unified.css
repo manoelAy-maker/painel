@@ -37,6 +37,16 @@
   --ay-focus: 0 0 0 3px rgb(242 140 40 / 25%);
   --ay-transition: 160ms ease;
   --ay-sidebar-bg: #343A42;
+  --ay-sidebar-hover: #46515F;
+  --ay-sidebar-card: #3D4652;
+  --ay-sidebar-border: #586675;
+  --ay-tooltip-bg: #202832;
+  --ay-tooltip-border: #607080;
+  --ay-badge-bg: #FFC17F;
+  --ay-badge-ink: #3d3006;
+  --ay-primary-fill: var(--ay-primary);
+  --ay-primary-fill-hover: var(--ay-primary-strong);
+  --ay-hero-fill: var(--ay-surface);
   /* Compatibilidade com componentes históricos. */
   --ay-bg: var(--ay-app-bg);
   --ay-bg-soft: var(--ay-surface-muted);
@@ -87,11 +97,72 @@ html.dark,
 
 /* Cores alternativas continuam disponíveis apenas por escolha explícita. */
 :root[data-ayres-accent="blue"] { --ay-primary: #60a5fa; --ay-primary-strong: #3b82f6; --ay-primary-soft: #dbeafe; --ay-primary-ink: #1e40af; --ay-on-primary: #17243b; }
-:root[data-ayres-accent="purple"] { --ay-primary: #c4b5fd; --ay-primary-strong: #a78bfa; --ay-primary-soft: #ede9fe; --ay-primary-ink: #6b21a8; --ay-on-primary: #30204a; }
+:root[data-ayres-accent="purple"] {
+  --ay-app-bg: #F4F2FC;
+  --ay-surface: #fff;
+  --ay-surface-raised: #FCFBFF;
+  --ay-surface-muted: #F5F3FF;
+  --ay-surface-hover: #EDE9FE;
+  --ay-border: #D8D2EB;
+  --ay-control-border: #8A7BA9;
+  --ay-border-strong: #A78BFA;
+  --ay-ink: #262039;
+  --ay-ink-soft: #4E425F;
+  --ay-ink-muted: #655773;
+  --ay-primary: #7C3AED;
+  --ay-primary-strong: #6D28D9;
+  --ay-primary-soft: #EDE9FE;
+  --ay-primary-ink: #5B21B6;
+  --ay-on-primary: #fff;
+  --ay-accent: #A78BFA;
+  --ay-primary-fill: linear-gradient(135deg, #7C3AED 0%, #6D28D9 60%, #4338CA 100%);
+  --ay-primary-fill-hover: linear-gradient(135deg, #6D28D9 0%, #5B21B6 60%, #3730A3 100%);
+  --ay-hero-fill: linear-gradient(125deg, #fff 35%, #F5F3FF 100%);
+  --ay-sidebar-bg: #18142C;
+  --ay-sidebar-hover: #32254D;
+  --ay-sidebar-card: #231C3A;
+  --ay-sidebar-border: #55436D;
+  --ay-tooltip-bg: #211A36;
+  --ay-tooltip-border: #7C699C;
+  --ay-badge-bg: #DDD6FE;
+  --ay-badge-ink: #3B1765;
+  --ay-focus: 0 0 0 3px rgb(139 92 246 / 25%);
+  --ay-shadow-md: 0 14px 44px rgb(57 28 87 / 18%);
+  --ay-logo-highlight: #DDD6FE;
+  --ay-logo-main: #A78BFA;
+  --ay-logo-deep: #5B21B6;
+  --ay-logo-shadow: #2E1065;
+  --ay-logo-mid: #7C3AED;
+  --ay-logo-accent: #C4B5FD;
+  --ay-logo-arrow-mid: #F5F3FF;
+  --ay-logo-arrow-end: #EDE9FE;
+  --ay-logo-outline: #5B21B6;
+  --ay-logo-glow: #8B5CF6;
+}
 :root[data-ayres-accent="green"] { --ay-primary: #6ee7b7; --ay-primary-strong: #34d399; --ay-primary-soft: #d1fae5; --ay-primary-ink: #166534; --ay-on-primary: #153b2a; }
 :root[data-ayres-accent="orange"] { --ay-primary: #fdba74; --ay-primary-strong: #fb923c; --ay-primary-soft: #ffedd5; --ay-primary-ink: #9a3412; --ay-on-primary: #44250e; }
 html.dark[data-ayres-accent="blue"] { --ay-primary-soft: #1d304b; --ay-primary-ink: #93c5fd; }
-html.dark[data-ayres-accent="purple"] { --ay-primary-soft: #302647; --ay-primary-ink: #ddd6fe; }
+html.dark[data-ayres-accent="purple"],
+:root[data-ayres-accent="purple"][data-ayres-theme="dark"] {
+  --ay-app-bg: #0F0C1D;
+  --ay-surface: #1C1730;
+  --ay-surface-raised: #261F3D;
+  --ay-surface-muted: #161225;
+  --ay-surface-hover: #2D2246;
+  --ay-border: #453656;
+  --ay-control-border: #837096;
+  --ay-border-strong: #A78BFA;
+  --ay-ink: #F5F3FF;
+  --ay-ink-soft: #DDD6EF;
+  --ay-ink-muted: #BAAECD;
+  --ay-primary-soft: #302047;
+  --ay-primary-ink: #D8B4FE;
+  --ay-hero-fill: radial-gradient(circle at 95% 0%, rgb(124 58 237 / 20%), transparent 50%), linear-gradient(125deg, #241B3A, #1C1730);
+  --ay-success: #86d5a0;
+  --ay-warning: #f2cf6e;
+  --ay-danger: #fca5a5;
+  --ay-shadow-md: 0 14px 44px rgb(0 0 0 / 32%);
+}
 html.dark[data-ayres-accent="green"] { --ay-primary-soft: #1b392b; --ay-primary-ink: #a7f3d0; }
 html.dark[data-ayres-accent="orange"] { --ay-primary-soft: #412d1a; --ay-primary-ink: #fed7aa; }
 
@@ -108,7 +179,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 *, *::before, *::after { box-sizing: border-box; }
-::selection { color: #242016; background: #FFC17F; }
+::selection { color: var(--ay-on-primary); background: var(--ay-primary); }
 * { scrollbar-width: thin; scrollbar-color: #adb3a4 transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-thumb { background: #adb3a4; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
@@ -178,17 +249,17 @@ body.sidebar-open .ayres-app .app-layout {
 .ayres-app .sidebar-pro .sidebar-nav .tab { height: 46px !important; max-height: 46px !important; flex: 0 0 46px !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab { position: relative; display: flex !important; justify-content: center !important; align-items: center; width: 100% !important; min-height: 46px !important; margin: 0 0 7px !important; padding: 12px 0 !important; border: 0 !important; border-radius: 9px !important; color: #E2E8F0 !important; background: transparent !important; box-shadow: none !important; transform: none !important; gap: 0 !important; opacity: 1 !important; filter: none !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab:hover,
-.ayres-app .sidebar-pro .sidebar-nav .tab:focus-visible { color: #fff !important; background: #46515F !important; }
-.ayres-app .sidebar-pro .sidebar-nav .tab.active { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; }
+.ayres-app .sidebar-pro .sidebar-nav .tab:focus-visible { color: #fff !important; background: var(--ay-sidebar-hover) !important; }
+.ayres-app .sidebar-pro .sidebar-nav .tab.active { background: var(--ay-primary-fill) !important; color: var(--ay-on-primary) !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab::before { display: none !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab-icon { color: inherit !important; display: inline-flex !important; opacity: 1 !important; filter: none !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab-icon svg { width: 20px !important; height: 20px !important; stroke-width: 2 !important; opacity: 1 !important; filter: none !important; }
 .ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab { color: #E2E8F0 !important; opacity: 1 !important; filter: none !important; }
 .ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab:hover,
-.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab:focus-visible { background: #46515F !important; color: #fff !important; }
-.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab.active { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; }
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab:focus-visible { background: var(--ay-sidebar-hover) !important; color: #fff !important; }
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab.active { background: var(--ay-primary-fill) !important; color: var(--ay-on-primary) !important; }
 .ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab :is(.tab-icon, .tab-label, svg) { color: inherit !important; }
-.ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: absolute; top: -2px; right: -3px; padding: 2px 5px !important; min-width: 16px; font-size: 9px !important; background: #FFC17F !important; color: #3d3006 !important; border: 1px solid #343A42 !important; animation: none !important; }
+.ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: absolute; top: -2px; right: -3px; padding: 2px 5px !important; min-width: 16px; font-size: 9px !important; background: var(--ay-badge-bg) !important; color: var(--ay-badge-ink) !important; border: 1px solid var(--ay-sidebar-bg) !important; animation: none !important; }
 body.sidebar-open .ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 { position: fixed !important; left: 0; width: 256px !important; max-width: 256px !important; padding: 18px 16px !important; transform: none !important; opacity: 1 !important; pointer-events: auto !important; box-shadow: 12px 0 36px rgb(0 0 0 / 18%) !important; }
 body.sidebar-open .ayres-app .sidebar-pro .brand-pro { justify-content: flex-start !important; gap: 12px !important; }
 body.sidebar-open .ayres-app .sidebar-pro .brand-pro > div:last-child,
@@ -202,7 +273,7 @@ body.sidebar-open .ayres-app .sidebar-pro .sidebar-section-label { color: #CBD5E
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-nav .tab { justify-content: flex-start !important; gap: 12px !important; padding: 12px 14px !important; font-size: 13px !important; }
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: static; margin-left: auto; }
 body.sidebar-open .ayres-app .sidebar-pro .ayres-today-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-body.sidebar-open .ayres-app .sidebar-pro :is(.ayres-today-grid > div, .sidebar-card, .sidebar-user-card) { padding: 10px; background: #3D4652 !important; border: 1px solid #586675 !important; border-radius: 9px !important; box-shadow: none !important; }
+body.sidebar-open .ayres-app .sidebar-pro :is(.ayres-today-grid > div, .sidebar-card, .sidebar-user-card) { padding: 10px; background: var(--ay-sidebar-card) !important; border: 1px solid var(--ay-sidebar-border) !important; border-radius: 9px !important; box-shadow: none !important; }
 body.sidebar-open .ayres-app .sidebar-pro .ayres-today-grid strong { display: block; font-size: 20px; color: #f6f7ef !important; }
 body.sidebar-open .ayres-app .sidebar-pro :is(p, small, .sidebar-user-role, .ayres-today-grid span) { color: #D6DFE8 !important; font-size: 11px; }
 body.sidebar-open .ayres-app .sidebar-pro :is(.sidebar-user-name, .sidebar-card-title) { color: #f6f7ef !important; font-size: 12px; }
@@ -217,9 +288,9 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   z-index: 100;
   max-width: min(280px, calc(100vw - 100px));
   padding: 10px 14px;
-  border: 1px solid #607080;
+  border: 1px solid var(--ay-tooltip-border);
   border-radius: 8px;
-  background: #202832;
+  background: var(--ay-tooltip-bg);
   color: #fff;
   font: 700 13px/1.4 Inter, ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0;
@@ -235,9 +306,9 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   top: 50%;
   width: 8px;
   height: 8px;
-  background: #202832;
-  border-left: 1px solid #607080;
-  border-bottom: 1px solid #607080;
+  background: var(--ay-tooltip-bg);
+  border-left: 1px solid var(--ay-tooltip-border);
+  border-bottom: 1px solid var(--ay-tooltip-border);
   transform: translateY(-50%) rotate(45deg);
 }
 
@@ -307,8 +378,8 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .ayres-app :is(input[type="checkbox"], input[type="radio"]) { min-height: 0 !important; accent-color: var(--ay-primary-strong); width: 16px; height: 16px; padding: 0; }
 .ayres-app :is(button, .btn) { font-weight: 650 !important; letter-spacing: 0 !important; border-radius: 8px !important; text-transform: none !important; transform: none; }
 .ayres-app :is(.btn-light, .ay-secondary-action, .btn.ghost) { min-height: 38px; padding: 8px 14px; color: var(--ay-ink-soft) !important; background: var(--ay-surface) !important; border: 1px solid var(--ay-border) !important; box-shadow: none !important; }
-.ayres-app :is(.btn-primary, .btn-blue, .btn-purple, .ay-primary-action, button[type="submit"]) { min-height: 42px; padding: 10px 18px; color: var(--ay-on-primary) !important; background: var(--ay-primary) !important; border: 1px solid var(--ay-primary) !important; box-shadow: none !important; }
-.ayres-app :is(.btn-primary, .btn-blue, .btn-purple, .ay-primary-action, button[type="submit"]):hover:not(:disabled) { background: var(--ay-primary-strong) !important; border-color: var(--ay-primary-strong) !important; }
+.ayres-app :is(.btn-primary, .btn-blue, .btn-purple, .ay-primary-action, button[type="submit"]) { min-height: 42px; padding: 10px 18px; color: var(--ay-on-primary) !important; background: var(--ay-primary-fill) !important; border: 1px solid var(--ay-primary) !important; box-shadow: none !important; }
+.ayres-app :is(.btn-primary, .btn-blue, .btn-purple, .ay-primary-action, button[type="submit"]):hover:not(:disabled) { background: var(--ay-primary-fill-hover) !important; border-color: var(--ay-primary-strong) !important; }
 .ayres-app .btn-orange { background: var(--ay-primary-soft) !important; color: var(--ay-primary-ink) !important; border: 1px solid var(--ay-border-strong) !important; box-shadow: none !important; }
 .ayres-app .btn-green { background: #dcfce7 !important; color: #166534 !important; border: 1px solid #bbdfc4 !important; box-shadow: none !important; }
 .ayres-app .btn-red { background: #fef2f2 !important; color: #b91c1c !important; border: 1px solid #fecaca !important; box-shadow: none !important; }
@@ -327,7 +398,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 /* Central de estadias: a composição aprovada permanece. */
 .ayres-app .main-pro .container .estadia-home .dashboard-hero { display: grid !important; grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr) !important; gap: 20px !important; margin: 0 0 20px !important; }
 .ayres-app .main-pro .container .estadia-home :is(.hero-pro-card, .hero-side-card) { position: relative; min-width: 0; padding: 28px !important; border: 1px solid var(--ay-border) !important; border-radius: 14px !important; background: var(--ay-surface) !important; box-shadow: var(--ay-shadow-xs) !important; color: var(--ay-ink) !important; overflow: hidden; }
-.ayres-app .main-pro .container .estadia-home .hero-pro-card { border-left: 1px solid var(--ay-border) !important; padding: 34px !important; }
+.ayres-app .main-pro .container .estadia-home .hero-pro-card { border-left: 1px solid var(--ay-border) !important; padding: 34px !important; background: var(--ay-hero-fill) !important; }
 .ayres-app .main-pro .container .estadia-home .hero-pro-card::before { content: ""; position: absolute; top: 0; left: 34px; height: 4px; width: 74px; border-radius: 0 0 4px 4px; background: var(--ay-primary); }
 .ayres-app .main-pro .container .estadia-home .hero-pro-card::before { top: 0 !important; bottom: auto !important; left: 34px !important; right: auto !important; height: 4px !important; width: 74px !important; transform: none !important; box-shadow: none !important; }
 .ayres-app .main-pro .container .estadia-home .hero-pro-card::after { display: none !important; }
@@ -338,7 +409,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .ayres-app .main-pro .container .estadia-home .hero-pro-card p { max-width: 500px; margin: 0 0 24px; color: var(--ay-ink-muted) !important; font-size: 14px !important; line-height: 1.75; }
 .ayres-app .estadia-home .hero-actions { display: flex !important; flex-wrap: wrap; gap: 10px !important; margin-top: 0 !important; }
 .ayres-app .main-pro .container .estadia-home .hero-actions button { min-height: 44px; padding: 11px 18px !important; font-size: 12px !important; border-radius: 8px !important; box-shadow: none !important; }
-.ayres-app .main-pro .container .estadia-home .hero-actions .ay-primary-action { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; border: 1px solid var(--ay-primary) !important; }
+.ayres-app .main-pro .container .estadia-home .hero-actions .ay-primary-action { background: var(--ay-primary-fill) !important; color: var(--ay-on-primary) !important; border: 1px solid var(--ay-primary) !important; }
 .ayres-app .main-pro .container .estadia-home .hero-actions .ay-secondary-action { background: var(--ay-surface) !important; color: var(--ay-ink-soft) !important; border: 1px solid var(--ay-border) !important; }
 .ayres-app .estadia-home .home-hero-note { display: block; margin-top: 22px; color: var(--ay-ink-muted) !important; font-size: 11px; }
 .ayres-app .estadia-home .home-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; }
@@ -370,7 +441,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .ayres-app .estadia-ticker-copy span,
 .ayres-app .estadia-ticker-meta :is(b, small) { color: var(--ay-ink-soft) !important; }
 .ayres-app .estadia-ticker-meta b { border-color: var(--ay-border) !important; background: var(--ay-surface-muted) !important; }
-.ayres-app .estadia-ticker-rail { background: var(--ay-primary) !important; box-shadow: none !important; animation: none !important; }
+.ayres-app .estadia-ticker-rail { background: var(--ay-primary-fill) !important; box-shadow: none !important; animation: none !important; }
 .ayres-app .live-dashboard { gap: 12px !important; margin-bottom: 20px; }
 .ayres-app .live-card { padding: 16px !important; }
 .ayres-app .live-head { color: var(--ay-ink) !important; font-size: 12px; }
@@ -402,6 +473,17 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .settings-option-grid { display: grid; gap: 10px; }
 .settings-option-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .settings-color-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.settings-theme-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.settings-modal .settings-theme-preset { min-width: 0; display: grid; gap: 8px; padding: 13px; text-align: left; color: var(--ay-ink); background: var(--ay-surface); border: 1px solid var(--ay-control-border); border-radius: 10px; }
+.settings-modal .settings-theme-preset.active { border-color: var(--ay-primary); background: var(--ay-primary-soft); box-shadow: inset 0 0 0 1px var(--ay-primary); }
+.settings-theme-preset > strong { font-size: 13px; }
+.settings-theme-preset > span { font-size: 11px; line-height: 1.5; }
+.settings-preset-swatch { display: grid; grid-template-columns: 10px 1fr 1fr; gap: 5px; height: 46px; padding: 6px; border-radius: 6px; overflow: hidden; background: #F3F5F7; border: 1px solid #CBD5E1; }
+.settings-preset-swatch > span { margin-top: 10px; border-radius: 3px; background: #fff; border-top: 3px solid #F28C28; }
+.settings-preset-swatch > span:first-child { margin: 0; border: 0; background: #343A42; }
+.settings-preset-swatch.purple-classic { background: #0F0C1D; border-color: #55436D; }
+.settings-preset-swatch.purple-classic > span { background: #261F3D; border-top-color: #A78BFA; }
+.settings-preset-swatch.purple-classic > span:first-child { background: #7C3AED; }
 .settings-modal :is(.settings-option-grid button, .settings-color-grid button) { padding: 13px; text-align: left; background: var(--ay-surface); color: var(--ay-ink); border: 1px solid var(--ay-border); border-radius: 8px; box-shadow: none !important; }
 .settings-modal :is(.settings-option-grid button, .settings-color-grid button).active { background: var(--ay-primary-soft); border-color: var(--ay-primary-strong); }
 .settings-option-grid :is(strong, span) { display: block; }
@@ -416,7 +498,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .settings-section.profile span { font-size: 11px; margin-top: 4px; }
 .settings-profile-btn, .settings-btn { min-height: 40px; padding: 8px 14px; border: 1px solid var(--ay-border); background: var(--ay-surface); color: var(--ay-ink); border-radius: 8px; font-size: 12px; }
 .settings-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px 24px; border-top: 1px solid var(--ay-border); }
-.settings-modal .settings-btn.primary, .perfil-modal .perfil-btn.primary { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; border: 1px solid var(--ay-primary) !important; box-shadow: none !important; }
+.settings-modal .settings-btn.primary, .perfil-modal .perfil-btn.primary { background: var(--ay-primary-fill) !important; color: var(--ay-on-primary) !important; border: 1px solid var(--ay-primary) !important; box-shadow: none !important; }
 .perfil-modal :is(.perfil-photo-card, .perfil-password-box) { background: var(--ay-surface-muted) !important; color: var(--ay-ink) !important; border-color: var(--ay-border) !important; }
 .perfil-modal :is(input, label) { color: var(--ay-ink) !important; }
 .perfil-modal input { background: var(--ay-surface) !important; border: 1px solid var(--ay-border) !important; }
@@ -1642,7 +1724,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   min-height: 42px;
   border: 1px solid var(--ay-primary-strong) !important;
   border-radius: 9px !important;
-  background: var(--ay-primary) !important;
+  background: var(--ay-primary-fill) !important;
   color: #1F2933 !important;
   box-shadow: 0 5px 14px rgba(202, 138, 4, .18) !important;
   font-weight: 800 !important;
@@ -1652,7 +1734,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .app .planilha-page .btn-blue:hover,
 .app .pendencias-pro .btn-purple:hover,
 .app .report-pro-hero .report-export-btn:not(.secondary):not(.dark):hover {
-  background: var(--ay-primary-strong) !important;
+  background: var(--ay-primary-fill-hover) !important;
   color: #1F2933 !important;
 }
 
@@ -3146,7 +3228,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 }
 
 .app .report-ranking-grid .dash-chart-card > div:not(.dash-chart-head) > div > div:last-child > div {
-  background: var(--ay-primary) !important;
+  background: var(--ay-primary-fill) !important;
 }
 
 .app .report-table-card {

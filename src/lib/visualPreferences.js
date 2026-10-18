@@ -3,6 +3,17 @@ const THEMES = new Set(['light', 'dark'])
 const COLORS = new Set(['yellow', 'blue', 'purple', 'green', 'orange'])
 const LANGUAGES = new Set(['pt', 'en'])
 
+export const PRESETS_VISUAIS_AYRES = [
+  { id: 'strada', label: 'Strada', detalhe: 'Claro, amarelo e grafite para uma operação direta.', tema: 'light', cor: 'yellow' },
+  { id: 'purple-classic', label: 'Roxo clássico', detalhe: 'Violeta escuro e gradientes suaves, inspirado no AYRES antigo.', tema: 'dark', cor: 'purple' },
+]
+
+export function selecionarPresetAyres(preferencias, presetId) {
+  const preset = PRESETS_VISUAIS_AYRES.find(item => item.id === presetId)
+  if (!preset) return { ...preferencias }
+  return { ...preferencias, tema: preset.tema, cor: preset.cor }
+}
+
 function valorSalvo(storage, key) {
   const raw = storage.getItem(key)
   if (!raw) return null

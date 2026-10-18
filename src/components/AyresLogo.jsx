@@ -1,4 +1,15 @@
+import { useId } from 'react'
+
 export default function AyresLogo({ size = 42, showWord = false, className = '' }) {
+  const instanceId = useId().replace(/[^a-zA-Z0-9_-]/g, '')
+  const ids = {
+    iconMain: `ayres-${instanceId}-icon-main`,
+    iconDeep: `ayres-${instanceId}-icon-deep`,
+    iconGold: `ayres-${instanceId}-icon-gold`,
+    arrow: `ayres-${instanceId}-arrow`,
+    word: `ayres-${instanceId}-word`,
+    softGlow: `ayres-${instanceId}-soft-glow`,
+  }
   const w = showWord ? size * 3.25 : size
   return (
     <svg
@@ -12,48 +23,52 @@ export default function AyresLogo({ size = 42, showWord = false, className = '' 
       aria-label="AYRES"
     >
       <defs>
-        <linearGradient id="ayresIconMain" x1="17" y1="10" x2="55" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#FFD3A7" />
-          <stop offset="0.48" stopColor="#F28C28" />
-          <stop offset="1" stopColor="#A64F12" />
+        <linearGradient id={ids.iconMain} x1="17" y1="10" x2="55" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--ay-logo-highlight, #FFD3A7)" />
+          <stop offset="0.48" stopColor="var(--ay-logo-main, #F28C28)" />
+          <stop offset="1" stopColor="var(--ay-logo-deep, #A64F12)" />
         </linearGradient>
-        <linearGradient id="ayresIconDeep" x1="16" y1="56" x2="48" y2="14" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#422006" />
-          <stop offset="0.55" stopColor="#92400E" />
-          <stop offset="1" stopColor="#D97820" />
+        <linearGradient id={ids.iconDeep} x1="16" y1="56" x2="48" y2="14" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--ay-logo-shadow, #422006)" />
+          <stop offset="0.55" stopColor="var(--ay-logo-mid, #92400E)" />
+          <stop offset="1" stopColor="var(--ay-logo-accent, #D97820)" />
         </linearGradient>
-        <linearGradient id="ayresIconGold" x1="43" y1="32" x2="61" y2="61" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#D97820" />
-          <stop offset="1" stopColor="#F28C28" />
+        <linearGradient id={ids.iconGold} x1="43" y1="32" x2="61" y2="61" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--ay-logo-accent, #D97820)" />
+          <stop offset="1" stopColor="var(--ay-logo-main, #F28C28)" />
         </linearGradient>
-        <linearGradient id="ayresArrow" x1="16" y1="47" x2="60" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset="0.58" stopColor="#FFF8F0" />
-          <stop offset="1" stopColor="#FFF1DF" />
+        <linearGradient id={ids.arrow} x1="16" y1="47" x2="60" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--ay-logo-arrow-mid, #FFFFFF)" />
+          <stop offset="0.58" stopColor="var(--ay-logo-arrow-mid, #FFF8F0)" />
+          <stop offset="1" stopColor="var(--ay-logo-arrow-end, #FFF1DF)" />
         </linearGradient>
-        <linearGradient id="ayresWord" x1="83" y1="22" x2="204" y2="55" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#111827" />
-          <stop offset="0.58" stopColor="#A64F12" />
-          <stop offset="1" stopColor="#F28C28" />
+        <linearGradient id={ids.word} x1="83" y1="22" x2="204" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--ay-ink, #111827)" />
+          <stop offset="0.58" stopColor="var(--ay-logo-deep, #A64F12)" />
+          <stop offset="1" stopColor="var(--ay-logo-main, #F28C28)" />
         </linearGradient>
-        <filter id="ayresSoftGlow" x="-20" y="-20" width="112" height="112" filterUnits="userSpaceOnUse">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.85 0 0 0 0 0.52 0 0 0 0 0.02 0 0 0 .28 0" />
-          <feBlend in="SourceGraphic" />
+        <filter id={ids.softGlow} x="-20" y="-20" width="112" height="112" filterUnits="userSpaceOnUse">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
+          <feFlood floodColor="var(--ay-logo-glow, #D97820)" floodOpacity=".2" result="glowColor" />
+          <feComposite in="glowColor" in2="blur" operator="in" result="coloredGlow" />
+          <feMerge>
+            <feMergeNode in="coloredGlow" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
       </defs>
 
-      <g filter="url(#ayresSoftGlow)">
-        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconMain)" />
-        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l7.66 15.65-8.3 5.22-3.08-6.5L15.7 65.38h-4.56c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill="url(#ayresIconDeep)" opacity=".96" />
-        <path d="M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z" fill="url(#ayresIconGold)" />
-        <path d="M15.4 50.55c10.82-10.8 24.9-18.46 42.22-22.98l-3.76 5.8C40.2 36.95 28.03 43.15 17.34 52.05l-1.94-1.5z" fill="url(#ayresArrow)" />
-        <path d="M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z" fill="#FFFFFF" />
-        <path d="M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25" stroke="#743B16" strokeWidth="2.4" strokeLinecap="round" opacity=".72" />
+      <g filter={`url(#${ids.softGlow})`}>
+        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l24.56 50.2c1.25 2.55-.6 5.53-3.44 5.53H48.1L36.1 39.65 23.6 65.38H11.14c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill={`url(#${ids.iconMain})`} />
+        <path d="M34.8 6.5c2.15 0 4.08 1.22 5.02 3.15l7.66 15.65-8.3 5.22-3.08-6.5L15.7 65.38h-4.56c-2.84 0-4.7-2.98-3.44-5.53L29.78 9.65A5.57 5.57 0 0134.8 6.5z" fill={`url(#${ids.iconDeep})`} opacity=".96" />
+        <path d="M43.55 32.1l20.83 27.75c1.25 2.55-.6 5.53-3.44 5.53H48.1L38.05 43.88l5.5-11.78z" fill={`url(#${ids.iconGold})`} />
+        <path d="M15.4 50.55c10.82-10.8 24.9-18.46 42.22-22.98l-3.76 5.8C40.2 36.95 28.03 43.15 17.34 52.05l-1.94-1.5z" fill={`url(#${ids.arrow})`} />
+        <path d="M49.18 25.05l13.1 5.28-11.64 8.72 1.82-5.72C41.9 35.3 32.22 39.35 23.4 45.5c7.96-8.9 17.2-15.18 27.82-18.84l-2.04-1.61z" fill="var(--ay-logo-arrow-mid, #FFFFFF)" />
+        <path d="M27.3 43.92c6.7-3.6 13.95-6.35 21.74-8.25" stroke="var(--ay-logo-outline, #743B16)" strokeWidth="2.4" strokeLinecap="round" opacity=".72" />
       </g>
 
       {showWord && (
-        <g fill="url(#ayresWord)">
+        <g fill={`url(#${ids.word})`}>
           <path d="M86.5 52H77l18.7-40h9.9l18.6 40h-10l-3.5-8.1H90L86.5 52zm6.5-15.3h14.6l-7.3-16.8L93 36.7z" />
           <path d="M136.6 52V36.4L120.4 12h10.3l10.7 16.6L152.2 12h9.8l-16.4 24.4V52h-9z" />
           <path d="M166.7 52V12h20.5c5.1 0 9.05 1.15 11.83 3.44 2.78 2.3 4.17 5.52 4.17 9.66 0 3.05-.73 5.58-2.2 7.59-1.46 2-3.54 3.45-6.22 4.34L204.4 52h-10.1l-8.42-13.65h-10.25V52h-8.93zm8.93-21.2h10.55c2.5 0 4.38-.48 5.63-1.45 1.25-.97 1.88-2.4 1.88-4.29 0-1.86-.63-3.27-1.88-4.23-1.25-.96-3.13-1.43-5.63-1.43h-10.55v11.4z" />

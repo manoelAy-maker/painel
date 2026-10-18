@@ -42,3 +42,7 @@ Branch `feat/visual-amarelo-ayres` e pull request para revisão. Não fazer merg
 ## Continuação: navegação e contraste
 
 Após a publicação da reforma solicitada pelo usuário, melhorar a identificação dos botões compactos com tooltips imediatos em hover/foco. Renderizar os nomes fora da região de scroll da barra para evitar recorte; Escape, blur, clique, scroll e resize dispensam o tooltip. O menu permanece compacto e não desloca a operação. Reforçar os tokens de texto secundário, os ícones e as bordas dos controles, sem remover estados de desabilitado ou mexer nas funções. Manter a identidade âmbar Strada `#F28C28`, o tema grafite e a navegação por botão no celular. Implementar em `feat/sidebar-tooltips-contraste`, mantendo a integração GitHub–Vercel existente.
+
+## Continuação: Roxo clássico opcional
+
+Adicionar um preset de tema Roxo clássico nas configurações, semelhante à identidade roxa anterior: fundo violeta escuro, cartões em tons de ameixa, botões roxos com gradiente discreto e marca harmonizada. Manter o Strada claro como padrão e oferecer retorno a ele em um clique. O usuário pode usar aparência clara/grafite sem perder persistência da escolha. Reusar as preferências de cor/modo já existentes, sem novos dados de operação ou mudanças de autenticação. Os tooltips, a legibilidade melhorada e o comportamento do menu permanecem. Integrar os tokens e a pele roxa à camada canônica, sem reativar arquivos legados conflitantes. Implementar em `feat/tema-roxo-classico` e conservar a integração GitHub–Vercel existente.
