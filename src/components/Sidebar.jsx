@@ -2,6 +2,7 @@ import { useAuthContext, useCloudContext, useEstadiaContext, useUiContext } from
 import { podeAdministrar } from '../utils/roles'
 import { ADMIN_NAV_GROUPS, OPERATOR_NAV_GROUPS } from '../config/navigation'
 import AyresLogo from './AyresLogo'
+import SidebarNavButton from './SidebarNavButton'
 
 const Ic = ({ d, d2, size = 18, ...p }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p}>
@@ -32,7 +33,7 @@ const CloudIcon = ({ status }) => {
   return <Ic size={14} d="M17 17H17.01M3 3l18 18M13.73 13.73A6 6 0 0118 18H5.5A4.5 4.5 0 018 9.27M9.63 5.64A8 8 0 0120 15.4" style={{ color: '#f87171' }} />
 }
 
-export default function Sidebar({ onFechar }) {
+export default function Sidebar({ onFechar, expandido = false }) {
   const { usuarioAtual } = useAuthContext()
   const { estadias, estadiasALancar } = useEstadiaContext()
   const { cloudStatus, cloudText } = useCloudContext()
@@ -62,11 +63,15 @@ export default function Sidebar({ onFechar }) {
           <div key={grupo.titulo} className="ayres-side-group-v4">
             <div className="sidebar-section-label">{grupo.titulo}</div>
             {grupo.itens.map(a => (
-              <button type="button" key={a.id} className={`tab ${abaAtiva === a.id ? 'active' : ''}`} onClick={() => handleTab(a.id)} title={a.label} aria-label={a.label} aria-current={abaAtiva === a.id ? 'page' : undefined}>
-                <span className="tab-icon">{ICONS[a.id]}</span>
-                <span className="tab-label">{a.label}</span>
-                {a.id === 'alancar' && pendentes > 0 && <span className="pending-badge">{pendentes}</span>}
-              </button>
+              <SidebarNavButton
+                key={a.id}
+                label={a.label}
+                icon={ICONS[a.id]}
+                active={abaAtiva === a.id}
+                compact={!expandido}
+                badge={a.id === 'alancar' ? pendentes : 0}
+                onClick={() => handleTab(a.id)}
+              />
             ))}
           </div>
         ))}

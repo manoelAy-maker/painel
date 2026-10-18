@@ -5,3 +5,9 @@
 - [x] Manter autenticação, idiomas, recuperação de senha, permissões, cálculos, dados, integrações e exportações existentes; não fazer gravações no banco da operação para testar o visual. Revisão dos handlers, 22 testes unitários e build concluídos com sucesso; validação visual com dados fictícios e integrações bloqueadas.
 - [x] Tornar a apresentação consistente no desktop e celular, com navegação controlada por botão, sem deslocar a área principal ao passar o mouse. Verificadas 15 capturas/estados, sem overflow horizontal nem erros de execução; abertura, Escape, seleção de abas e persistência do tema após reload verificados.
 - [x] Entregar as alterações em `feat/visual-amarelo-ayres` e abrir pull request, sem merge nem substituição da versão em produção.
+
+## Melhoria da navegação e legibilidade
+
+- [x] Na barra lateral compacta, mostrar o nome de cada botão ao passar o mouse; oferecer o mesmo nome no foco de teclado, sem expandir a barra nem movimentar a página. O nome não deve ser cortado pelo scroll do menu e deve sumir ao sair, pressionar Escape ou navegar. Manter os nomes sempre disponíveis no menu expandido do celular. Hover de todos os botões, teclado, menu aberto, janela baixa e celular verificados com dados locais.
+- [x] Aumentar a legibilidade dos ícones, textos secundários, rótulos e bordas de controles que estavam apagados; preservar o tom Strada, estados de sucesso/risco, modo grafite e indicação de controles desabilitados. Contraste dos placeholders: 6,08:1 no claro e 9,17:1 no grafite; bordas dos filtros: 3,29:1 nos dois temas. Ícones ativos/inativos e hover/foco do cabeçalho verificados.
+- [x] Implementar a melhoria em branch própria com testes/build e validação local isolada, mantendo dados, permissões e fluxos existentes. Branch `feat/sidebar-tooltips-contraste`; 26 testes e build concluídos, sem gravações na operação real.

@@ -11,11 +11,12 @@
   --ay-surface-raised: #fff;
   --ay-surface-muted: #F7F8FA;
   --ay-surface-hover: #FFF8F0;
-  --ay-border: #DFE3E7;
+  --ay-border: #CDD4DC;
+  --ay-control-border: #7C8B99;
   --ay-border-strong: #E7B386;
   --ay-ink: #29313B;
-  --ay-ink-soft: #4C5965;
-  --ay-ink-muted: #67717C;
+  --ay-ink-soft: #3E4C59;
+  --ay-ink-muted: #52606D;
   --ay-primary: #F28C28;
   --ay-primary-strong: #D97820;
   --ay-primary-soft: #FFF1DF;
@@ -71,10 +72,11 @@ html.dark,
   --ay-surface-muted: #1c201a;
   --ay-surface-hover: #303327;
   --ay-border: #373d30;
+  --ay-control-border: #657361;
   --ay-border-strong: #966338;
   --ay-ink: #f3f4ec;
   --ay-ink-soft: #d7dccd;
-  --ay-ink-muted: #a2ab98;
+  --ay-ink-muted: #BBC4B3;
   --ay-primary-soft: #462F1C;
   --ay-primary-ink: #FFBE7F;
   --ay-success: #86d5a0;
@@ -174,11 +176,18 @@ body.sidebar-open .ayres-app .app-layout {
 .ayres-app .sidebar-pro .sidebar-nav { display: block !important; width: 100%; margin: 0 !important; padding: 0 !important; overflow: visible !important; flex: 1; }
 .ayres-app .sidebar-pro .ayres-side-group-v4 { display: flex !important; flex-direction: column; gap: 0; }
 .ayres-app .sidebar-pro .sidebar-nav .tab { height: 46px !important; max-height: 46px !important; flex: 0 0 46px !important; }
-.ayres-app .sidebar-pro .sidebar-nav .tab { position: relative; display: flex !important; justify-content: center !important; align-items: center; width: 100% !important; min-height: 46px !important; margin: 0 0 7px !important; padding: 12px 0 !important; border: 0 !important; border-radius: 9px !important; color: #bdc5b2 !important; background: transparent !important; box-shadow: none !important; transform: none !important; gap: 0 !important; }
-.ayres-app .sidebar-pro .sidebar-nav .tab:hover { color: #fff !important; background: #353b2e !important; }
+.ayres-app .sidebar-pro .sidebar-nav .tab { position: relative; display: flex !important; justify-content: center !important; align-items: center; width: 100% !important; min-height: 46px !important; margin: 0 0 7px !important; padding: 12px 0 !important; border: 0 !important; border-radius: 9px !important; color: #E2E8F0 !important; background: transparent !important; box-shadow: none !important; transform: none !important; gap: 0 !important; opacity: 1 !important; filter: none !important; }
+.ayres-app .sidebar-pro .sidebar-nav .tab:hover,
+.ayres-app .sidebar-pro .sidebar-nav .tab:focus-visible { color: #fff !important; background: #46515F !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab.active { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; }
 .ayres-app .sidebar-pro .sidebar-nav .tab::before { display: none !important; }
-.ayres-app .sidebar-pro .sidebar-nav .tab-icon { color: inherit !important; display: inline-flex !important; }
+.ayres-app .sidebar-pro .sidebar-nav .tab-icon { color: inherit !important; display: inline-flex !important; opacity: 1 !important; filter: none !important; }
+.ayres-app .sidebar-pro .sidebar-nav .tab-icon svg { width: 20px !important; height: 20px !important; stroke-width: 2 !important; opacity: 1 !important; filter: none !important; }
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab { color: #E2E8F0 !important; opacity: 1 !important; filter: none !important; }
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab:hover,
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab:focus-visible { background: #46515F !important; color: #fff !important; }
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab.active { background: var(--ay-primary) !important; color: var(--ay-on-primary) !important; }
+.ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 .sidebar-nav .tab :is(.tab-icon, .tab-label, svg) { color: inherit !important; }
 .ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: absolute; top: -2px; right: -3px; padding: 2px 5px !important; min-width: 16px; font-size: 9px !important; background: #FFC17F !important; color: #3d3006 !important; border: 1px solid #343A42 !important; animation: none !important; }
 body.sidebar-open .ayres-app .app-layout > .sidebar-pro.ayres-sidebar-v4 { position: fixed !important; left: 0; width: 256px !important; max-width: 256px !important; padding: 18px 16px !important; transform: none !important; opacity: 1 !important; pointer-events: auto !important; box-shadow: 12px 0 36px rgb(0 0 0 / 18%) !important; }
 body.sidebar-open .ayres-app .sidebar-pro .brand-pro { justify-content: flex-start !important; gap: 12px !important; }
@@ -188,19 +197,49 @@ body.sidebar-open .ayres-app .sidebar-pro .sidebar-section-label,
 body.sidebar-open .ayres-app .sidebar-pro .ayres-sidebar-today,
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-status { display: block !important; }
 body.sidebar-open .ayres-app .sidebar-pro .brand-pro h1 { font-size: 23px !important; letter-spacing: -.05em !important; color: #fff !important; }
-body.sidebar-open .ayres-app .sidebar-pro .brand-pro p { color: #a5af99 !important; font-size: 10px !important; line-height: 1.5; }
-body.sidebar-open .ayres-app .sidebar-pro .sidebar-section-label { color: #a5af99 !important; padding: 0 8px 12px !important; font-size: 10px !important; letter-spacing: .12em; }
+body.sidebar-open .ayres-app .sidebar-pro .brand-pro p { color: #CBD5E1 !important; font-size: 11px !important; line-height: 1.5; }
+body.sidebar-open .ayres-app .sidebar-pro .sidebar-section-label { color: #CBD5E1 !important; padding: 0 8px 12px !important; font-size: 11px !important; letter-spacing: .08em; }
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-nav .tab { justify-content: flex-start !important; gap: 12px !important; padding: 12px 14px !important; font-size: 13px !important; }
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-nav .pending-badge { position: static; margin-left: auto; }
 body.sidebar-open .ayres-app .sidebar-pro .ayres-today-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-body.sidebar-open .ayres-app .sidebar-pro :is(.ayres-today-grid > div, .sidebar-card, .sidebar-user-card) { padding: 10px; background: #2d3327 !important; border: 1px solid #3a4332 !important; border-radius: 9px !important; box-shadow: none !important; }
+body.sidebar-open .ayres-app .sidebar-pro :is(.ayres-today-grid > div, .sidebar-card, .sidebar-user-card) { padding: 10px; background: #3D4652 !important; border: 1px solid #586675 !important; border-radius: 9px !important; box-shadow: none !important; }
 body.sidebar-open .ayres-app .sidebar-pro .ayres-today-grid strong { display: block; font-size: 20px; color: #f6f7ef !important; }
-body.sidebar-open .ayres-app .sidebar-pro :is(p, small, .sidebar-user-role, .ayres-today-grid span) { color: #b2bca6 !important; font-size: 10px; }
+body.sidebar-open .ayres-app .sidebar-pro :is(p, small, .sidebar-user-role, .ayres-today-grid span) { color: #D6DFE8 !important; font-size: 11px; }
 body.sidebar-open .ayres-app .sidebar-pro :is(.sidebar-user-name, .sidebar-card-title) { color: #f6f7ef !important; font-size: 12px; }
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-status { margin-top: auto !important; }
 body.sidebar-open .ayres-app .sidebar-pro .sidebar-user-card { display: flex; gap: 10px; margin-top: 8px; }
 .ayres-app .sidebar-backdrop,
 body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; position: fixed; inset: 0; z-index: 55; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: rgb(20 25 18 / 24%) !important; backdrop-filter: none !important; transform: none !important; }
+
+/* Portal em body: os nomes não são cortados pelo scroll da barra compacta. */
+.ayres-nav-tooltip {
+  position: fixed;
+  z-index: 100;
+  max-width: min(280px, calc(100vw - 100px));
+  padding: 10px 14px;
+  border: 1px solid #607080;
+  border-radius: 8px;
+  background: #202832;
+  color: #fff;
+  font: 700 13px/1.4 Inter, ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+  box-shadow: 0 5px 16px rgb(0 0 0 / 18%);
+  transform: translateY(-50%);
+  pointer-events: auto;
+  overflow-wrap: break-word;
+}
+.ayres-nav-tooltip::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: #202832;
+  border-left: 1px solid #607080;
+  border-bottom: 1px solid #607080;
+  transform: translateY(-50%) rotate(45deg);
+}
 
 /* Cabeçalho com marca, contexto e controles reais. */
 .ayres-app .main-pro .topbar.ayres-header-v4 { position: sticky; top: 0; z-index: 45; min-height: 76px; background: var(--ay-surface) !important; border: 0 !important; border-bottom: 1px solid var(--ay-border) !important; box-shadow: none !important; backdrop-filter: none !important; }
@@ -216,7 +255,29 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .ayres-app .topbar .ayres-header-brand span { display: block; font-size: 8px; letter-spacing: .13em; font-weight: 600; color: var(--ay-ink-muted); }
 .ayres-app .topbar :is(.ay-menu-toggle, .settings-trigger-btn, .topbar-profile-btn, .ayres-date-chip-v4) { min-height: 38px !important; border: 1px solid var(--ay-border) !important; background: var(--ay-surface) !important; border-radius: 8px !important; box-shadow: none !important; color: var(--ay-ink-soft) !important; transform: none !important; }
 .ayres-app .topbar .ay-menu-toggle { display: grid; place-items: center; width: 38px; flex-shrink: 0; }
-.ayres-app .main-pro .topbar .ay-menu-toggle { background: var(--ay-surface) !important; box-shadow: none !important; border: 1px solid var(--ay-border) !important; color: var(--ay-ink-soft) !important; }
+.ayres-app .main-pro .topbar.ayres-header-v4 :is(.ay-menu-toggle, .settings-trigger-btn, .notif-button, .topbar-profile-btn) {
+  background: var(--ay-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--ay-control-border) !important;
+  color: var(--ay-ink-soft) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+.ayres-app .main-pro .topbar.ayres-header-v4 :is(.ay-menu-toggle, .settings-trigger-btn, .notif-button, .topbar-profile-btn):is(:hover, :focus, :focus-visible) {
+  background: var(--ay-surface-hover) !important;
+  background-image: none !important;
+  border-color: var(--ay-primary-strong) !important;
+  color: var(--ay-ink) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+.ayres-app .main-pro .topbar.ayres-header-v4 :is(.ay-menu-toggle, .settings-trigger-btn, .notif-button, .topbar-profile-btn) svg { color: inherit !important; opacity: 1 !important; }
+.ayres-app .main-pro .topbar.ayres-header-v4 .ay-menu-toggle::before,
+.ayres-app .main-pro .topbar.ayres-header-v4 .ay-menu-toggle::after { display: none !important; }
 .ayres-app .topbar .ayres-header-actions-v4 { display: flex !important; gap: 10px !important; align-items: center; }
 .ayres-app .topbar .ayres-header-actions-v4 { background: transparent !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important; }
 .ayres-app .topbar .settings-trigger-btn { display: inline-flex; align-items: center; gap: 7px; padding: 0 11px; font-size: 11px !important; }
@@ -239,9 +300,9 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .ayres-app :is(h1, h2, h3, h4, strong) { color: var(--ay-ink) !important; text-shadow: none !important; }
 .ayres-app :is(p, small, .muted) { color: var(--ay-ink-muted) !important; }
 .ayres-app :is(.box, .panel, .card, .command-panel, .live-card, .dash-chart-card, .stat) { background: var(--ay-surface) !important; color: var(--ay-ink) !important; border: 1px solid var(--ay-border) !important; border-radius: var(--ay-radius-md) !important; box-shadow: var(--ay-shadow-xs) !important; backdrop-filter: none !important; }
-.ayres-app label { color: var(--ay-ink-soft) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important; }
-.ayres-app :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) { min-height: 42px; background: var(--ay-surface-raised) !important; color: var(--ay-ink) !important; border: 1px solid var(--ay-border) !important; border-radius: 8px !important; box-shadow: none !important; font-size: 13px !important; }
-.ayres-app :is(input, textarea)::placeholder { color: var(--ay-ink-muted) !important; opacity: .8; }
+.ayres-app label { color: var(--ay-ink-soft) !important; font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important; }
+.ayres-app :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) { min-height: 42px; background: var(--ay-surface-raised) !important; color: var(--ay-ink) !important; border: 1px solid var(--ay-control-border) !important; border-radius: 8px !important; box-shadow: none !important; font-size: 13px !important; }
+.ayres-app :is(input, textarea)::placeholder { color: var(--ay-ink-muted) !important; opacity: 1 !important; }
 .ayres-app :is(input, textarea, select):focus { border-color: var(--ay-primary-strong) !important; box-shadow: var(--ay-focus) !important; transform: none !important; }
 .ayres-app :is(input[type="checkbox"], input[type="radio"]) { min-height: 0 !important; accent-color: var(--ay-primary-strong); width: 16px; height: 16px; padding: 0; }
 .ayres-app :is(button, .btn) { font-weight: 650 !important; letter-spacing: 0 !important; border-radius: 8px !important; text-transform: none !important; transform: none; }
@@ -727,7 +788,8 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 
 .ayres-form-field input::placeholder,
 .ayres-form-field textarea::placeholder {
-  color: color-mix(in srgb, var(--ay-login-ink-muted) 72%, transparent) !important;
+  color: var(--ay-login-ink-muted) !important;
+  opacity: 1 !important;
 }
 
 .ayres-form-field input:hover,
@@ -1478,7 +1540,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .app .report-filter-card :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
   min-height: 42px !important;
   color: var(--ay-ink) !important;
-  border: 1px solid var(--ay-border) !important;
+  border: 1px solid var(--ay-control-border) !important;
   border-radius: 10px !important;
   background: var(--ay-surface-muted) !important;
   box-shadow: none !important;
@@ -1490,7 +1552,8 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .app #abaLancadas :is(input:not([type='checkbox']):not([type='radio']), select, textarea)::placeholder,
 .app .pendencias-pro :is(input:not([type='checkbox']):not([type='radio']), select, textarea)::placeholder,
 .app .report-filter-card :is(input:not([type='checkbox']):not([type='radio']), select, textarea)::placeholder {
-  color: color-mix(in srgb, var(--ay-ink-muted) 78%, transparent) !important;
+  color: var(--ay-ink-muted) !important;
+  opacity: 1 !important;
 }
 
 .app .consulta-pro :is(input:not([type='checkbox']):not([type='radio']), select, textarea):hover,
@@ -1534,7 +1597,7 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
   padding: 0 8px !important;
   border: 1px solid transparent !important;
   border-radius: 999px !important;
-  font-size: 10px !important;
+  font-size: 11px !important;
   font-weight: 800 !important;
   line-height: 1;
   white-space: nowrap;
