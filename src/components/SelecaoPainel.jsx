@@ -41,7 +41,7 @@ const TRADUCOES = {
       { id: 'estadia', nome: 'Estadias', subtitulo: 'Pendências, lançamentos, anexos e finalizações em um só lugar.', icon: 'grid', aba: 'consultaLancadas', etiqueta: 'Operação', bullets: ['Em andamento', 'Pendências', 'Finalizadas'] },
       { id: 'relatorios', nome: 'Relatórios', subtitulo: 'Filtre a operação e gere os arquivos que você precisa.', icon: 'report', aba: 'relatorios', etiqueta: 'Exportação', bullets: ['Excel', 'PDF', 'Filtros'] },
     ],
-    adminModulos: [],
+    adminModulos: [{ id: 'admin', nome: 'Usuários', subtitulo: 'Cadastre funcionários e gerencie os acessos ao sistema.', icon: 'users', aba: 'admin', etiqueta: 'Administração', bullets: ['Cadastrar', 'Permissões', 'Filiais'], admin: true }],
   },
   en: {
     marca: 'Operations',
@@ -73,8 +73,8 @@ export default function SelecaoPainel() {
   const t = TRADUCOES[idioma] || TRADUCOES.pt
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || usuarioAtual?.usuario || 'usuário'
   const filialLabel = usuarioAtual?.filial === 'oleo' ? 'Operação do Óleo' : (usuarioAtual?.filial || 'jatai-go')
-  const isAdmin = false
-  const modulosPortal = t.modulos
+  const isAdmin = usuarioAtual?.cargo === 'Admin'
+  const modulosPortal = isAdmin ? [...t.modulos, ...t.adminModulos] : t.modulos
 
   useEffect(() => {
     const timer = setTimeout(() => setPronto(true), 40)
@@ -88,7 +88,7 @@ export default function SelecaoPainel() {
   }
 
   const acessar = (modulo) => {
-    localStorage.setItem('moduloInicialViaLog', modulo.id)
+    localStorage.setItem('moduloInicialViaLog', modulo.id === 'admin' ? 'estadia' : modulo.id)
     mudarAba(modulo.aba)
     window.dispatchEvent(new Event('ayres:modulo'))
   }
