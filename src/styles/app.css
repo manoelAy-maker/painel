@@ -4,7 +4,6 @@
 @import '../clickup-workspace.css';
 @import '../captacao-pontuacao.css';
 @import '../captacao-leads-pro.css';
-@import '../captacao-simple-mode.css';
 @import '../captacao-desktop-pro.css';
 @import '../captacao-theme.css';
 @import '../estadia-mobile.css';
@@ -19,6 +18,8 @@
 @import './modern-cards.css';
 @import './site-v3.css';
 @import './product-v4.css';
+@import '../ayres-stadias-design.css';
+@import '../ayres-strada-inspired.css';
 @import '../sidebar-toggle.css';
 @import '../topbar-ultra-clean.css';
 @import '../captacao-desktop-clean.css';

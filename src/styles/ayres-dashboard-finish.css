@@ -1,0 +1,40 @@
+/* AYRES: acabamento do dashboard, sem alterar telas de formulários. */
+.app-layout .main-pro .container{min-width:0;width:100%;max-width:none;box-sizing:border-box}
+.app-layout .main-pro .container .dashboard-hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:14px;align-items:stretch;margin-bottom:14px}
+.app-layout .main-pro .container .dashboard-hero>*{min-width:0}
+.app-layout .main-pro .container .stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px;margin:0 0 16px!important}
+.app-layout .main-pro .container .stats .stat-card{min-width:0;min-height:120px;box-sizing:border-box;display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;gap:9px;overflow:hidden;padding:17px 18px!important;border-radius:14px!important;background:#182333!important;border:1px solid #344253!important;color:#f8fafc!important;box-shadow:none!important}
+.app-layout .main-pro .container .stats .stat-card span{position:static!important;display:block;max-width:100%;font-size:12px!important;line-height:1.35;color:#aebccc!important;white-space:normal!important}
+.app-layout .main-pro .container .stats .stat-card strong{position:static!important;display:block;max-width:100%;font-size:32px!important;line-height:1!important;letter-spacing:-.03em;color:#f8fafc!important;transform:none!important}
+.app-layout .main-pro .container .stats .stat-card small{position:static!important;display:block;color:#8fa0b3!important;font-size:11px!important;line-height:1.3}
+.app-layout .main-pro .container .hero-side-card{min-width:0;background:#182333!important;color:#eaf0f8!important;border:1px solid #344253!important;border-radius:16px!important;box-shadow:none!important}
+.app-layout .main-pro .container .hero-side-card h3{color:#f8fafc!important}
+.app-layout .main-pro .container .health-row{background:#111b29!important;border:1px solid #2c394b!important;border-radius:9px!important;min-width:0}
+.app-layout .main-pro .container .health-row span{color:#b5c1cf!important}
+.app-layout .main-pro .container .health-row strong{color:#f8fafc!important}
+.app-layout .main-pro .container .hero-pro-card{background:linear-gradient(120deg,#182333,#27384a)!important;border:1px solid #3c4b5b!important;border-left:4px solid #f28c28!important;box-shadow:none!important}
+.app-layout .main-pro .container .hero-pro-card p{color:#c5d0dc!important}
+.app-layout .main-pro .container .hero-actions button{background:#d97820!important;color:#fff!important;border:1px solid #ed913d!important;border-radius:9px!important;box-shadow:none!important}
+.app-layout .main-pro .container .hero-actions button:hover{background:#ed8c31!important}
+.app-layout .main-pro .container .hero-side-card p{color:#b5c1cf!important}
+@media(max-width:1200px){.app-layout .main-pro .container .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}.app-layout .main-pro .container .dashboard-hero{grid-template-columns:1fr!important}}
+@media(max-width:600px){.app-layout .main-pro .container .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}.app-layout .main-pro .container .stats .stat-card{min-height:110px;padding:12px!important}.app-layout .main-pro .container .stats .stat-card strong{font-size:27px!important}}
+
+/* Sidebar: manter estatísticas, navegação e rodapé visíveis sem recortes. */
+.app-layout .sidebar-pro.ayres-sidebar-v4{box-sizing:border-box;display:flex!important;flex-direction:column!important;gap:8px!important;overflow-x:hidden!important;overflow-y:auto!important;min-height:0!important;max-height:100dvh!important;padding-bottom:14px!important;scrollbar-width:thin}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .brand-pro{flex:0 0 auto!important;margin:0!important;padding:4px 8px 12px!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .sidebar-nav{flex:0 0 auto!important;min-height:0!important;overflow:visible!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .ayres-sidebar-today{position:static!important;flex:0 0 auto!important;margin:8px 0 0!important;padding:0 4px!important;min-height:0!important;overflow:visible!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .ayres-today-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:0!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .ayres-today-grid>div{min-width:0!important;padding:10px 4px!important;text-align:center!important;overflow:visible!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .ayres-today-grid strong{display:block!important;font-size:22px!important;line-height:1.15!important;color:#f8fafc!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .ayres-today-grid span{display:block!important;font-size:10px!important;line-height:1.4!important;color:#aebccc!important;white-space:normal!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .sidebar-status{position:static!important;flex:0 0 auto!important;margin-top:12px!important;min-height:0!important;overflow:visible!important;padding-top:12px!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .sidebar-card,.app-layout .sidebar-pro.ayres-sidebar-v4 .sidebar-user-card{position:static!important;min-height:0!important;overflow:visible!important}
+
+/* Elimina o vazio lateral: menu com altura do conteúdo, sem coluna escura até o rodapé. */
+@media(min-width:761px){
+.app-layout .sidebar-pro.ayres-sidebar-v4{position:sticky!important;top:0!important;align-self:start!important;height:auto!important;max-height:calc(100dvh - 12px)!important;min-height:0!important;overflow-y:auto!important;border-radius:0 0 12px 0!important;padding-bottom:12px!important}
+.app-layout .sidebar-pro.ayres-sidebar-v4 .sidebar-status{margin-top:10px!important}
+.app-layout{align-items:start!important}
+}

@@ -1,8 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { linkWhatsapp, dataISOTexto, tempoDecorrido } from '../utils/index'
 import { nomeFilial } from '../data/filiais'
 import { arquivarEstadiaLancada } from '../lib/ayresSafety'
+import EstadiaActionMenu from '../components/EstadiaActionMenu'
+import { prepararEstadiaPaga, prepararReaberturaEstadia, estadiaPagamentoConfirmado } from '../modules/estadia/services/estadiaPagamento'
+import { statusEstadiaTexto, tempoParadoTexto, tempoParadoClasse } from '../modules/estadia/services/estadiaDisplay'
 import '../estadia-desktop-pro.css'
 import '../consulta-estadias-pro.css'
 
@@ -19,33 +22,9 @@ function classeStatus(s) {
   return 'status-aberto'
 }
 
-function statusLabel(s) {
-  return s || 'Aberto'
-}
-
 function parseValor(valor) {
   const n = String(valor || '').replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.')
   return Number(n) || 0
-}
-
-function tempoParadoTexto(e) {
-  const horas = Number(String(e.horas || '0').replace(',', '.')) || 0
-  return `${horas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}h`
-}
-
-function tempoParadoClasse(e) {
-  const horas = Number(String(e.horas || '0').replace(',', '.')) || 0
-  if (horas > 24) return 'danger'
-  if (horas > 12) return 'warn'
-  return 'ok'
-}
-
-function agoraHistorico() {
-  return new Date().toLocaleString('pt-BR')
-}
-
-function eventoHistorico(acao, usuario, detalhes = '') {
-  return { data: agoraHistorico(), usuario: usuario || '-', acao, detalhes }
 }
 
 function dataLocalISO(date = new Date()) {
@@ -61,20 +40,22 @@ function resumoEstadia(e) {
     `NF: ${e.nf || e.numeroNf || '-'}`,
     `Chamado: ${e.chamado || '-'}`,
     `Transportadora: ${e.transportadora || '-'}`,
-    `Status: ${statusLabel(e.status)}`,
+    `Status: ${statusEstadiaTexto(e)}`,
     `Valor: ${e.valor || 'R$ 0,00'}`,
   ].join('\n')
 }
 
-export default function ConsultaEstadiasLancadas() {
-  const { estadias, editarLancada, excluirLancada, filiais, mudarAba, usuarioAtual, toast } = useApp()
+export default function ConsultaEstadiasLancadas({ visaoInicial = 'andamento' }) {
+  const { estadias, atualizarLancada, excluirLancada, filiais, mudarAba, usuarioAtual, toast } = useApp()
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState('')
   const [filtroFilial, setFiltroFilial] = useState('')
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
   const [detalhe, setDetalhe] = useState(null)
-  const [visao, setVisao] = useState('andamento')
+  const [visao, setVisao] = useState(visaoInicial)
+  const [salvandoIds, setSalvandoIds] = useState(() => new Set())
+  const salvandoRef = useRef(new Set())
 
   const listaFiltrada = useMemo(() => estadias.filter(e => {
     const txt = ((e.placa || '') + ' ' + (e.motorista || '') + ' ' + (e.chamado || '') + ' ' + (e.transportadora || '') + ' ' + (e.nf || e.numeroNf || '')).toUpperCase()
@@ -117,34 +98,33 @@ export default function ConsultaEstadiasLancadas() {
     mudarAba('lancadas')
   }
 
-  const atualizarStatus = async (e, status) => {
-    const campoUsuario = status === 'Feito' ? 'feitoPor' : status === 'Finalizado' ? 'finalizadoPor' : status === 'Em análise' ? 'emAnalisePor' : 'reabertoPor'
-    const campoData = status === 'Feito' ? 'dataFeito' : status === 'Finalizado' ? 'dataFinalizado' : status === 'Em análise' ? 'dataAnalise' : 'dataReabertura'
-    const dados = {
-      ...e,
-      status,
-      [campoUsuario]: usuarioAtual?.usuario || '-',
-      [campoData]: agoraHistorico(),
-      historicoItem: [
-        eventoHistorico(`Mudou status para ${status}`, usuarioAtual?.usuario, `Placa ${e.placa || '-'}`),
-        ...(e.historicoItem || []),
-      ].slice(0, 20),
-    }
-
-    if (status === 'Aberto') {
-      dados.feitoPor = ''
-      dados.finalizadoPor = ''
-      dados.emAnalisePor = ''
-    }
-
+  const salvarEstado = async (e, dados, mensagem) => {
+    const id = String(e.id)
+    if (salvandoRef.current.has(id)) return
+    salvandoRef.current.add(id)
+    setSalvandoIds(previous => new Set(previous).add(id))
     try {
-      await editarLancada(e.id, dados)
-      if (status === 'Finalizado') setVisao('finalizadas')
-      toast?.(`Status alterado para ${status}.`, 'ok')
+      const resultado = await atualizarLancada(e.id, dados)
+      setDetalhe(current => current && String(current.id) === id ? dados : current)
+      if (resultado?.sincronizado === false) {
+        toast?.(`${mensagem} Salva neste aparelho; sincronização pendente.`, 'warn')
+      } else {
+        toast?.(mensagem, 'ok')
+      }
     } catch {
-      toast?.('Não consegui alterar o status dessa estadia.', 'err')
+      toast?.('Não consegui salvar a alteração da estadia. Tente novamente.', 'err')
+    } finally {
+      salvandoRef.current.delete(id)
+      setSalvandoIds(previous => { const next = new Set(previous); next.delete(id); return next })
     }
   }
+
+  const marcarPago = e => {
+    if (e.status === 'Finalizado') return
+    return salvarEstado(e, prepararEstadiaPaga(e, usuarioAtual?.usuario), 'Marcada como paga e finalizada.')
+  }
+
+  const reabrir = e => salvarEstado(e, prepararReaberturaEstadia(e, usuarioAtual?.usuario), 'Estadia reaberta.')
 
   const arquivar = async (e) => {
     if (!confirm(`Arquivar a estadia da placa ${e.placa || '-'}? Ela sairá da consulta e ficará na Lixeira.`)) return
@@ -185,13 +165,6 @@ export default function ConsultaEstadiasLancadas() {
     const ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
     setDataInicio(dataLocalISO(ini))
     setDataFim(dataLocalISO(hoje))
-  }
-
-  const proximaAcao = (e) => {
-    if (!e.status || e.status === 'Aberto') return { label: 'Analisar', status: 'Em análise', classe: 'warn' }
-    if (e.status === 'Em análise') return { label: 'Marcar feito', status: 'Feito', classe: 'ok' }
-    if (e.status === 'Feito') return { label: 'Finalizar', status: 'Finalizado', classe: 'done' }
-    return null
   }
 
   return (
@@ -239,13 +212,13 @@ export default function ConsultaEstadiasLancadas() {
         {lista.length === 0 && <div className="consulta-pro-empty">{visao === 'finalizadas' ? 'Nenhuma estadia finalizada encontrada.' : 'Nenhuma estadia em andamento encontrada.'}</div>}
 
         {lista.map(e => {
-          const acao = proximaAcao(e)
+          const salvando = salvandoIds.has(String(e.id))
           return (
-            <article key={e.id} className="consulta-pro-card">
+            <article key={e.id} className="consulta-pro-card" aria-busy={salvando}>
               <div className="consulta-pro-main">
                 <div className="consulta-pro-topline">
                   <span className="consulta-pro-plate">{e.placa || '-'}</span>
-                  <span className={`status ${classeStatus(e.status)}`}>{statusLabel(e.status)}</span>
+                  <span className={`status ${classeStatus(e.status)}`}>{estadiaPagamentoConfirmado(e) ? 'Pago' : statusEstadiaTexto(e)}</span>
                   <span className={`prio ${classePrio(e.prioridade)}`}>{e.prioridade || 'Normal'}</span>
                 </div>
                 <h3>{e.motorista || 'Motorista não informado'}</h3>
@@ -269,13 +242,15 @@ export default function ConsultaEstadiasLancadas() {
                   <strong>{e.lancadoPor || '-'}</strong>
                 </div>
                 <div className="consulta-pro-actions">
-                  {acao && <button className={`consulta-pro-action ${acao.classe}`} onClick={() => atualizarStatus(e, acao.status)}>{acao.label}</button>}
-                  {e.status !== 'Aberto' && <button className="consulta-pro-light small" onClick={() => atualizarStatus(e, 'Aberto')}>Reabrir</button>}
-                  <button className="consulta-pro-light small" onClick={() => setDetalhe(e)}>Detalhes</button>
-                  <button className="consulta-pro-light small" onClick={() => editar(e)}>Editar</button>
-                  <button className="consulta-pro-light small" onClick={() => copiar(e)}>Copiar</button>
-                  {e.telefoneMotorista && <a className="consulta-pro-whats" href={linkWhatsapp(e)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
-                  <button className="consulta-pro-danger small" onClick={() => arquivar(e)}>Arquivar</button>
+                  {e.status !== 'Finalizado' && <button type="button" className="consulta-pro-action pago" disabled={salvando} onClick={() => marcarPago(e)}>{salvando ? 'Salvando...' : 'Pago'}</button>}
+                  <button type="button" className="consulta-pro-light small" onClick={() => setDetalhe(e)}>Detalhes</button>
+                  <EstadiaActionMenu disabled={salvando} items={[
+                    e.status && e.status !== 'Aberto' && { label: 'Reabrir', onClick: () => reabrir(e) },
+                    { label: 'Editar', onClick: () => editar(e) },
+                    { label: 'Copiar', onClick: () => copiar(e) },
+                    e.telefoneMotorista && { label: 'WhatsApp', href: linkWhatsapp(e) },
+                    { label: 'Arquivar', danger: true, onClick: () => arquivar(e) },
+                  ]} />
                 </div>
               </div>
             </article>
@@ -288,7 +263,7 @@ export default function ConsultaEstadiasLancadas() {
           <div className="box-title">
             <div>
               <h2>{detalhe.placa || 'Estadia'}</h2>
-              <span>{detalhe.motorista || '-'} · {statusLabel(detalhe.status)}</span>
+              <span>{detalhe.motorista || '-'} · {estadiaPagamentoConfirmado(detalhe) ? 'Pago · Finalizado' : statusEstadiaTexto(detalhe)}</span>
             </div>
             <button className="btn-light btn-small" onClick={() => setDetalhe(null)}>Fechar</button>
           </div>
@@ -298,10 +273,11 @@ export default function ConsultaEstadiasLancadas() {
             <div><small>Transportadora</small><strong>{detalhe.transportadora || '-'}</strong></div>
             <div><small>Filial</small><strong>{nomeFilial(detalhe.filial)}</strong></div>
             <div><small>Peso</small><strong>{detalhe.peso || '-'}</strong></div>
-            <div><small>Horas</small><strong>{detalhe.horas || '0.00'} h</strong></div>
+            <div><small>Horas</small><strong>{tempoParadoTexto(detalhe)}</strong></div>
             <div><small>Valor</small><strong>{detalhe.valor || 'R$ 0,00'}</strong></div>
             <div><small>Pago por</small><strong>{detalhe.pagoPor || 'Logística'}</strong></div>
           </div>
+          {estadiaPagamentoConfirmado(detalhe) && <p className="consulta-pagamento-info">Pagamento confirmado por {detalhe.pagamentoConfirmadoPor || detalhe.finalizadoPor || '-'} em {detalhe.dataPagamentoConfirmado || detalhe.dataFinalizado || '-'}.</p>}
           <div className="consulta-modal-section">
             <h3>Histórico da estadia</h3>
             {detalhe.historicoItem?.length ? detalhe.historicoItem.map((h, i) => <div key={i} className="consulta-history-item"><strong>{h.acao}</strong><small>{h.usuario} · {h.data}</small>{h.detalhes && <small>{h.detalhes}</small>}</div>) : <p>Sem histórico interno ainda.</p>}
