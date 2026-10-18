@@ -3432,3 +3432,39 @@ body.sidebar-open .ayres-app .sidebar-backdrop { display: block !important; posi
 .app #abaLancadas .summary-save.btn-green:hover {
   background: color-mix(in srgb, var(--ay-success) 86%, #000) !important;
 }
+
+/* Administração — gestão de usuários, mantendo os tokens do tema atual. */
+.app .main-pro .users-pro-page { gap: 16px; color: var(--ay-ink); }
+.app .main-pro .users-pro-page :is(.users-pro-hero, .users-pro-card, .users-pro-kpi) { border: 1px solid var(--ay-border) !important; background: var(--ay-surface) !important; border-radius: 14px !important; box-shadow: var(--ay-shadow-xs) !important; }
+.app .main-pro .users-pro-page :is(.users-pro-hero, .users-pro-card)::before,
+.app .main-pro .users-pro-page .users-pro-kpi::after { display: none !important; }
+.app .main-pro .users-pro-page .users-pro-hero { border-left: 4px solid var(--ay-primary) !important; background: var(--ay-hero-fill) !important; }
+.app .main-pro .users-pro-page .users-pro-eyebrow { border: 1px solid var(--ay-border-strong) !important; background: var(--ay-primary-soft) !important; color: var(--ay-primary-ink) !important; font-size: 11px; }
+.app .main-pro .users-pro-page :is(h2, h3, .users-pro-person strong, .users-pro-kpi strong, .users-pro-rule-list strong) { color: var(--ay-ink) !important; }
+.app .main-pro .users-pro-page :is(.users-pro-hero p, .users-pro-card-head p, .users-pro-kpi span, .users-pro-rule-list span, .users-pro-empty) { color: var(--ay-ink-muted) !important; }
+.app .main-pro .users-pro-page .users-pro-kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.app .main-pro .users-pro-page :is(.users-pro-card-head, .users-pro-table td) { border-color: var(--ay-border) !important; }
+.app .main-pro .users-pro-page :is(.users-pro-form label > span, .users-pro-label-row, .users-pro-filial-box > label > span) { color: var(--ay-ink-soft) !important; font-size: 12px; }
+.app .main-pro .users-pro-page :is(input, select) { min-height: 42px; border: 1px solid var(--ay-control-border) !important; border-radius: 8px !important; background: var(--ay-surface-muted) !important; color: var(--ay-ink) !important; box-shadow: none !important; }
+.app .main-pro .users-pro-page input::placeholder { color: var(--ay-ink-muted) !important; opacity: 1 !important; }
+.app .main-pro .users-pro-page :is(input, select):focus { border-color: var(--ay-primary-ink) !important; box-shadow: var(--ay-focus) !important; outline: none !important; }
+.app .main-pro .users-pro-page :is(.users-pro-filial-box, .users-pro-rule-list > div, .users-pro-rule-list > button, .users-pro-table-wrap) { border: 1px solid var(--ay-border) !important; background: var(--ay-surface-muted) !important; color: var(--ay-ink); border-radius: 10px !important; }
+.app .main-pro .users-pro-page :is(.users-pro-primary, .users-pro-person > span) { border: 1px solid var(--ay-border-strong) !important; background: var(--ay-primary-fill) !important; color: var(--ay-on-primary) !important; border-radius: 8px !important; box-shadow: none !important; transform: none !important; }
+.app .main-pro .users-pro-page .users-pro-primary { min-height: 42px; font-size: 13px; }
+.app .main-pro .users-pro-page .users-pro-primary:hover:not(:disabled) { background: var(--ay-primary-fill-hover) !important; color: var(--ay-on-primary) !important; }
+.app .main-pro .users-pro-page :is(.users-pro-ghost, .users-pro-tags button, .users-pro-row-actions button) { border: 1px solid var(--ay-control-border) !important; border-radius: 8px !important; background: transparent !important; color: var(--ay-ink-soft) !important; box-shadow: none !important; transform: none !important; }
+.app .main-pro .users-pro-page :is(.users-pro-ghost, .users-pro-tags button, .users-pro-row-actions button):hover:not(:disabled) { background: var(--ay-surface-hover) !important; color: var(--ay-ink) !important; }
+.app .main-pro .users-pro-page .users-pro-tags button.active { background: var(--ay-primary-soft) !important; color: var(--ay-primary-ink) !important; border-color: var(--ay-border-strong) !important; }
+.app .main-pro .users-pro-page .users-pro-row-actions button.danger { color: var(--ay-danger) !important; border-color: var(--ay-danger) !important; }
+.app .main-pro .users-pro-page .users-pro-table { min-width: 740px; }
+.app .main-pro .users-pro-page .users-pro-table th { background: var(--ay-surface-muted) !important; color: var(--ay-ink-soft) !important; }
+.app .main-pro .users-pro-page .users-pro-table td { color: var(--ay-ink) !important; }
+.app .main-pro .users-pro-page .users-pro-table tbody tr:hover td { background: var(--ay-surface-hover) !important; }
+.app .main-pro .users-pro-page :is(.users-pro-chip, .users-pro-chip.muted) { background: var(--ay-primary-soft) !important; color: var(--ay-primary-ink) !important; font-size: 11px; }
+.app .main-pro .users-pro-page :is(button, input, select):disabled { opacity: .6 !important; cursor: not-allowed !important; }
+@media (max-width: 720px) {
+  .app .main-pro .users-pro-page :is(.users-pro-grid, .users-pro-form) { grid-template-columns: 1fr !important; }
+  .app .main-pro .users-pro-page .users-pro-kpis { grid-template-columns: 1fr !important; }
+  .app .main-pro .users-pro-page .users-pro-actions > * { width: 100%; }
+  .app .main-pro .users-pro-page .users-pro-filters { min-width: 0; }
+}

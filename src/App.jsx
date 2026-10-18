@@ -7,6 +7,8 @@ import LivePanel from './components/LivePanel'
 import EstadiaTicker from './components/EstadiaTicker'
 import Toast from './components/Toast'
 import SoundManager from './components/SoundManager'
+import { podeAdministrar } from './utils/roles'
+import { ADMIN_ONLY_TABS } from './config/navigation'
 import './styles/app.css'
 import './login-dark-restore.css'
 import './styles/ayres-estadia-form-clean.css'
@@ -22,8 +24,9 @@ const EstadiasPlanilha = lazy(() => import('./pages/EstadiasPlanilha'))
 const EstadiaALancar = lazy(() => import('./modules/estadia/pages/EstadiaALancar'))
 const Relatorios = lazy(() => import('./pages/Relatorios'))
 const SelecaoPainel = lazy(() => import('./components/SelecaoPainel'))
+const Admin = lazy(() => import('./modules/admin/pages/Admin'))
 
-const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'planilha', 'finalizadas', 'lancadas', 'alancar']
+const ABAS_VALIDAS = ['inicio', 'consultaLancadas', 'planilha', 'finalizadas', 'lancadas', 'alancar', 'admin']
 const MODULOS_VALIDOS = ['estadia', 'relatorios']
 const moduloSalvo = () => {
   const modulo = localStorage.getItem('moduloInicialViaLog') || ''
@@ -101,11 +104,12 @@ function EstadiasHome({ onNovaLancada, onNovaPendencia }) {
 }
 
 function PainelEstadias({ onVoltarPortal }) {
-  const { abaAtiva, mudarAba } = useApp()
+  const { abaAtiva, mudarAba, usuarioAtual } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const formLancadaRef = useRef()
   const formALancarRef = useRef()
-  const aba = ABAS_VALIDAS.includes(abaAtiva) ? abaAtiva : 'inicio'
+  const acessoPermitido = !ADMIN_ONLY_TABS.includes(abaAtiva) || podeAdministrar(usuarioAtual)
+  const aba = ABAS_VALIDAS.includes(abaAtiva) && acessoPermitido ? abaAtiva : 'inicio'
 
   useEffect(() => {
     const fecharComEscape = (event) => { if (event.key === 'Escape') setSidebarOpen(false) }
@@ -114,8 +118,8 @@ function PainelEstadias({ onVoltarPortal }) {
   }, [])
 
   useEffect(() => {
-    if (!ABAS_VALIDAS.includes(abaAtiva)) mudarAba('inicio')
-  }, [abaAtiva, mudarAba])
+    if (!ABAS_VALIDAS.includes(abaAtiva) || !acessoPermitido) mudarAba('inicio')
+  }, [abaAtiva, acessoPermitido, mudarAba])
 
   useEffect(() => {
     document.body.classList.toggle('sidebar-open', sidebarOpen)
@@ -153,6 +157,7 @@ function PainelEstadias({ onVoltarPortal }) {
               {aba === 'finalizadas' && <ConsultaEstadiasLancadas visaoInicial="finalizadas" />}
               {aba === 'lancadas' && <EstadiaLancada formRef={formLancadaRef} />}
               {aba === 'alancar' && <EstadiaALancar formRef={formALancarRef} />}
+              {aba === 'admin' && podeAdministrar(usuarioAtual) && <Admin somenteUsuarios />}
             </Suspense>
             <div className="footer">AYRES · Controle de Estadias · by Manoel</div>
           </main>
