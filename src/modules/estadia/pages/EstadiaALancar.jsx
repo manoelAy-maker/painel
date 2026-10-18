@@ -184,6 +184,48 @@ export default function EstadiaALancar({ formRef }) {
         </div>
       </section>
 
+      <div className="pendencias-list-head">
+        <div>
+          <h3>Pendências a lançar</h3>
+          <p>{lista.length} pendência(s) visível(is) para {isAdmin ? 'todas as filiais' : nomeFilial(filialPadrao)}.</p>
+        </div>
+        <button type="button" className="pendencia-refresh" onClick={atualizarDaNuvem} disabled={atualizando}>↻ {atualizando ? 'Atualizando' : 'Atualizar'}</button>
+      </div>
+
+      <div className="table-wrap pendencias-table">
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Placa / Transportadora</th><th>Filial</th><th>Prioridade / SLA</th><th>Observação</th><th>Anexos</th><th>Pendente há</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lista.length === 0
+                ? <tr><td colSpan={7} className="empty">Nenhuma estadia a lançar para sua filial.</td></tr>
+                : lista.map(item => {
+                  const processando = String(processandoId) === String(item.id)
+                  return (
+                    <tr key={item.id} className={`sla-row sla-row-${item._sla.nivel}`}>
+                      <td className="pendencia-placa-cell"><span className="plate">{item.placa || '-'}</span><small>{item.transportadora || 'Transportadora não informada'}</small></td>
+                      <td><span className="badge badge-logistica">{nomeFilial(item.filial)}</span></td>
+                      <td><div className="pendencia-prioridade"><span className={`prio ${classePrio(item.prioridade)}`}>{item.prioridade || 'Normal'}</span><SlaBadge nivel={item._sla.nivel} label={item._sla.label} /></div></td>
+                      <td className="pendencia-obs">{item.obs || '-'}</td>
+                      <td>{item.anexos?.length ? item.anexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">Arquivo {i + 1}</a>) : '-'}</td>
+                      <td><TempoPendente data={item.dataCriacao} compacto /></td>
+                      <td>
+                        <div className="pendencia-acoes">
+                          <button className="btn-green btn-small" disabled={processando} onClick={() => handleAbrirParaLancar(item.id)}>{processando ? 'Abrindo...' : 'Lançar'}</button>
+                          <button className="btn-red btn-small" disabled={processando} onClick={() => handleArquivar(item)}>{processando ? 'Excluindo...' : 'Excluir'}</button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div className="box pendencias-form" ref={formRef}>
         <div className="box-title">
           <h2>Nova pendência</h2>
@@ -230,51 +272,7 @@ export default function EstadiaALancar({ formRef }) {
         </button>
       </div>
 
-      <div className="pendencias-list-head">
-        <div>
-          <h3>Pendências a lançar</h3>
-          <p>{lista.length} pendência(s) visível(is) para {isAdmin ? 'todas as filiais' : nomeFilial(filialPadrao)}.</p>
-        </div>
-        <button type="button" className="pendencia-refresh" onClick={atualizarDaNuvem} disabled={atualizando}>↻ {atualizando ? 'Atualizando' : 'Atualizar'}</button>
-      </div>
 
-      <div className="table-wrap pendencias-table">
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Filial</th><th>Placa</th><th>SLA</th><th>Prioridade</th><th>Anexo</th><th>Observação</th><th>Criado por</th><th>Pendente há</th><th>Status</th><th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lista.length === 0
-                ? <tr><td colSpan={10} className="empty">Nenhuma estadia a lançar para sua filial.</td></tr>
-                : lista.map(item => {
-                  const processando = String(processandoId) === String(item.id)
-                  return (
-                    <tr key={item.id} className={`sla-row sla-row-${item._sla.nivel}`}>
-                      <td><span className="badge badge-logistica">{nomeFilial(item.filial)}</span></td>
-                      <td><span className="plate">{item.placa || '-'}</span><br /><small>{item.transportadora || '-'}</small><br /><TempoPendente data={item.dataCriacao} compacto /></td>
-                      <td><SlaBadge nivel={item._sla.nivel} label={item._sla.label} /></td>
-                      <td><span className={`prio ${classePrio(item.prioridade)}`}>{item.prioridade || 'Normal'}</span></td>
-                      <td>{item.anexos?.length ? item.anexos.map((a, i) => <a key={i} className="anexo-link" href={a.url} target="_blank" rel="noopener noreferrer">Arquivo {i + 1}</a>) : '-'}</td>
-                      <td>{item.obs || '-'}</td>
-                      <td>{item.criadoPor || '-'}<br /><small>{item.dataCriacao || ''}</small></td>
-                      <td><TempoPendente data={item.dataCriacao} /></td>
-                      <td><span className="status status-lancar">{item.status || 'A lançar'}</span></td>
-                      <td>
-                        <div className="pendencia-acoes">
-                          <button className="btn-green btn-small" disabled={processando} onClick={() => handleAbrirParaLancar(item.id)}>{processando ? 'Abrindo...' : 'Lançar'}</button>
-                          <button className="btn-red btn-small" disabled={processando} onClick={() => handleArquivar(item)}>{processando ? 'Excluindo...' : 'Excluir'}</button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
   )
 }
