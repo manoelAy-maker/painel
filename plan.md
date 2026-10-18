@@ -38,3 +38,7 @@ Manter React/Vite e os componentes existentes. Substituir a camada visual canôn
 ## Entrega
 
 Branch `feat/visual-amarelo-ayres` e pull request para revisão. Não fazer merge nem publicar na Vercel. Usar os testes e build existentes, sem gravar dados na operação real.
+
+## Continuação: navegação e contraste
+
+Após a publicação da reforma solicitada pelo usuário, melhorar a identificação dos botões compactos com tooltips imediatos em hover/foco. Renderizar os nomes fora da região de scroll da barra para evitar recorte; Escape, blur, clique, scroll e resize dispensam o tooltip. O menu permanece compacto e não desloca a operação. Reforçar os tokens de texto secundário, os ícones e as bordas dos controles, sem remover estados de desabilitado ou mexer nas funções. Manter a identidade âmbar Strada `#F28C28`, o tema grafite e a navegação por botão no celular. Implementar em `feat/sidebar-tooltips-contraste`, mantendo a integração GitHub–Vercel existente.

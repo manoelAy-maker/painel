@@ -136,7 +136,7 @@ function PainelEstadias({ onVoltarPortal }) {
     <div className="app ayres-app" style={{ display: 'block' }}>
       {sidebarOpen && <button className="sidebar-backdrop" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
       <div className="app-layout">
-        <Sidebar onFechar={() => setSidebarOpen(false)} />
+        <Sidebar expandido={sidebarOpen} onFechar={() => setSidebarOpen(false)} />
         <section className="main-pro">
           <Header menuAberto={sidebarOpen} onMenuMobile={() => setSidebarOpen(v => !v)} />
           <main className="container">
